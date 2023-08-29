@@ -3,6 +3,9 @@ import os
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap
+from components.buttons import Button, Register_Button
+from components.form_field import Form
+from styles.styles import button_style, global_style
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -30,9 +33,15 @@ class Window(QWidget):
         self.edit1 = QLineEdit('', self)
         self.edit1.setGeometry(45, 15, 100, 20)
 
-        self.boton1 = QPushButton('&Send', self)
-        self.boton1.resize(self.boton1.sizeHint())
-        self.boton1.move(5, 70)
+        # Buttons
+        self.button1 = QPushButton('&Send', self)
+        self.button1.resize(self.button1.sizeHint())
+        self.button1.move(5, 70)
+        # 1
+        self.button2 = Button('nameButton', (50, 40), '&Enter', self)
+        self.register_button = Register_Button(
+            'registerButton', (300, 250), '&Register', self)
+        # register_clicked = self.register_button.button_clicked()
         # Text
         self.text_to_edit = QLineEdit('Edit this!', self)
         self.text_to_edit.setGeometry(50, 50, 100, 40)
@@ -56,7 +65,8 @@ class Window(QWidget):
         hbox.addStretch(1)
         hbox.addWidget(self.labels['label1'])
         hbox.addWidget(self.edit1)
-        hbox.addWidget(self.boton1)
+        hbox.addWidget(self.button1)
+        hbox.addWidget(self.button2)
         hbox.addWidget(self.labels['label2'])
         hbox.addStretch(1)
         # Vertical Layout
@@ -71,7 +81,16 @@ class Window(QWidget):
 
 
 if __name__ == '__main__':
-    app = QApplication([])
+
+    # Debug function
+    def hook(type, value, traceback):
+        print(type)
+        print(traceback)
+    sys.__excepthook__ = hook
+
+    app = QApplication(sys.argv)
     window = Window()
+
+    window.setStyleSheet(global_style)
     window.show()
     sys.exit(app.exec())
