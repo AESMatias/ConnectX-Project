@@ -1,8 +1,9 @@
 import sys
 import os
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
-from PyQt6.QtGui import QPixmap
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import (QFileDialog,
+                             QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
+from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Button, Register_Button
 from components.form_field import Form
 from styles.styles import button_style, global_style
@@ -10,14 +11,12 @@ image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
 
-class Window(QWidget):
+class Frame(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self.init_gui()
 
     def init_gui(self):
-
         # Window Geometry
         self.setGeometry(200, 100, 800, 800)
         self.setWindowTitle('ConectX Project')
@@ -40,7 +39,10 @@ class Window(QWidget):
         # 1
         self.button2 = Button('nameButton', (50, 40), '&Enter', self)
         self.register_button = Register_Button(
-            'registerButton', (300, 250), '&Register', self)
+            'registerButton', (300, 250), 'REGISTER', self)
+        self.register_button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.register_button.setStyleSheet(button_style)
         # register_clicked = self.register_button.button_clicked()
         # Text
         self.text_to_edit = QLineEdit('Edit this!', self)
@@ -53,12 +55,13 @@ class Window(QWidget):
         # self.image_florence.setPixmap(pixels_flocence)
         # self.image_florence.setScaledContents(True)
         # Aristotle Image
-        self.image_aristotle1 = QLabel(self)
-        self.image_aristotle1.setGeometry(100, 500, 150, 150)
-        image_aristotle1 = os.path.join('images', 'aristotle_1.jpg')
-        pixels_aristotle1 = QPixmap(image_aristotle1)
-        self.image_aristotle1.setPixmap(pixels_aristotle1)
-        self.image_aristotle1.setScaledContents(True)
+        # self.image_aristotle1 = QLabel(self)
+        # self.image_aristotle1.setGeometry(100, 500, 150, 150)
+        # image_aristotle1 = os.path.join('images', 'aristotle_1.jpg')
+        # pixels_aristotle1 = QPixmap(image_aristotle1)
+        # self.image_aristotle1.setPixmap(pixels_aristotle1)
+        # self.image_aristotle1.setScaledContents(True)
+        # self.image_aristotle1.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Horizontal Layout
         hbox = QHBoxLayout()
@@ -69,6 +72,7 @@ class Window(QWidget):
         hbox.addWidget(self.button2)
         hbox.addWidget(self.labels['label2'])
         hbox.addStretch(1)
+
         # Vertical Layout
         vbox = QVBoxLayout()
         vbox.addStretch(1)
@@ -89,8 +93,13 @@ if __name__ == '__main__':
     sys.__excepthook__ = hook
 
     app = QApplication(sys.argv)
-    window = Window()
 
+    window = Frame()
     window.setStyleSheet(global_style)
     window.show()
+
+    # window2 = Frame()
+    # window2.setStyleSheet(global_style)
+    # window2.show()
+
     sys.exit(app.exec())
