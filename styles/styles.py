@@ -2,7 +2,7 @@ button_style = """
     QPushButton {
         border: 1px solid white;
         border-radius: 5px;
-        font-size: 30px;
+        font-size: 40px;
         color: white;
         padding: 10px 0;
         margin: 2px 2px;
