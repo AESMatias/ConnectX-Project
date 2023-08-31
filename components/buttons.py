@@ -1,13 +1,14 @@
 # The import below isn't working
 # from Login.login_module import login
-import sys
-import os
 from PyQt6.QtWidgets import (QPushButton)
+import os
+import sys
+# print(sys.builtin_module_names)
+# print(sys.path)
 debugMode: bool = True
-
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(project_root)
 sys.path.append(project_root)
+from Login.login_module import login
 
 
 class Button(QPushButton):
@@ -53,5 +54,5 @@ class Login_Button(QPushButton):
 
     def button_clicked(self):
         print('Login button pressed!') if debugMode else None
-        # login('adasda', 'pepe')
+        login('jose', 'pepe')
         return self.status

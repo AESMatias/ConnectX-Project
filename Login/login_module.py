@@ -1,15 +1,17 @@
 import os
 import csv
-from register_module import cvsMaker
+from Login.register_module import cvsMaker
 debugMode: bool = True
-data_path: str = os.path.abspath("logs.csv")
+data_path: str = os.path.abspath("Login")
+cvs_path = os.path.join(data_path, 'logs.csv')
+print(cvs_path)
 
 
 def login(user: str, password: str) -> None:
     userMatch: bool = False
     passMatch: bool = False
     try:
-        with open(data_path, mode='r+') as data:
+        with open(cvs_path, mode='r+') as data:
             reader = csv.reader(data)
             next(reader)
             for row in reader:
@@ -17,7 +19,7 @@ def login(user: str, password: str) -> None:
                     userMatch = True
                     if row[1] == password:
                         passMatch = True
-                        row[2] == 'True'
+                        row[2] = 'True'
     except FileNotFoundError as error:
         cvsMaker()
         if debugMode:
@@ -26,9 +28,9 @@ def login(user: str, password: str) -> None:
         print('user already exists')
     elif userMatch == False:
         print('non-existent user')
-    if passMatch:
-        print('Aceso')
 
+    if passMatch:
+        print('Access')
     elif passMatch == False:
         print('wrong password')
 
