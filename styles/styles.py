@@ -21,3 +21,10 @@ global_style = """
                                      stop: 0 #6B73FF, stop: 1 #000DFF);
     }
 """
+login_label = """
+    QLabel {
+        color: red;
+        opacity: 0.5;
+        
+    }
+"""

@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Button, Register_Button, Login_Button
-from components.form_field import Form
-from styles.styles import button_style, global_style
+from components.form_field import InputField
+from styles.styles import button_style, global_style, login_label
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -18,7 +18,7 @@ class Frame(QWidget):
 
     def init_gui(self) -> None:
         # Window Geometry
-        self.setGeometry(200, 100, 800, 800)
+        self.setGeometry(100, 200, 1000, 800)
         self.setWindowTitle('ConectX Project')
         # Grid Layout
         self.grid = QGridLayout()
@@ -26,22 +26,28 @@ class Frame(QWidget):
         self.labels = {}
         self.labels['username'] = QLabel('Your username:', self)
         # self.labels['username'].move(10, 15)
-        self.labels['password'] = QLabel('Pasword:', self)
-        self.labels['password'].move(10, 50)
+        self.labels['password'] = QLabel('Password', self)
+        # self.labels['password'].move(10, 50)
+        self.labels['username_status'] = QLabel('', self)
+        self.labels['username_status'].setStyleSheet(login_label)
 
-        self.username_field = QLineEdit('', self)
-        self.password_field = QLineEdit('', self)
+        self.username_field = InputField('username_field', '', self)
 
-        # Buttons
-
+        self.password_field = InputField('password_field', '', self)
+        passa = self.password_field.text
+        # Register
         self.register_button = Register_Button(
             'registerButton', (300, 250), 'REGISTER', self)
         self.register_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.register_button.setStyleSheet(button_style)
+        # Login
+        # self.login_button = Login_Button(
+        #     'loginButton', (300, 250), 'LOGIN', [1, 2], self)
         self.login_button = Login_Button(
             'loginButton', (300, 250), 'LOGIN', self)
-        self.login_button.setStyleSheet(button_style)
+        self.login_button.setStyleSheet(
+            button_style)
         self.login_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         # # Florence mage
@@ -86,7 +92,13 @@ class Frame(QWidget):
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
-        # grid.addWidget(self.image_florence, 0, 0)
+        vbox.addWidget(self.labels['username_status'])
+
+        self.labels['username_status'].setGeometry(0, 500, 150, 450)
+        self.labels['username_status'].setScaledContents(True)
+        self.labels['username_status'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+
         vbox.addStretch(5)
         self.setLayout(vbox)
         self.show()
@@ -99,9 +111,7 @@ if __name__ == '__main__':
         print(type)
         print(traceback)
     sys.__excepthook__ = hook
-
     app = QApplication(sys.argv)
-
     window = Frame()
     window.setStyleSheet(global_style)
     # window.setFixedWidth(1280)
