@@ -4,10 +4,9 @@ from Login.register_module import cvsMaker
 debugMode: bool = True
 data_path: str = os.path.abspath("Login")
 cvs_path = os.path.join(data_path, 'logs.csv')
-print(cvs_path)
 
 
-def login(user: str, password: str) -> None:
+def login(user: str, password: str) -> bool:
     userMatch: bool = False
     passMatch: bool = False
     try:
@@ -31,6 +30,7 @@ def login(user: str, password: str) -> None:
 
     if passMatch:
         print('Access')
+        return True
     elif passMatch == False:
         print('wrong password')
 
