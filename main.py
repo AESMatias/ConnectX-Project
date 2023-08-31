@@ -1,12 +1,13 @@
 import sys
 import os
+from PyQt6.QtGui import QIcon
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import InputField, Register_Button, Login_Button
+from components.buttons import Register_Button, Login_Button, InputField
 # from components.form_field import InputField
-from styles.styles import tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -45,8 +46,13 @@ class Frame(QWidget):
         self.labels['username_status'].setStyleSheet(login_label)
 
         self.username_field = InputField('username_field', '', self)
-
+        self.username_field.setFixedSize(200, 40)
+        self.username_field.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.username_field.setStyleSheet(InputFieldStyle)
         self.password_field = InputField('password_field', '', self)
+        self.password_field.setFixedSize(200, 40)
+        self.password_field.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.password_field.setStyleSheet(InputFieldStyle)
         # Register
         self.register_button = Register_Button(
             'registerButton', (300, 250), 'REGISTER', self)
@@ -108,7 +114,6 @@ class Frame(QWidget):
         vbox.addLayout(hbox3)
         vbox.addWidget(self.labels['username_status'])
 
-        self.labels['username_status'].setGeometry(0, 500, 150, 450)
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -126,6 +131,7 @@ if __name__ == '__main__':
         print(traceback)
     sys.__excepthook__ = hook
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(os.path.join('images', 'logo32.png')))
     window = Frame()
     window.setStyleSheet(global_style)
     # window.setFixedWidth(1280)

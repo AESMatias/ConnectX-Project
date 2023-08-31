@@ -45,6 +45,14 @@ tag = """
         
     }
 """
+InputFieldStyle = """ InputField {
+        opacity: 0.5;
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        background: white;
+    }
+"""
 login_label_wrong = """
     QLabel {
         opacity: 0;
