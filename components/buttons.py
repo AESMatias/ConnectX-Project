@@ -1,6 +1,7 @@
 # The import below isn't working
 from Login.login_module import login
-from PyQt6.QtWidgets import (QPushButton, QLineEdit)
+from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
+from PyQt6.QtCore import (QObject, pyqtSignal)
 import os
 import sys
 # print(sys.builtin_module_names)
@@ -36,15 +37,15 @@ class Register_Button(QPushButton):
         self.setGeometry(300, 250, 400, 150)
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
-        self.status = False  # Has been clicked?
 
     def button_clicked(self, register_label) -> bool:
         sender = self.sender()
         print(sender.text(), "Pressed!") if debugMode else None
-        return self.status
 
 
 class Login_Button(QPushButton):
+    login_signal = pyqtSignal()
+
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
@@ -55,11 +56,15 @@ class Login_Button(QPushButton):
         self.login_status = False  # Has been logged successfully?
         self.clicked.connect(self.button_clicked)
 
+    # def mousePressEvent(self, event):
+    #     self.login_signal.emit()
+
     def button_clicked(self) -> bool:
         sender = self.sender()
         sender.repaint()  # To avoid bugs
         if login(form_username, form_password):
             self.login_status = True
+            self.login_signal.emit()
             print('Login status:', self.login_status)
         else:
             self.login_status = False
