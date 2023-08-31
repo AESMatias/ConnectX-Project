@@ -31,6 +31,8 @@ if __name__ == '__main__':
     # window2 = Frame()
     # window2.setStyleSheet(global_style)
     # window2.show()
+    # This two code lines below, trigger to open a login window and close the main
     window.login_button.login_signal.connect(login_window.launch)
+    # window.login_button.login_signal.connect(window.close)
 
     sys.exit(app.exec())
