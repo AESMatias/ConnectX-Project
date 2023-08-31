@@ -24,15 +24,15 @@ def login(user: str, password: str) -> bool:
         if debugMode:
             print(error)
     if userMatch:
-        print('user already exists')
+        print(f'user already exists: {user}')
     elif userMatch == False:
-        print('non-existent user')
+        print(f'non-existent user: {user}')
 
     if passMatch:
-        print('Access')
+        print(f'Access with password: {password}')
         return True
     elif passMatch == False:
-        print('wrong password')
+        print(f'wrong password {password}')
 
 
 # login('Exdi', 'pepe')

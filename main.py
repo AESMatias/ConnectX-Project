@@ -4,9 +4,9 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Button, Register_Button, Login_Button
-from components.form_field import InputField
-from styles.styles import button_style, global_style, login_label
+from components.buttons import InputField, Register_Button, Login_Button
+# from components.form_field import InputField
+from styles.styles import tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -15,6 +15,17 @@ class Frame(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.init_gui()
+
+    def change_username_status(self):
+        sender = self.sender()
+        if sender.login_status == False:
+            self.labels['username_status'].setText('Invalid credentials')
+            self.labels['username_status'].setStyleSheet(login_label_wrong)
+            self.labels['username_status'].repaint()  # To avoid bugs
+        elif sender.login_status == True:
+            self.labels['username_status'].setText('Credentials OK')
+            self.labels['username_status'].setStyleSheet(login_label_ok)
+            self.labels['username_status'].repaint()  # To avoid bugs
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -25,8 +36,10 @@ class Frame(QWidget):
         # Labels
         self.labels = {}
         self.labels['username'] = QLabel('Your username:', self)
+        self.labels['username'].setStyleSheet(tag)
         # self.labels['username'].move(10, 15)
         self.labels['password'] = QLabel('Password', self)
+        self.labels['password'].setStyleSheet(tag)
         # self.labels['password'].move(10, 50)
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
@@ -34,7 +47,6 @@ class Frame(QWidget):
         self.username_field = InputField('username_field', '', self)
 
         self.password_field = InputField('password_field', '', self)
-        passa = self.password_field.text
         # Register
         self.register_button = Register_Button(
             'registerButton', (300, 250), 'REGISTER', self)
@@ -50,6 +62,8 @@ class Frame(QWidget):
             button_style)
         self.login_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.login_button.clicked.connect(self.change_username_status)
+
         # # Florence mage
         # self.image_florence = QLabel(self)
         # self.image_florence.setGeometry(350, 400, 100, 100)
