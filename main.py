@@ -6,16 +6,39 @@ from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Register_Button, Login_Button, InputField
-# from components.form_field import InputField
 from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
 
 class Frame(QWidget):
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.init_gui()
+
+        # self.setMouseTracking(True)
+    # def mouseMoveEvent(self, event):
+    #     x = event.pos().x()
+    #     y = event.pos().y()
+    #     self.y_coord = event.pos().y()
+    #     print(x, y)
+
+    def mousePressEvent(self, event):
+        x = event.position().x()
+        y = event.position().y()
+        print(f"Clicked at {x},{y}")
+
+    def mouseReleaseEvent(self, event):
+        x = event.position().x()
+        y = event.position().y()
+        print(f"Click released at {x},{y}")
+
+    def keyPressEvent(self, event):
+        print((f'Key: {event.text()} Code: {event.key()}'))
+        # if event.text() == 'Q' or event.text() == 'q':
+        #     print('A pressed')
+        #     sys.exit()
 
     def change_username_status(self):
         sender = self.sender()
