@@ -6,7 +6,7 @@ data_path: str = os.path.abspath("Login")
 cvs_path = os.path.join(data_path, 'logs.csv')
 
 
-def login(user: str, password: str) -> bool:
+def login(user: str, password: str) -> (bool, str):
     userMatch: bool = False
     passMatch: bool = False
     try:

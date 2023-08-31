@@ -1,3 +1,4 @@
+from time import sleep
 import sys
 import os
 from PyQt6.QtGui import QIcon
@@ -15,11 +16,15 @@ class FrameLogin(QWidget):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.username = ''
         self.init_gui()
 
     def launch(self):
-        print('LAUNCHEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
-        self.show()
+        sender = self.sender()
+        if sender.login_status == True:
+            print('Session initiated')
+            print('logoutbutton username:', self.logout_button.username)
+            self.show()
 
     def mousePressEvent(self, event):
         x = event.position().x()
@@ -56,36 +61,20 @@ class FrameLogin(QWidget):
         self.grid = QGridLayout()
         # Labels
         self.labels = {}
-        self.labels['username'] = QLabel('Welcome', self)
+        self.labels['username'] = QLabel(f'Welcome {self.username}', self)
         self.labels['username'].setStyleSheet(tag)
+        self.labels['username'].setFixedSize(200, 40)
+        self.labels['username'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.labels['username_status'] = QLabel('', self)
-        self.labels['username_status'].setStyleSheet(login_label)
-
-        self.username_field = InputField('username_field', '', self)
-        self.username_field.setFixedSize(200, 40)
-        self.username_field.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.username_field.setStyleSheet(InputFieldStyle)
-        self.password_field = InputField('password_field', '', self)
-        self.password_field.setFixedSize(200, 40)
-        self.password_field.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.password_field.setStyleSheet(InputFieldStyle)
-        # Register
-        self.register_button = Register_Button(
-            'registerButton', (300, 250), 'REGISTER', self)
-        self.register_button.setCursor(
-            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.register_button.setStyleSheet(button_style)
-        # Login
-        # self.login_button = Login_Button(
-        #     'loginButton', (300, 250), 'LOGIN', [1, 2], self)
-        self.login_button = Login_Button(
-            'loginButton', (300, 250), 'LOGIN', self)
-        self.login_button.setStyleSheet(
+        # Logout
+        self.logout_button = Login_Button(
+            'logoutnButton', (300, 250), 'Close session', self)
+        self.logout_button.setStyleSheet(
             button_style)
-        self.login_button.setCursor(
+        self.logout_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.login_button.clicked.connect(self.change_username_status)
+        self.logout_button.clicked.connect(self.change_username_status)
 
         # # Florence mage
         # self.image_florence = QLabel(self)
@@ -126,12 +115,6 @@ class FrameLogin(QWidget):
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
-        vbox.addWidget(self.labels['username_status'])
-
-        self.labels['username_status'].setScaledContents(True)
-        self.labels['username_status'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-
         vbox.addStretch(5)
         self.setLayout(vbox)
         # self.show()

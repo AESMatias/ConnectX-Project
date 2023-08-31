@@ -49,27 +49,30 @@ class Login_Button(QPushButton):
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
-        self.counter_clicks = 0
         self.resize(self.sizeHint())
         self.setGeometry(300, 250, 400, 150)
         self.move(*pos)
         self.login_status = False  # Has been logged successfully?
         self.clicked.connect(self.button_clicked)
+        # global form_username
+        self.username = form_username
 
     # def mousePressEvent(self, event):
     #     self.login_signal.emit()
 
-    def button_clicked(self) -> bool:
+    def button_clicked(self) -> None:
         sender = self.sender()
         sender.repaint()  # To avoid bugs
-        if login(form_username, form_password):
+        status_login = login(form_username, form_password)
+        if status_login:
+            self.username = form_username
+            print('SELF.USERNAME ', self.username)
             self.login_status = True
             self.login_signal.emit()
             print('Login status:', self.login_status)
         else:
             self.login_status = False
-            print("No login")
-        return self.login_status
+            print(f"No login with username {form_username}")
 
 
 class InputField(QLineEdit):
@@ -87,4 +90,3 @@ class InputField(QLineEdit):
             form_username = text_field
         elif self.name == 'password_field':
             form_password = text_field
-        # form_username = text_field

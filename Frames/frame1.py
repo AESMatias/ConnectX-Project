@@ -1,3 +1,4 @@
+from time import sleep
 import sys
 import os
 from PyQt6.QtGui import QIcon
