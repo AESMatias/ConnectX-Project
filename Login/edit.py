@@ -1,4 +1,5 @@
-import os, csv
+import os
+import csv
 from register_module import cvsMaker
 data_path: str = os.path.abspath("logs.csv")
 
@@ -10,15 +11,14 @@ def charge() -> None:
         reader = csvfile.read()
         memory.extend(eval(reader))
         print(memory)
-    
-         
+
+
 '''def change(data):
      if data == memory: '''
-          
+
 charge()
 
 
-#Estado actual de la sesion
-#Nombre 
-#Password
-
+# Estado actual de la sesion
+# Nombre
+# Password
