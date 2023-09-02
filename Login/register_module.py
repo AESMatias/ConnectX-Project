@@ -6,7 +6,7 @@ debugMode: bool = False
 data_path: str = os.path.abspath("logs.csv")
 
 
-cvs_colums = ['id', "users", 'password', 'session_state', 'userPath' , "imgPath"]
+cvs_colums = ['id', "users", 'password', 'session_state', "imgPath"]
 
 def cvsMaker() -> None:
     with open(data_path, mode='w', newline="") as data:
@@ -63,10 +63,10 @@ def Register(user: str, password: str) -> None:
         except Exception as error:
             print(error)
     if not userExist:  # add
-        userId = id()
-        Pathdirectory = userPath(user, userId)
+        userId: str = id()
+        userPath(user, userId)
         pathImguser = f"{user}-{userId}_img.jpg"
-        newUser = [userId, user, password, False, Pathdirectory, pathImguser]
+        newUser = [userId, user, password, False, pathImguser]
         with open(data_path, mode='a', newline='') as data:
             writer = csv.writer(data)
             writer.writerow(newUser)
