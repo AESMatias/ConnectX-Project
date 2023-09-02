@@ -4,9 +4,12 @@ import uuid
 
 debugMode: bool = False
 data_path: str = os.path.abspath("logs.csv")
+# data_path: str = os.path.abspath("Login")
+# cvs_path = os.path.join(data_path, 'logs.csv')
 
 
 cvs_colums = ['id', "users", 'password', 'session_state', "imgPath"]
+
 
 def cvsMaker() -> None:
     with open(data_path, mode='w', newline="") as data:
@@ -14,23 +17,22 @@ def cvsMaker() -> None:
         writer.writerow(cvs_colums)
         print('> New CVS created')
 
-def id () -> (str):
+
+def id() -> (str):
     random_uuid = uuid.uuid4()
     limited_random_id = str(random_uuid)[:6]
     return str(limited_random_id)
+
 
 def userPath(user: str, id: str) -> str:
     base_directory = os.path.dirname(os.path.abspath(__file__))
     users_directory = os.path.join(base_directory, "Users")
     user_directory = os.path.join(users_directory, f"{user}_{id}")
-    
+
     if not os.path.exists(user_directory):
         os.makedirs(user_directory)
-    
+
     return user_directory
-
-
-
 
 
 '''def userPath(user: str,id: str) -> str:
@@ -42,9 +44,7 @@ def userPath(user: str, id: str) -> str:
     return f"{user_directory}"    '''
 
 
-
-
-def Register(user: str, password: str) -> None:
+def register(user: str, password: str) -> None:
     userExist: bool = False
     try:  # Check if user exists
         with open(data_path, mode='r') as data:
@@ -73,11 +73,12 @@ def Register(user: str, password: str) -> None:
             if debugMode:
                 print('Usuario Creado')
 
-Register('Enrique','UnoDosTres')
 
-""" 
-Add
-    User_path
-    fecha de Creacio
-    hacer que el usuario sea un id no un nombre
-"""
+# register('Enrique', 'UnoDosTres')
+
+# """
+# Add
+#     User_path
+#     fecha de Creacio
+#     hacer que el usuario sea un id no un nombre
+# """

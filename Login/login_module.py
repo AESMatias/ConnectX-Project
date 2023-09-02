@@ -2,24 +2,26 @@ import os
 import csv
 from Login.register_module import cvsMaker
 debugMode: bool = True
-data_path: str = os.path.abspath("Login")
-cvs_path = os.path.join(data_path, 'logs.csv')
+# data_path: str = os.path.abspath("Login")
+# cvs_path = os.path.join(data_path, 'logs.csv')
+data_path: str = os.path.abspath("logs.csv")
 
 
 def login(user: str, password: str) -> (bool, str):
     userMatch: bool = False
     passMatch: bool = False
     try:
-        with open(cvs_path, mode='r+') as data:
+        with open(data_path, mode='r+') as data:
             reader = csv.reader(data)
             next(reader)
+            print(reader)
             for row in reader:
-                if row[0] == user:
+                if row[1] == user:
                     userMatch = True
-                    if row[1] == password:
+                    if row[2] == password:
                         passMatch = True
-                        # row[2] = 'True' 
-                        #Llamar a funcion de session_state
+                        # row[2] = 'True'
+                        # Llamar a funcion de session_state
     except FileNotFoundError as error:
         cvsMaker()
         if debugMode:
@@ -34,7 +36,3 @@ def login(user: str, password: str) -> (bool, str):
         return True
     elif passMatch == False:
         print(f'wrong password {password}')
-
-
-
-

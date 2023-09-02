@@ -1,5 +1,6 @@
 # The import below isn't working
 from Login.login_module import login
+from Login.register_module import register
 from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
 from PyQt6.QtCore import (QObject, pyqtSignal)
 import os
@@ -18,14 +19,9 @@ class Button(QPushButton):
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
-        self.counter_clicks = 0
         self.resize(self.sizeHint())
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
-
-    def button_clicked(self):
-        self.counter_clicks += 1
-        print(f'Button {self.name} clicked {self.counter_clicks} times.')
 
 
 class Register_Button(QPushButton):
@@ -38,9 +34,19 @@ class Register_Button(QPushButton):
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
 
-    def button_clicked(self, register_label) -> bool:
+    def button_clicked(self) -> None:
         sender = self.sender()
-        print(sender.text(), "Pressed!") if debugMode else None
+        sender.repaint()  # To avoid bugs
+        status_register = register(form_username, form_password)
+        # if status_login:
+        #     self.username = form_username
+        #     print('SELF.USERNAME ', self.username)
+        #     self.login_status = True
+        #     self.login_signal.emit()
+        #     print('Login status:', self.login_status)
+        # else:
+        #     self.login_status = False
+        #     print(f"No login with username {form_username}")
 
 
 class Login_Button(QPushButton):
@@ -56,9 +62,6 @@ class Login_Button(QPushButton):
         self.clicked.connect(self.button_clicked)
         # global form_username
         self.username = form_username
-
-    # def mousePressEvent(self, event):
-    #     self.login_signal.emit()
 
     def button_clicked(self) -> None:
         sender = self.sender()
