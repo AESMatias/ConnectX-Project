@@ -18,23 +18,6 @@ class Frame1(QWidget):
         super().__init__(*args, **kwargs)
         self.init_gui()
 
-        # self.setMouseTracking(True)
-    # def mouseMoveEvent(self, event):
-    #     x = event.pos().x()
-    #     y = event.pos().y()
-    #     self.y_coord = event.pos().y()
-    #     print(x, y)
-
-    def mousePressEvent(self, event):
-        x = event.position().x()
-        y = event.position().y()
-        print(f"Clicked at {x},{y}")
-
-    def mouseReleaseEvent(self, event):
-        x = event.position().x()
-        y = event.position().y()
-        print(f"Click released at {x},{y}")
-
     def keyPressEvent(self, event):
         print((f'Key: {event.text()} Code: {event.key()}'))
         # if event.text() == 'Q' or event.text() == 'q':
@@ -83,9 +66,9 @@ class Frame1(QWidget):
         self.register_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.register_button.setStyleSheet(button_style)
+        self.register_button.clicked.connect(
+            self.register_button.button_clicked)
         # Login
-        # self.login_button = Login_Button(
-        #     'loginButton', (300, 250), 'LOGIN', [1, 2], self)
         self.login_button = Login_Button(
             'loginButton', (300, 250), 'LOGIN', self)
         self.login_button.setStyleSheet(

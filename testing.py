@@ -1,10 +1,11 @@
-values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+# values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
-positions = [(val, i, j) for i in range(4)
-             for j in range(3) for val in values if i % 2 == 0]
+# positions = [(val, i, j) for i in range(4)
+#              for j in range(3) for val in values if i % 2 == 0]
 
-print(positions)
-
+# print(positions)
+# monedas = [x for x in monedas if x != 3.14]
+# mi_dict = {clave: valor for clave, valor in mi_dict.items() if valor != 3.14}
 
 # To track the mouse position and clicks
 #     self.setMouseTracking(True)
