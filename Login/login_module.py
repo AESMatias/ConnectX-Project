@@ -18,7 +18,8 @@ def login(user: str, password: str) -> (bool, str):
                     userMatch = True
                     if row[1] == password:
                         passMatch = True
-                        row[2] = 'True'
+                        # row[2] = 'True' 
+                        #Llamar a funcion de session_state
     except FileNotFoundError as error:
         cvsMaker()
         if debugMode:
@@ -35,4 +36,5 @@ def login(user: str, password: str) -> (bool, str):
         print(f'wrong password {password}')
 
 
-# login('Exdi', 'pepe')
+
+

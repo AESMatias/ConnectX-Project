@@ -1,9 +1,2 @@
-users,password,session_state
-jose,pepe,False
-juan,equisde,False
-Numero,pepe,False
-nichol,dsadsada,False
-brenwod,dsaaF,False
-jodsadse,pepe,False
-Exdi,pepe,False
-a,a,False
+id,users,password,session_state,userPath,imgPath
+04bfa0,Enrique,UnoDosTres,False,D:\Windows\Desktop\ConnectX-Project\Login\Users\Enrique_04bfa0,Enrique-04bfa0_img.jpg
