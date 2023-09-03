@@ -8,8 +8,6 @@ from PyQt6.QtWidgets import (QFileDialog,
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Register_Button, Login_Button, InputField
 from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
-image_florence = 'florence.jpg'
-aristotle_1 = 'aristotle_1.jpg'
 
 
 class Frame1(QWidget):
@@ -116,24 +114,6 @@ class Frame1(QWidget):
         self.login_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.login_button.clicked.connect(self.change_username_status)
-
-        # # Florence mage
-        # self.image_florence = QLabel(self)
-        # self.image_florence.setGeometry(350, 400, 100, 100)
-        # image_florence_path = os.path.join('images', 'florence.jpg')
-        # pixels_flocence = QPixmap(image_florence_path)
-        # self.image_florence.setPixmap(pixels_flocence)
-        # self.image_florence.setScaledContents(True)
-        # self.image_florence.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-
-        # # Aristotle Image
-        # self.image_aristotle1 = QLabel(self)
-        # self.image_aristotle1.setGeometry(100, 500, 150, 150)
-        # image_aristotle1 = os.path.join('images', 'aristotle_1.jpg')
-        # pixels_aristotle1 = QPixmap(image_aristotle1)
-        # self.image_aristotle1.setPixmap(pixels_aristotle1)
-        # self.image_aristotle1.setScaledContents(True)
-        # self.image_aristotle1.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()

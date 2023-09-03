@@ -24,6 +24,10 @@ class Button(QPushButton):
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
 
+    def button_clicked(self):
+        sender = self.sender
+        pass
+
 
 class Upload_file(QPushButton):
     def __init__(self, name: str, pos: int, *args, **kwargs):

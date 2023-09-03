@@ -11,6 +11,7 @@ from styles.styles import InputFieldStyle, tag, button_style, global_style, logi
 from Frames.frame1 import Frame1
 from Frames.frame_login import FrameLogin
 from components.input_user import ImageViewer
+from Frames.edit_profile import EditProfile
 
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
@@ -30,6 +31,7 @@ if __name__ == '__main__':
     login_window.setStyleSheet(global_style)
     # window.setFixedWidth(1280)
     window.show()
+    edit_profile_window = EditProfile()
 
     # window2 = Frame()
     # window2.setStyleSheet(global_style)
@@ -47,6 +49,8 @@ if __name__ == '__main__':
 
     window.register_button.clicked.connect(
         window.show_register_status)
+    # open the account configuration
+    login_window.edit_account.clicked.connect(edit_profile_window.show)
     #
     input_image = ImageViewer()
     input_image.setStyleSheet(global_style)

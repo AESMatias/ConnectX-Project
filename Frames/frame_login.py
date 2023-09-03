@@ -6,11 +6,10 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Upload_file, Register_Button, Login_Button, InputField
+from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button
 from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
 from PyQt6.QtCore import QTimer, QStandardPaths
-image_florence = 'florence.jpg'
-aristotle_1 = 'aristotle_1.jpg'
+from Frames.edit_profile import EditProfile
 
 
 class FrameLogin(QWidget):
@@ -38,12 +37,6 @@ class FrameLogin(QWidget):
                 QtCore.Qt.AlignmentFlag.AlignCenter)
             self.labels['label_image'].show()
 
-        # image_aristotle1 = os.path.join('images', 'aristotle_1.jpg')
-        # pixels_aristotle1 = QPixmap(image_aristotle1)
-        # self.image_aristotle1.setPixmap(pixels_aristotle1)
-        # self.image_aristotle1.setScaledContents(True)
-        # self.image_aristotle1.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-
     def launch(self):
         sender = self.sender()
         if sender.login_status == True:
@@ -53,6 +46,14 @@ class FrameLogin(QWidget):
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
             self.show()
+
+    def open_edit_account(self):
+        sender = self.sender()
+        print('logoutbutton username:', self.logout_button.username)
+        self.labels['username_status'].setText('Credentials OK')
+        self.labels['username_status'].setStyleSheet(login_label_ok)
+        self.labels['username_status'].repaint()  # To avoid bugs
+        self.show()
 
     def change_username_status(self):
         sender = self.sender()
@@ -68,7 +69,7 @@ class FrameLogin(QWidget):
     def init_gui(self) -> None:
         # Window Geometry
         self.setGeometry(100, 200, 1000, 800)
-        self.setWindowTitle('ConectX Project')
+        self.setWindowTitle(f'ConectX Project - {self.username}')
         # Grid Layout
         self.grid = QGridLayout()
         # Labels
@@ -83,6 +84,8 @@ class FrameLogin(QWidget):
         # image
         self.labels['label_image'] = QLabel(self)
         self.labels['label_image'].setGeometry(50, 50, 300, 300)
+        self.labels['label_image'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Upload profile image
         self.upload_image = Upload_file(
@@ -92,6 +95,14 @@ class FrameLogin(QWidget):
         self.upload_image.setStyleSheet(
             button_style)
         self.upload_image.clicked.connect(self.open_file)
+        # Edtir profile
+        self.edit_account = Button(
+            'editAccount', (300, 250), 'Edit your account', self)
+        self.edit_account.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.edit_account.setStyleSheet(
+            button_style)
+        # self.edit_account.clicked.connect(self.open_edit_account)
 
         # Logout
         self.logout_button = Login_Button(
@@ -110,26 +121,30 @@ class FrameLogin(QWidget):
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
-
         hbox1.addWidget(self.labels['username'])
         self.labels['username'].setScaledContents(True)
         # Second Horizontal Layout
         hbox2 = QHBoxLayout()
         hbox2.addStretch(1)
+        hbox2.addWidget(self.upload_image)
         hbox2.addStretch(1)
         # Third Horizontal Layout
         hbox3 = QHBoxLayout()
         hbox3.addStretch(1)
         hbox3.addWidget(self.logout_button)
         hbox3.addStretch(1)
-        # Vertical Layout
+        # Four
+        hbox4 = QHBoxLayout()
+        hbox4.addWidget(self.edit_account)
+        hbox4.addStretch(1)
+        # Vertical
         vbox = QVBoxLayout()
         vbox.addStretch(2)
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
-        vbox.addStretch(2)
         vbox.addLayout(hbox3)
-        vbox.addStretch(4)
+        vbox.addLayout(hbox4)
+        vbox.addStretch(2)
         vbox.addWidget(self.labels['username_status'])
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
