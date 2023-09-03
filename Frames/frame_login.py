@@ -25,13 +25,10 @@ class FrameLogin(QWidget):
         if sender.login_status == True:
             print('Session initiated')
             print('logoutbutton username:', self.logout_button.username)
+            self.labels['username_status'].setText('Credentials OK')
+            self.labels['username_status'].setStyleSheet(login_label_ok)
+            self.labels['username_status'].repaint()  # To avoid bugs
             self.show()
-
-    def keyPressEvent(self, event):
-        print((f'Key: {event.text()} Code: {event.key()}'))
-        # if event.text() == 'Q' or event.text() == 'q':
-        #     print('A pressed')
-        #     sys.exit()
 
     def change_username_status(self):
         sender = self.sender()
@@ -40,9 +37,9 @@ class FrameLogin(QWidget):
             self.labels['username_status'].setStyleSheet(login_label_wrong)
             self.labels['username_status'].repaint()  # To avoid bugs
         elif sender.login_status == True:
-            self.labels['username_status'].setText('Credentials OK')
-            self.labels['username_status'].setStyleSheet(login_label_ok)
-            self.labels['username_status'].repaint()  # To avoid bugs
+            username = sender.username
+            self.labels['username'].setText(f'Welcome {username}')
+            self.labels['username'].repaint()  # To avoid bugs
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -53,8 +50,8 @@ class FrameLogin(QWidget):
         # Labels
         self.labels = {}
         self.labels['username'] = QLabel(f'Welcome {self.username}', self)
-        self.labels['username'].setStyleSheet(tag)
-        self.labels['username'].setFixedSize(200, 40)
+        self.labels['username'].setStyleSheet(login_label_ok)
+        self.labels['username'].setFixedSize(550, 60)
         self.labels['username'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username'].repaint()
@@ -62,11 +59,11 @@ class FrameLogin(QWidget):
         # Logout
         self.logout_button = Login_Button(
             'logoutnButton', (300, 250), 'Close session', self)
-        self.logout_button.setStyleSheet(
-            button_style)
         self.logout_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        # self.logout_button.clicked.connect(self.change_username_status)
+        self.logout_button.setStyleSheet(
+            button_style)
+        self.logout_button.clicked.connect(self.change_username_status)
 
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
@@ -81,32 +78,36 @@ class FrameLogin(QWidget):
         # self.labels['image_input'].repaint()  # To avoid bugs
         # self.labels['image_input'].clicked.connect(self.load_image)
 
-    def load_image(self):
-        print('UPLOADING IMAGEEE')
+    # def load_image(self):
+    #     print('UPLOADING IMAGEEE')
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
-        hbox1.addStretch(1)
+
         hbox1.addWidget(self.labels['username'])
-        hbox1.addStretch(1)
+        self.labels['username'].setScaledContents(True)
         # Second Horizontal Layout
         hbox2 = QHBoxLayout()
         hbox2.addStretch(1)
-        # hbox2.addWidget(self.login_button)
         hbox2.addStretch(1)
         # Third Horizontal Layout
         hbox3 = QHBoxLayout()
         hbox3.addStretch(1)
-        # hbox3.addWidget(self.register_button)
+        hbox3.addWidget(self.logout_button)
         hbox3.addStretch(1)
         # Vertical Layout
         vbox = QVBoxLayout()
         vbox.addStretch(2)
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
+        vbox.addStretch(2)
         vbox.addLayout(hbox3)
-        vbox.addStretch(3)
+        vbox.addStretch(4)
         vbox.addWidget(self.labels['username_status'])
+        self.labels['username_status'].setScaledContents(True)
+        self.labels['username_status'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+
         # vbox.addWidget(self.labels['image_input'])
         vbox.addStretch(5)
         self.setLayout(vbox)

@@ -18,11 +18,26 @@ class Frame1(QWidget):
         super().__init__(*args, **kwargs)
         self.init_gui()
 
-    def keyPressEvent(self, event):
-        print((f'Key: {event.text()} Code: {event.key()}'))
-        # if event.text() == 'Q' or event.text() == 'q':
-        #     print('A pressed')
-        #     sys.exit()
+    def remove_registered_label(self):
+        sender = self.sender()
+        print(sender.name)
+        print(sender)
+        if sender.register_status == False and sender.name == 'logoutnButton':
+            self.labels['registered_status'].setText(
+                '')
+            self.labels['registered_status'].setStyleSheet(login_label)
+            self.labels['registered_status'].repaint()  # To avoid bugs
+
+            self.labels['username_status'].setText('')
+            self.labels['username_status'].setStyleSheet(login_label)
+            self.labels['username_status'].repaint()  # To avoid bugs
+
+        if sender.login_status == False and sender.name == 'loginButton':
+            self.labels['username_status'].setText('Invalid credentials')
+            self.labels['username_status'].setStyleSheet(login_label_wrong)
+            self.labels['username_status'].repaint()  # To avoid bugs
+            self.labels['registered_status'].setText('')
+            self.labels['registered_status'].setStyleSheet(login_label)
 
     def change_username_status(self):
         sender = self.sender()
@@ -30,10 +45,30 @@ class Frame1(QWidget):
             self.labels['username_status'].setText('Invalid credentials')
             self.labels['username_status'].setStyleSheet(login_label_wrong)
             self.labels['username_status'].repaint()  # To avoid bugs
+            self.labels['registered_status'].setText('')
+            self.labels['registered_status'].setStyleSheet(login_label)
         elif sender.login_status == True:
-            self.labels['username_status'].setText('Credentials OK')
-            self.labels['username_status'].setStyleSheet(login_label_ok)
-            self.labels['username_status'].repaint()  # To avoid bugs
+            # self.labels['username_status'].setText('')
+            # self.labels['username_status'].setStyleSheet(login_label)
+            # self.labels['username_status'].repaint()  # To avoid bugs
+            self.labels['registered_status'].setText(
+                'You have been registered')
+            self.labels['registered_status'].setStyleSheet(login_label_ok)
+            self.labels['registered_status'].repaint()  # To avoid bugs
+
+    def show_register_status(self):
+        sender = self.sender()
+        if sender.register_status == False:
+            pass
+        elif sender.register_status == True:
+            # self.labels['username_status'].setText('')
+            # self.labels['username_status'].setStyleSheet(login_label)
+            # self.labels['username_status'].repaint()  # To avoid bugs
+            self.labels['registered_status'].setText(
+                'You have been registered')
+            self.labels['registered_status'].setStyleSheet(login_label_ok)
+            self.labels['registered_status'].repaint()  # To avoid bugs
+            sender.register_status = False
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -51,6 +86,11 @@ class Frame1(QWidget):
         # self.labels['password'].move(10, 50)
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
+        # registered status
+        self.labels['registered_status'] = QLabel('', self)
+        self.labels['registered_status'].setStyleSheet(login_label)
+        self.labels['registered_status'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.username_field = InputField('username_field', '', self)
         self.username_field.setFixedSize(200, 40)
@@ -120,6 +160,7 @@ class Frame1(QWidget):
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
         vbox.addWidget(self.labels['username_status'])
+        vbox.addWidget(self.labels['registered_status'])
 
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(

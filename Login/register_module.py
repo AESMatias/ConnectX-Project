@@ -44,7 +44,7 @@ def userPath(user: str, id: str) -> str:
     return f"{user_directory}"    '''
 
 
-def register(user: str, password: str) -> None:
+def register(user: str, password: str) -> bool:
     userExist: bool = False
     try:  # Check if user exists
         with open(data_path, mode='r') as data:
@@ -72,7 +72,7 @@ def register(user: str, password: str) -> None:
             writer.writerow(newUser)
             if debugMode:
                 print('Usuario Creado')
-
+            return True
 
 # register('Enrique', 'UnoDosTres')
 
