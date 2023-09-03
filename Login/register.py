@@ -1,4 +1,9 @@
-from bd import TABLEUSERS,connect_to_db
+from Login.bd import TABLEUSERS, connect_to_db
+import os
+import sys
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
+
 
 def tableMaker() -> None:
     db = connect_to_db()
@@ -7,12 +12,11 @@ def tableMaker() -> None:
     mycursor.close()
     db.close()
 
-def register(user:str, password: str) -> bool:
+
+def register(user: str, password: str) -> bool:
     tableMaker()
     db = connect_to_db()
     mycursor = db.cursor()
-     #Create Table
-    #Check if user exist in table
     mycursor.execute("SELECT nickName FROM Users")
     result = mycursor.fetchall()
     user_exists = False
@@ -20,9 +24,10 @@ def register(user:str, password: str) -> bool:
         if user == row[0]:
             user_exists = True
             print('User already exists, choose another user')
-            break
+            return False
     if not user_exists:
-        mycursor.execute("INSERT INTO Users (nickName, password, sessionState) VALUES (%s,%s,%s)",(user,password,0))
+        mycursor.execute(
+            "INSERT INTO Users (nickName, password, sessionState) VALUES (%s,%s,%s)", (user, password, 0))
         db.commit()
     mycursor.close()
     db.close()

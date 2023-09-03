@@ -6,9 +6,9 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Register_Button, Login_Button, InputField
+from components.buttons import Upload_file, Register_Button, Login_Button, InputField
 from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, QStandardPaths
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -19,6 +19,30 @@ class FrameLogin(QWidget):
         super().__init__(*args, **kwargs)
         self.username = ''
         self.init_gui()
+
+    def open_file(self) -> None:
+        sender = self.sender()
+        print('FILE OPEN')
+        initial_dir = QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.DocumentsLocation)
+        self.upload_qfile = QFileDialog.getOpenFileName(
+            self, 'Upload image', initial_dir, 'All files (*)')
+        if self.upload_qfile:
+            print(f'Selected file: {self.upload_qfile}')
+            dir_image = self.upload_qfile[0]
+            image_pixmap = QPixmap(dir_image)
+            self.labels['label_image'].setPixmap(image_pixmap)
+            self.labels['label_image'].setScaledContents(True)
+            self.labels['label_image'].setGeometry(200, 200, 300, 300)
+            self.labels['label_image'].setAlignment(
+                QtCore.Qt.AlignmentFlag.AlignCenter)
+            self.labels['label_image'].show()
+
+        # image_aristotle1 = os.path.join('images', 'aristotle_1.jpg')
+        # pixels_aristotle1 = QPixmap(image_aristotle1)
+        # self.image_aristotle1.setPixmap(pixels_aristotle1)
+        # self.image_aristotle1.setScaledContents(True)
+        # self.image_aristotle1.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
     def launch(self):
         sender = self.sender()
@@ -56,6 +80,19 @@ class FrameLogin(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username'].repaint()
 
+        # image
+        self.labels['label_image'] = QLabel(self)
+        self.labels['label_image'].setGeometry(50, 50, 300, 300)
+
+        # Upload profile image
+        self.upload_image = Upload_file(
+            'uploadButton', (300, 250), 'Upload file', self)
+        self.upload_image.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.upload_image.setStyleSheet(
+            button_style)
+        self.upload_image.clicked.connect(self.open_file)
+
         # Logout
         self.logout_button = Login_Button(
             'logoutnButton', (300, 250), 'Close session', self)
@@ -70,16 +107,6 @@ class FrameLogin(QWidget):
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username_status'].repaint()
-        # Image Input
-        # self.labels['image_input'] = QPushButton('Upload image', self)
-        # self.labels['image_input'].setStyleSheet(login_label)
-        # self.labels['image_input'].setText('IMAGE INPUT')
-        # self.labels['image_input'].setStyleSheet(login_label_ok)
-        # self.labels['image_input'].repaint()  # To avoid bugs
-        # self.labels['image_input'].clicked.connect(self.load_image)
-
-    # def load_image(self):
-    #     print('UPLOADING IMAGEEE')
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
@@ -112,14 +139,3 @@ class FrameLogin(QWidget):
         vbox.addStretch(5)
         self.setLayout(vbox)
         # self.show()
-
-    # def load_image(self):
-    #     options = QFileDialog.Options()
-    #     options |= QFileDialog.ReadOnly
-    #     file_name, _ = QFileDialog.getOpenFileName(
-    #         'Abrir Imagen', '', 'Imágenes (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)', options=options)
-
-    #     if file_name:
-    #         pixmap = QPixmap(file_name)
-    #         image_label.setPixmap(pixmap)
-    #         image_label.setScaledContents(True)
