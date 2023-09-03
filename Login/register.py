@@ -1,4 +1,8 @@
-from bd import TABLEUSERS,connect_to_db
+import os
+import sys
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
+from Login.bd import TABLEUSERS,connect_to_db
 
 def tableMaker() -> None:
     db = connect_to_db()
@@ -11,8 +15,6 @@ def register(user:str, password: str) -> bool:
     tableMaker()
     db = connect_to_db()
     mycursor = db.cursor()
-     #Create Table
-    #Check if user exist in table
     mycursor.execute("SELECT nickName FROM Users")
     result = mycursor.fetchall()
     user_exists = False
@@ -27,3 +29,4 @@ def register(user:str, password: str) -> bool:
     mycursor.close()
     db.close()
     return True
+

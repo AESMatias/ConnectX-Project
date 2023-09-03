@@ -29,7 +29,8 @@ def checkTable() -> str:
     mycursor.execute("SELECT * FROM Users")
     for x in mycursor:
         print(x)
-
+    mycursor.close()
+    db.close()
 
 def drop_table(Tabla: str) -> None:
     db = connect_to_db()
@@ -37,5 +38,4 @@ def drop_table(Tabla: str) -> None:
     mycursor.execute(f"DROP TABLE IF EXISTS {Tabla}")
     mycursor.close()
     db.close()
-    mycursor.close()
-    db.close()
+   
