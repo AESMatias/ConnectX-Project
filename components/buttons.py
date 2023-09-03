@@ -45,6 +45,7 @@ class Register_Button(QPushButton):
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
+        self.register_status = False
         self.resize(self.sizeHint())
         self.setGeometry(300, 250, 400, 150)
         self.move(*pos)
