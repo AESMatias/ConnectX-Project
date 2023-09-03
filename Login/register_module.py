@@ -1,4 +1,10 @@
-from bd import TABLEUSERS,connect_to_db
+from Login.bd import TABLEUSERS, connect_to_db
+import uuid
+import os
+import csv
+debugMode: bool = True
+data_path: str = os.path.abspath("logs.csv")
+
 
 def tableMaker() -> None:
     db = connect_to_db()

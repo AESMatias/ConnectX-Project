@@ -11,13 +11,15 @@ TABLEUSERS = """
     )
 """
 # Configuración de la conexión a la base de datos
+
+
 def connect_to_db() -> None:
     return mysql.connector.connect(
-        user = 'root',
-        password = 'o3Sq4FNPIrI0xYoYgQQM',
-        host = 'containers-us-west-75.railway.app',
-        database = 'railway',
-        port = 6336
+        user='root',
+        password='o3Sq4FNPIrI0xYoYgQQM',
+        host='containers-us-west-75.railway.app',
+        database='railway',
+        port=6336
     )
 
 
@@ -28,11 +30,12 @@ def checkTable() -> str:
     for x in mycursor:
         print(x)
 
-def drop_table(Tabla:str) -> None:
+
+def drop_table(Tabla: str) -> None:
     db = connect_to_db()
     mycursor = db.cursor()
     mycursor.execute(f"DROP TABLE IF EXISTS {Tabla}")
     mycursor.close()
-    db.close()      
+    db.close()
     mycursor.close()
-    db.close()    
+    db.close()
