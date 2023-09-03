@@ -43,6 +43,10 @@ if __name__ == '__main__':
     login_window.logout_button.login_signal.connect(login_window.close)
     #
     window.login_button.clicked.connect(login_window.change_username_status)
+    login_window.logout_button.clicked.connect(window.remove_registered_label)
+
+    window.register_button.clicked.connect(
+        window.show_register_status)
     #
     input_image = ImageViewer()
     input_image.setStyleSheet(global_style)

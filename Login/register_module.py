@@ -1,11 +1,17 @@
+from Login.bd import TABLEUSERS, connect_to_db
+import uuid
 import os
 import csv
-import uuid
-
-debugMode: bool = False
+debugMode: bool = True
 data_path: str = os.path.abspath("logs.csv")
-# data_path: str = os.path.abspath("Login")
-# cvs_path = os.path.join(data_path, 'logs.csv')
+
+
+def tableMaker() -> None:
+    db = connect_to_db()
+    mycursor = db.cursor()
+    mycursor.execute(TABLEUSERS)
+    mycursor.close()
+    db.close()
 
 
 cvs_colums = ['id', "users", 'password', 'session_state', "imgPath"]

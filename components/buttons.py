@@ -38,15 +38,16 @@ class Register_Button(QPushButton):
         sender = self.sender()
         sender.repaint()  # To avoid bugs
         status_register = register(form_username, form_password)
-        # if status_login:
-        #     self.username = form_username
-        #     print('SELF.USERNAME ', self.username)
-        #     self.login_status = True
-        #     self.login_signal.emit()
-        #     print('Login status:', self.login_status)
-        # else:
-        #     self.login_status = False
-        #     print(f"No login with username {form_username}")
+        if status_register:
+            self.register_status = True
+            self.username = form_username
+            print('SELF.USERNAME ', self.username, 'has been registered')
+            self.login_status = True
+            # self.login_signal.emit()
+            print('Login status:', self.login_status)
+        else:
+            self.login_status = False
+            print(f"No login with username {form_username}")
 
 
 class Login_Button(QPushButton):
@@ -62,12 +63,25 @@ class Login_Button(QPushButton):
         self.clicked.connect(self.button_clicked)
         # global form_username
         self.username = form_username
+        self.register_status = False
 
     def button_clicked(self) -> None:
         sender = self.sender()
         sender.repaint()  # To avoid bugs
         status_login = login(form_username, form_password)
-        if status_login:
+        if status_login and self.name == 'logoutnButton':
+            self.username = form_username
+            print('SELF.USERNAME ', self.username)
+            self.login_status = False
+            self.login_signal.emit()
+            print('Login status:', self.login_status)
+        elif status_login and self.name == 'loginButton':
+            self.username = form_username
+            self.login_status = True
+            print('SELF.USERNAME ', self.username)
+            self.login_signal.emit()
+            print('Login status:', self.login_status)
+        elif status_login:
             self.username = form_username
             print('SELF.USERNAME ', self.username)
             self.login_status = True
