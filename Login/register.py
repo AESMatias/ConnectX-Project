@@ -7,7 +7,7 @@ def tableMaker() -> None:
     mycursor.close()
     db.close()
 
-def register(user:str, password: str) -> None:
+def register(user:str, password: str) -> bool:
     tableMaker()
     db = connect_to_db()
     mycursor = db.cursor()
@@ -26,3 +26,4 @@ def register(user:str, password: str) -> None:
         db.commit()
     mycursor.close()
     db.close()
+    return True
