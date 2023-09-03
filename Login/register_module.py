@@ -1,11 +1,11 @@
-import os
-import csv
-import uuid
+from bd import TABLEUSERS,connect_to_db
 
-debugMode: bool = False
-data_path: str = os.path.abspath("logs.csv")
-# data_path: str = os.path.abspath("Login")
-# cvs_path = os.path.join(data_path, 'logs.csv')
+def tableMaker() -> None:
+    db = connect_to_db()
+    mycursor = db.cursor()
+    mycursor.execute(TABLEUSERS)
+    mycursor.close()
+    db.close()
 
 
 cvs_colums = ['id', "users", 'password', 'session_state', "imgPath"]
@@ -44,7 +44,7 @@ def userPath(user: str, id: str) -> str:
     return f"{user_directory}"    '''
 
 
-def register(user: str, password: str) -> bool:
+def register(user: str, password: str) -> None:
     userExist: bool = False
     try:  # Check if user exists
         with open(data_path, mode='r') as data:
@@ -72,7 +72,7 @@ def register(user: str, password: str) -> bool:
             writer.writerow(newUser)
             if debugMode:
                 print('Usuario Creado')
-            return True
+
 
 # register('Enrique', 'UnoDosTres')
 
