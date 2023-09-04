@@ -1,9 +1,9 @@
+from Login.edit import update_session_state
+from Login.bd import connect_to_db
 import os
 import sys
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
-# from Login.bd import connect_to_db
-# from Login.edit import update_session_state
 
 
 def login(user: str, password: str) -> {bool, str}:

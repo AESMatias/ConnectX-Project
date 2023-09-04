@@ -1,5 +1,5 @@
-mysql-connector-python
-uvicorn
-fastapi
-hypercorn==0.14.4
+# uvicorn
+# fastapi
+# hypercorn==0.14.4
 requests
+mysql.connector-python==8.1.0
