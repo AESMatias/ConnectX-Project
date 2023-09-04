@@ -1,11 +1,12 @@
 # The import below isn't working
 # from Login.login_module import login
-from Login.login import login
+from Server.login import login
 from Login.register import register
 from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
 from PyQt6.QtCore import (QObject, pyqtSignal)
 import os
 import sys
+import requests
 # print(sys.builtin_module_names)
 # print(sys.path)
 debugMode: bool = True
@@ -91,6 +92,33 @@ class Login_Button(QPushButton):
         sender.repaint()  # To avoid bugs
         status_login, text_response = login(form_username, form_password)
         print('RETORNAAA', status_login)
+        # Username and password from the form
+        username = form_username
+        password = form_password
+        # URL of the endpoint of the API for login
+        # Reemplaza con la URL real de tu servidor
+        url_login = "http://127.0.0.1:8000/login"
+
+        # Datos para enviar en el cuerpo de la solicitud POST
+        data = {
+            "username": username,
+            "password": password
+        }
+
+        # Realizar la solicitud POST
+        response = requests.post(url_login, json=data)
+
+        # Comprobar la respuesta del servidor
+        if response.status_code == 200:
+            # El servidor respondió con un código 200 (OK), lo que generalmente significa que el inicio de sesión fue exitoso
+            # Esto depende de cómo se estructura la respuesta en el servidor
+            is_valid = response.json()
+            print("Inicio de sesión válido:", is_valid)
+        else:
+            # El servidor respondió con un código de error (por ejemplo, 401 Unauthorized)
+            print("Error en el inicio de sesión. Código de estado:",
+                  response.status_code)
+
         if status_login and self.name == 'logoutnButton':
             self.username = form_username
             print('SELF.USERNAME ', self.username)
