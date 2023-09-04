@@ -32,10 +32,10 @@ def checkTable() -> str:
     mycursor.close()
     db.close()
 
+
 def drop_table(Tabla: str) -> None:
     db = connect_to_db()
     mycursor = db.cursor()
     mycursor.execute(f"DROP TABLE IF EXISTS {Tabla}")
     mycursor.close()
     db.close()
-   

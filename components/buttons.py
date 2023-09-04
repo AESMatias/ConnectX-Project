@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
 from PyQt6.QtCore import (QObject, pyqtSignal)
 import os
 import sys
+import requests
 # print(sys.builtin_module_names)
 # print(sys.path)
 debugMode: bool = True
