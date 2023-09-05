@@ -1,13 +1,14 @@
 from time import sleep
 import sys
 import os
-from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QPropertyAnimation
+from PyQt6.QtGui import QIcon, QColor, QPalette
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Register_Button, Login_Button, InputField
-from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import new_login_button, InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
 
 
 class Frame1(QWidget):
