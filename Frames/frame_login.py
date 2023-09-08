@@ -21,7 +21,6 @@ class FrameLogin(QWidget):
 
     def open_file(self) -> None:
         sender = self.sender()
-        print('FILE OPEN')
         initial_dir = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.DocumentsLocation)
         self.upload_qfile = QFileDialog.getOpenFileName(
@@ -81,8 +80,10 @@ class FrameLogin(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username'].repaint()
 
-        # image
+        # QLabel image assignation
+        window_size = self.size()
         self.labels['label_image'] = QLabel(self)
+        self.labels['label_image'].setMaximumSize(window_size)
         self.labels['label_image'].setGeometry(50, 50, 300, 300)
         self.labels['label_image'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
