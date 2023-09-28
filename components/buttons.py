@@ -1,7 +1,8 @@
 # The import below isn't working
-# from Login.login_module import login
-from Login.login import login
-from Login.register import register
+from Login.login_module import login
+# from Login.login import login
+# from Login.register import register
+from Login.register_module import register
 from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
 from PyQt6.QtCore import (QObject, pyqtSignal)
 import os
@@ -90,7 +91,7 @@ class Login_Button(QPushButton):
     def button_clicked(self) -> None:
         sender = self.sender()
         sender.repaint()  # To avoid bugs
-        status_login, text_response = login(form_username, form_password)
+        status_login = login(form_username, form_password)
         print('RETORNAAA', status_login)
         if status_login and self.name == 'logoutnButton':
             self.username = form_username
