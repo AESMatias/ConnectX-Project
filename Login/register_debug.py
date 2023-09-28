@@ -57,7 +57,7 @@ def register(user: str, password: str) -> None:
             reader = csv.reader(data)
             next(reader)
             for row in reader:
-                if row[0] == user:
+                if row[1] == user:
                     userExist = True
                     print('duplicate User')
                     break
@@ -78,6 +78,7 @@ def register(user: str, password: str) -> None:
             writer.writerow(newUser)
             if debugMode:
                 print('Usuario Creado')
+                return True
 
 
 # register('Enrique', 'UnoDosTres')

@@ -1,6 +1,6 @@
 import os
 import csv
-from Login.register_module import cvsMaker
+from Login.register_debug import cvsMaker
 debugMode: bool = True
 # data_path: str = os.path.abspath("Login")
 # cvs_path = os.path.join(data_path, 'logs.csv')
