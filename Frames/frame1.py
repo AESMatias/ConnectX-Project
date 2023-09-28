@@ -58,7 +58,14 @@ class Frame1(QWidget):
     def show_register_status(self):
         sender = self.sender()
         if sender.register_status == False:
-            pass
+            # self.labels['username_status'].setText('')
+            # self.labels['username_status'].setStyleSheet(login_label)
+            # self.labels['username_status'].repaint()  # To avoid bugs
+            self.labels['registered_status'].setText(
+                'The user already exists')
+            self.labels['registered_status'].setStyleSheet(login_label_wrong)
+            self.labels['registered_status'].repaint()  # To avoid bugs
+            sender.register_status = False
         elif sender.register_status == True:
             # self.labels['username_status'].setText('')
             # self.labels['username_status'].setStyleSheet(login_label)

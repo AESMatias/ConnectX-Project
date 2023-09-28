@@ -1,8 +1,8 @@
 # The import below isn't working
-from Login.login_module import login
+from Login.login_debug import login
 # from Login.login import login
 # from Login.register import register
-from Login.register_module import register
+from Login.register_debug import register
 from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
 from PyQt6.QtCore import (QObject, pyqtSignal)
 import os
