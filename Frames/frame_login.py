@@ -8,8 +8,9 @@ from PyQt6.QtWidgets import (QFileDialog,
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button
 from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
-from PyQt6.QtCore import QTimer, QStandardPaths
+from PyQt6.QtCore import QTimer, QStandardPaths, QUrl
 from Frames.edit_profile import EditProfile
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 
 
 class FrameLogin(QWidget):
@@ -18,6 +19,21 @@ class FrameLogin(QWidget):
         super().__init__(*args, **kwargs)
         self.username = ''
         self.init_gui()
+        # Lounge looped music
+        self.media_player = QMediaPlayer(self)
+        self.media_player.setAudioOutput(QAudioOutput(self))
+        file_url = QUrl.fromLocalFile(os.path.join('Music', 'music1.opus'))
+        self.media_player.setSource(file_url)
+        self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+        self.play_media()
+
+    def play_media(self):
+        self.media_player.play()
+
+    def handle_media_status(self, status):
+        if status == QMediaPlayer.MediaStatus.EndOfMedia:
+            self.media_player.setPosition(0)  # Reinicia la posición al inicio
+            self.play_media()
 
     def open_file(self) -> None:
         sender = self.sender()
