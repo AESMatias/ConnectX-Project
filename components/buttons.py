@@ -4,7 +4,8 @@ from Login.login_debug import login
 # from Login.register import register
 from Login.register_debug import register
 from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
-from PyQt6.QtCore import (QObject, pyqtSignal)
+from PyQt6.QtCore import (QObject, pyqtSignal, QUrl)
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 import os
 import sys
 import requests
@@ -16,6 +17,7 @@ sys.path.append(project_root)
 
 form_username = ''
 form_password = ''
+password_not_visible = ''
 
 
 class Button(QPushButton):
@@ -57,10 +59,19 @@ class Register_Button(QPushButton):
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
 
+    def register_sound(self):
+        self.media_player = QMediaPlayer(self)
+        self.media_player.setAudioOutput(QAudioOutput(self))
+        file_url = QUrl.fromLocalFile(os.path.join(
+            'Music', 'mixkit-fantasy-game-sweep-notification-255.wav'))
+        self.media_player.setSource(file_url)
+        # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+        self.media_player.play()
+
     def button_clicked(self) -> None:
         sender = self.sender()
         sender.repaint()  # To avoid bugs
-        status_register = register(form_username, form_password)
+        status_register = register(form_username, password_not_visible)
         if status_register:
             self.register_status = True
             self.username = form_username
@@ -68,6 +79,7 @@ class Register_Button(QPushButton):
             self.login_status = True
             # self.login_signal.emit()
             print('Login status:', self.login_status)
+            self.register_sound()
         else:
             self.login_status = False
             print(f"No login with username {form_username}")
@@ -91,7 +103,7 @@ class Login_Button(QPushButton):
     def button_clicked(self) -> None:
         sender = self.sender()
         sender.repaint()  # To avoid bugs
-        status_login = login(form_username, form_password)
+        status_login = login(form_username, password_not_visible)
         print('RETORNAAA', status_login)
         if status_login and self.name == 'logoutnButton':
             self.username = form_username
@@ -104,7 +116,17 @@ class Login_Button(QPushButton):
             self.login_status = True
             print('SELF.USERNAME ', self.username)
             self.login_signal.emit()
-            print('Login status:', self.login_status)
+            print('Login status:', self.login_status)\
+
+        # Login successfull sound
+            self.media_player = QMediaPlayer(self)
+            self.media_player.setAudioOutput(QAudioOutput(self))
+            file_url = QUrl.fromLocalFile(os.path.join(
+                'Music', 'mixkit-fantasy-game-sweep-notification-255.wav'))
+            self.media_player.setSource(file_url)
+            # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+            self.media_player.play()
+
         elif status_login:
             self.username = form_username
             print('SELF.USERNAME ', self.username)
@@ -122,12 +144,36 @@ class InputField(QLineEdit):
         self.name = name
         self.text = ''
         self.textChanged.connect(self.change_text)
+        self.password_has_been_changed = False
 
     def change_text(self, text_field: str):
-        print('text changed to', text_field)
         global form_username
         global form_password
+        global password_not_visible
         if self.name == 'username_field':
             form_username = text_field
+            print('username', form_username)
         elif self.name == 'password_field':
             form_password = text_field
+            # Then a character has been added
+            if len(text_field) == 0 and self.password_has_been_changed:
+                password_not_visible = ''
+                self.password_has_been_changed = False
+            elif len(password_not_visible)-len(text_field) < 0 and self.password_has_been_changed:
+                password_not_visible += text_field[-1]
+                self.password_has_been_changed = True
+            # Then a character has been deleted
+            elif len(password_not_visible)-len(text_field) > 0 and self.password_has_been_changed:
+                password_not_visible = password_not_visible[:-1]
+                self.password_has_been_changed = True
+            else:
+                password_not_visible += text_field[-1]
+                self.password_has_been_changed = True
+            print('password_not_visible', password_not_visible)
+            # Disconnect the signal textChanged so it doesn't infinite loop
+            self.textChanged.disconnect(self.change_text)
+            # Set the password text to asterisks
+            self.setText('*' * len(text_field))
+            password_has_been_changed = True
+            # Connect the signal again
+            self.textChanged.connect(self.change_text)
