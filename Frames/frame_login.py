@@ -32,7 +32,7 @@ class FrameLogin(QWidget):
 
     def handle_media_status(self, status):
         if status == QMediaPlayer.MediaStatus.EndOfMedia:
-            self.media_player.setPosition(0)  # Reinicia la posición al inicio
+            self.media_player.setPosition(0)  # Restart song when finished
             self.play_media()
 
     def open_file(self) -> None:
@@ -170,4 +170,3 @@ class FrameLogin(QWidget):
         # vbox.addWidget(self.labels['image_input'])
         vbox.addStretch(5)
         self.setLayout(vbox)
-        # self.show()

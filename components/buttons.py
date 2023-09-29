@@ -9,9 +9,6 @@ from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 import os
 import sys
 import requests
-# print(sys.builtin_module_names)
-# print(sys.path)
-debugMode: bool = True
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
@@ -154,6 +151,8 @@ class InputField(QLineEdit):
             form_username = text_field
             print('username', form_username)
         elif self.name == 'password_field':
+            # Later, change the entire password field to * at [index] with a temporary variable
+            # with a library.
             form_password = text_field
             # Then the hole password has been deleted
             if len(text_field) == 0 and self.password_has_been_changed:
