@@ -155,10 +155,18 @@ class InputField(QLineEdit):
             print('username', form_username)
         elif self.name == 'password_field':
             form_password = text_field
-            # Then a character has been added
+            # Then the hole password has been deleted
             if len(text_field) == 0 and self.password_has_been_changed:
                 password_not_visible = ''
                 self.password_has_been_changed = False
+            # Then the hole password has been changed to a character
+            elif abs(len(password_not_visible)-len(text_field)) > 1 and self.password_has_been_changed:
+                if len(text_field) != 0:
+                    password_not_visible = text_field[-1]
+                else:
+                    password_not_visible = ''
+                self.password_has_been_changed = False
+            # Then a character has been added
             elif len(password_not_visible)-len(text_field) < 0 and self.password_has_been_changed:
                 password_not_visible += text_field[-1]
                 self.password_has_been_changed = True
