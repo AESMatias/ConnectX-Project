@@ -22,7 +22,7 @@ class FrameLogin(QWidget):
         # Lounge looped music
         self.media_player = QMediaPlayer(self)
         self.media_player.setAudioOutput(QAudioOutput(self))
-        file_url = QUrl.fromLocalFile(os.path.join('Music', 'music1.opus'))
+        file_url = QUrl.fromLocalFile(os.path.join('Music', 'music2.opus'))
         self.media_player.setSource(file_url)
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
@@ -79,12 +79,12 @@ class FrameLogin(QWidget):
         elif sender.login_status == True:
             username = sender.username
             self.labels['username'].setText(f'Welcome {username}')
+            self.setWindowTitle(f'ConectX Project - {username}')
             self.labels['username'].repaint()  # To avoid bugs
 
     def init_gui(self) -> None:
         # Window Geometry
         self.setGeometry(100, 200, 1000, 800)
-        self.setWindowTitle(f'ConectX Project - {self.username}')
         # Grid Layout
         self.grid = QGridLayout()
         # Labels
