@@ -1,9 +1,10 @@
 from time import sleep
 import sys
 import os
-from PyQt6.QtCore import QPropertyAnimation
+import typing
+from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QUrl, QCoreApplication
 from PyQt6.QtGui import QIcon, QColor, QPalette
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
@@ -16,6 +17,10 @@ class Frame1(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.init_gui()
+
+    def keyPressEvent(self, event) -> None:
+        if event.key() == Qt.Key.Key_Return or event.key() == 16777220:
+            self.login_button.click()
 
     def remove_registered_label(self):
         sender = self.sender()
@@ -108,6 +113,46 @@ class Frame1(QWidget):
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.login_button.clicked.connect(self.change_username_status)
 
+        # QLabel image assignation
+        dir_image = os.path.join('images', 'logo512.png')
+        image_pixmap = QPixmap(dir_image)
+        image_pixmap = image_pixmap.scaled(
+            200, 200, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        self.labels['logo_welcome'] = QLabel(self)
+        self.labels['logo_welcome'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labels['logo_welcome'].setPixmap(image_pixmap)
+        self.labels['logo_welcome'].show()
+        self.opacity_decimal = 9
+        self.labels['logo_welcome'].setStyleSheet(
+            'background:none;opacity:0.9')
+
+        self.timer = QTimer()
+        self.first_cycle = True
+        self.second_cycle = False
+        self.timer.setInterval(500)
+        self.timer.start()
+
+        def change_opacity_value():
+            if self.opacity_decimal <= 10 and self.first_cycle:
+                self.opacity_decimal -= 1
+                self.first_cycle = True
+                self.second_cycle = False
+                print(self.opacity_decimal)
+            elif self.opacity_decimal >= 0 and self.second_cycle:
+                self.opacity_decimal += 1
+                self.second_cycle = True
+                self.first_cycle = False
+                print(self.opacity_decimal)
+            self.labels['logo_welcome'].setStyleSheet(
+                f'background:none;opacity:0.{self.opacity_decimal}')
+            image_pixmap = image_pixmap.scaled(
+                250+self.opacity_decimal, 250+self.opacity_decimal, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+            QCoreApplication.processEvents()
+            self.timer.stop()
+            self.timer.start()
+        self.timer.timeout.connect(change_opacity_value)
+
         # Horizontal Layout
         hbox1 = QHBoxLayout()
         hbox1.addStretch(1)
@@ -134,6 +179,8 @@ class Frame1(QWidget):
         vbox.addLayout(hbox3)
         vbox.addWidget(self.labels['username_status'])
         vbox.addWidget(self.labels['registered_status'])
+        vbox.addStretch(1)
+        vbox.addWidget(self.labels['logo_welcome'])
 
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
