@@ -107,7 +107,6 @@ QWidget {{
     # This two code lines below, trigger to open a login window and close the main
     window.login_button.login_signal.connect(login_window.launch)
     window.login_button.login_signal.connect(window.close)
-
     # Once the login was successful, we adding the close session option
     login_window.logout_button.login_signal.connect(window.show)
     login_window.logout_button.login_signal.connect(login_window.close)
