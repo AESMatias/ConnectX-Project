@@ -19,8 +19,6 @@ class Frame1(QWidget):
 
     def remove_registered_label(self):
         sender = self.sender()
-        print(sender.name)
-        print(sender)
         if sender.register_status == False and sender.name == 'logoutnButton':
             self.labels['registered_status'].setText(
                 '')
@@ -47,9 +45,6 @@ class Frame1(QWidget):
             self.labels['registered_status'].setText('')
             self.labels['registered_status'].setStyleSheet(login_label)
         elif sender.login_status == True:
-            # self.labels['username_status'].setText('')
-            # self.labels['username_status'].setStyleSheet(login_label)
-            # self.labels['username_status'].repaint()  # To avoid bugs
             self.labels['registered_status'].setText(
                 'You have been registered')
             self.labels['registered_status'].setStyleSheet(login_label_ok)
@@ -58,18 +53,12 @@ class Frame1(QWidget):
     def show_register_status(self):
         sender = self.sender()
         if sender.register_status == False:
-            # self.labels['username_status'].setText('')
-            # self.labels['username_status'].setStyleSheet(login_label)
-            # self.labels['username_status'].repaint()  # To avoid bugs
             self.labels['registered_status'].setText(
                 'The user already exists')
             self.labels['registered_status'].setStyleSheet(login_label_wrong)
             self.labels['registered_status'].repaint()  # To avoid bugs
             sender.register_status = False
         elif sender.register_status == True:
-            # self.labels['username_status'].setText('')
-            # self.labels['username_status'].setStyleSheet(login_label)
-            # self.labels['username_status'].repaint()  # To avoid bugs
             self.labels['registered_status'].setText(
                 'You have been registered')
             self.labels['registered_status'].setStyleSheet(login_label_ok)
@@ -86,10 +75,8 @@ class Frame1(QWidget):
         self.labels = {}
         self.labels['username'] = QLabel('Your username:', self)
         self.labels['username'].setStyleSheet(tag)
-        # self.labels['username'].move(10, 15)
         self.labels['password'] = QLabel('Password', self)
         self.labels['password'].setStyleSheet(tag)
-        # self.labels['password'].move(10, 50)
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
         # registered status
@@ -112,8 +99,6 @@ class Frame1(QWidget):
         self.register_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.register_button.setStyleSheet(button_style)
-        self.register_button.clicked.connect(
-            self.register_button.button_clicked)
         # Login
         self.login_button = Login_Button(
             'loginButton', (300, 250), 'LOGIN', self)

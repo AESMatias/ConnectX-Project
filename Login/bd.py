@@ -10,7 +10,8 @@ TABLEUSERS = """
         
     )
 """
-# Configuración de la conexión a la base de datos
+
+# Free to use for everyone lol
 
 
 def connect_to_db() -> None:

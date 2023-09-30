@@ -9,9 +9,6 @@ from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 import os
 import sys
 import requests
-# print(sys.builtin_module_names)
-# print(sys.path)
-debugMode: bool = True
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
@@ -59,30 +56,36 @@ class Register_Button(QPushButton):
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
 
-    def register_sound(self):
-        self.media_player = QMediaPlayer(self)
-        self.media_player.setAudioOutput(QAudioOutput(self))
-        file_url = QUrl.fromLocalFile(os.path.join(
-            'Music', 'mixkit-fantasy-game-sweep-notification-255.wav'))
-        self.media_player.setSource(file_url)
-        # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
-        self.media_player.play()
-
     def button_clicked(self) -> None:
         sender = self.sender()
-        sender.repaint()  # To avoid bugs
         status_register = register(form_username, password_not_visible)
-        if status_register:
+        if status_register == True:
             self.register_status = True
             self.username = form_username
             print('SELF.USERNAME ', self.username, 'has been registered')
             self.login_status = True
             # self.login_signal.emit()
             print('Login status:', self.login_status)
-            self.register_sound()
-        else:
+            # Successfull sound
+            self.media_player = QMediaPlayer(self)
+            self.media_player.setAudioOutput(QAudioOutput(self))
+            file_url = QUrl.fromLocalFile(os.path.join(
+                'Music', 'mixkit-fantasy-game-sweep-notification-255.wav'))
+            self.media_player.setSource(file_url)
+            # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+            self.media_player.play()
+
+        elif status_register == False:
             self.login_status = False
             print(f"No login with username {form_username}")
+            # Unsuccessfull sound
+            self.media_player = QMediaPlayer(self)
+            self.media_player.setAudioOutput(QAudioOutput(self))
+            file_url = QUrl.fromLocalFile(os.path.join(
+                'Music', 'mixkit-alert-bells-echo-765.wav'))
+            self.media_player.setSource(file_url)
+            # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+            self.media_player.play()
 
 
 class Login_Button(QPushButton):
@@ -102,7 +105,6 @@ class Login_Button(QPushButton):
 
     def button_clicked(self) -> None:
         sender = self.sender()
-        sender.repaint()  # To avoid bugs
         status_login = login(form_username, password_not_visible)
         print('RETORNAAA', status_login)
         if status_login and self.name == 'logoutnButton':
@@ -126,7 +128,6 @@ class Login_Button(QPushButton):
             self.media_player.setSource(file_url)
             # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
             self.media_player.play()
-
         elif status_login:
             self.username = form_username
             print('SELF.USERNAME ', self.username)
@@ -134,6 +135,14 @@ class Login_Button(QPushButton):
             self.login_signal.emit()
             print('Login status:', self.login_status)
         else:
+            # Login unsuccessfull sound
+            self.media_player = QMediaPlayer(self)
+            self.media_player.setAudioOutput(QAudioOutput(self))
+            file_url = QUrl.fromLocalFile(os.path.join(
+                'Music', 'mixkit-alert-bells-echo-765.wav'))
+            self.media_player.setSource(file_url)
+            # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+            self.media_player.play()
             self.login_status = False
             print(f"No login with username {form_username}")
 
@@ -154,11 +163,21 @@ class InputField(QLineEdit):
             form_username = text_field
             print('username', form_username)
         elif self.name == 'password_field':
+            # Later, change the entire password field to * at [index] with a temporary variable
+            # with a library.
             form_password = text_field
-            # Then a character has been added
+            # Then the hole password has been deleted
             if len(text_field) == 0 and self.password_has_been_changed:
                 password_not_visible = ''
                 self.password_has_been_changed = False
+            # Then the hole password has been changed to a character
+            elif abs(len(password_not_visible)-len(text_field)) > 1 and self.password_has_been_changed:
+                if len(text_field) != 0:
+                    password_not_visible = text_field[-1]
+                else:
+                    password_not_visible = ''
+                self.password_has_been_changed = False
+            # Then a character has been added
             elif len(password_not_visible)-len(text_field) < 0 and self.password_has_been_changed:
                 password_not_visible += text_field[-1]
                 self.password_has_been_changed = True

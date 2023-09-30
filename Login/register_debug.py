@@ -59,8 +59,9 @@ def register(user: str, password: str) -> None:
             for row in reader:
                 if row[1] == user:
                     userExist = True
-                    print('duplicate User')
-                    break
+                    print(row[1], user)
+                    print('Duplicated username')
+                    return False
     except FileNotFoundError as filenotfound:
         try:
             cvsMaker()
@@ -68,7 +69,7 @@ def register(user: str, password: str) -> None:
                 print(filenotfound)
         except Exception as error:
             print(error)
-    if not userExist:  # add
+    if not userExist:  # Then, add
         userId: str = id()
         userPath(user, userId)
         pathImguser = f"{user}-{userId}_img.jpg"
@@ -77,7 +78,7 @@ def register(user: str, password: str) -> None:
             writer = csv.writer(data)
             writer.writerow(newUser)
             if debugMode:
-                print('Usuario Creado')
+                print('User created')
                 return True
 
 

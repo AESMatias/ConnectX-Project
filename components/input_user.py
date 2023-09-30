@@ -6,7 +6,6 @@ from PyQt6.QtGui import QPixmap
 class ImageViewer(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
@@ -24,7 +23,7 @@ class ImageViewer(QMainWindow):
         options = QFileDialog.Options()
         options |= QFileDialog.ReadOnly
         file_name, _ = QFileDialog.getOpenFileName(
-            self, 'Abrir Imagen', '', 'Imágenes (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)', options=options)
+            self, 'Open image', '', 'Images (*.png *.jpg *.jpeg *.bmp *.gif *.tiff)', options=options)
 
         if file_name:
             pixmap = QPixmap(file_name)
