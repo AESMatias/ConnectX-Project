@@ -127,32 +127,6 @@ class Frame1(QWidget):
         self.labels['logo_welcome'].setStyleSheet(
             'background:none;opacity:0.9')
 
-        self.timer = QTimer()
-        self.first_cycle = True
-        self.second_cycle = False
-        self.timer.setInterval(500)
-        self.timer.start()
-
-        def change_opacity_value():
-            if self.opacity_decimal <= 10 and self.first_cycle:
-                self.opacity_decimal -= 1
-                self.first_cycle = True
-                self.second_cycle = False
-                print(self.opacity_decimal)
-            elif self.opacity_decimal >= 0 and self.second_cycle:
-                self.opacity_decimal += 1
-                self.second_cycle = True
-                self.first_cycle = False
-                print(self.opacity_decimal)
-            self.labels['logo_welcome'].setStyleSheet(
-                f'background:none;opacity:0.{self.opacity_decimal}')
-            image_pixmap = image_pixmap.scaled(
-                250+self.opacity_decimal, 250+self.opacity_decimal, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-            QCoreApplication.processEvents()
-            self.timer.stop()
-            self.timer.start()
-        self.timer.timeout.connect(change_opacity_value)
-
         # Horizontal Layout
         hbox1 = QHBoxLayout()
         hbox1.addStretch(1)
