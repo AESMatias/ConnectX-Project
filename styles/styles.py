@@ -99,6 +99,12 @@ global_style = """
                                      stop: 0 #6B73FF, stop: 1 #000DFF);
     }
 """
+global_style_changed = """
+    QWidget {
+        background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                     stop: 0 #6B73FF, stop: 1 #FFFFFF);
+    }
+"""
 login_label = """
     QLabel {
         opacity: 0.5;
@@ -111,7 +117,9 @@ tag = """
         opacity: 0;
         font-size: 22px;
         background: rgba(0,0,0,0);
-        
+        color: white;
+        border: 1px solid #000000;
+}
     }
 """
 InputFieldStyle = """ InputField {

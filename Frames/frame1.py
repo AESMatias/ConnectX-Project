@@ -19,8 +19,6 @@ class Frame1(QWidget):
 
     def remove_registered_label(self):
         sender = self.sender()
-        print(sender.name)
-        print(sender)
         if sender.register_status == False and sender.name == 'logoutnButton':
             self.labels['registered_status'].setText(
                 '')
@@ -101,8 +99,6 @@ class Frame1(QWidget):
         self.register_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.register_button.setStyleSheet(button_style)
-        self.register_button.clicked.connect(
-            self.register_button.button_clicked)
         # Login
         self.login_button = Login_Button(
             'loginButton', (300, 250), 'LOGIN', self)
