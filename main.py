@@ -1,6 +1,8 @@
 from PyQt6.QtCore import QTimer, QCoreApplication, Qt
 import sys
 import os
+import socket
+import os
 from PyQt6.QtGui import QIcon
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
@@ -121,4 +123,33 @@ QWidget {{
     #
     input_image = ImageViewer()
     input_image.setStyleSheet(global_style)
+
+    # Host and port of FastAPI
+    host = "localhost"
+    port = 12345
+    print(host)
+    # Create the client socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Connect to the server
+    try:
+        client_socket.connect((host, port))
+        while True:
+            print('If do you want to exit, write "exit" or "close"')
+            message = input(str('Write a message: '))
+            if message.lower() == 'exit' or message.lower() == 'close':
+                client_socket.send(message.encode())
+                client_socket.close()
+                break
+
+            # Sending message to the server
+            client_socket.send(message.encode())
+
+            # Receiving message from the server
+            message = client_socket.recv(4096).decode()
+            print('Server message: ', message)
+
+    except Exception as e:
+        print('Error: ', e)
+    finally:
+        client_socket.close()
     sys.exit(app.exec())

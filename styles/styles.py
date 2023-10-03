@@ -69,7 +69,7 @@ new_login_button = """
 
 button_style = """
     QPushButton {
-        border: 1px solid white;
+        border: 2px solid white;
         border-radius: 5px;
         font-size: 40px;
         font-weight: bold;
@@ -80,8 +80,7 @@ button_style = """
     
     QPushButton:hover {
         border: 2px solid white;
-        background: #000DFF;
-        border-radius: 10px;
+        border-radius: 8px;
         font-size: 32px;
         font-weight: bold;
     }
