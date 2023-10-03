@@ -1,8 +1,10 @@
-from PyQt6.QtCore import QTimer, QCoreApplication, Qt
+from PyQt6.QtCore import QTimer, QCoreApplication, Qt, QObject, pyqtSignal
 import sys
 import os
 import socket
+import asyncio
 import os
+from typing import Optional, List, Dict, Set, Tuple, Union, Any, Literal, Text
 from PyQt6.QtGui import QIcon
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
@@ -14,6 +16,7 @@ from Frames.frame1 import Frame1
 from Frames.frame_login import FrameLogin
 from components.input_user import ImageViewer
 from Frames.edit_profile import EditProfile
+import threading
 
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
@@ -125,31 +128,58 @@ QWidget {{
     input_image.setStyleSheet(global_style)
 
     # Host and port of FastAPI
-    host = "localhost"
+    host = "127.0.0.1"
     port = 12345
-    print(host)
     # Create the client socket
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Connect to the server
-    try:
-        client_socket.connect((host, port))
-        while True:
-            print('If do you want to exit, write "exit" or "close"')
-            message = input(str('Write a message: '))
-            if message.lower() == 'exit' or message.lower() == 'close':
-                client_socket.send(message.encode())
-                client_socket.close()
-                break
 
-            # Sending message to the server
-            client_socket.send(message.encode())
+    class ClientCommunicator(QObject):
+        message_received = pyqtSignal(str)
 
-            # Receiving message from the server
-            message = client_socket.recv(4096).decode()
-            print('Server message: ', message)
+        def __init__(self, host, port):
+            super().__init__()
+            self.host = host
+            self.port = port
+            self.client_socket = socket.socket(
+                socket.AF_INET, socket.SOCK_STREAM)
 
-    except Exception as e:
-        print('Error: ', e)
-    finally:
-        client_socket.close()
+        def run_client(self):
+            try:
+                self.client_socket.connect((self.host, self.port))
+                self.message_received.emit(
+                    'Cliente conectadoooooooooooooooooooo')
+                while True:
+                    message = input('Write a message: ')
+                    if message.lower() == 'exit' or message.lower() == 'close':
+                        self.message_received.emit('CLOSE WRITTEN')
+                        self.client_socket.send(message.encode())
+                        response = self.client_socket.recv(4096)
+                        response = response.decode()
+                        self.message_received.emit(
+                            f'Server message: {response}')
+                        self.client_socket.close()
+                        break
+
+                    # Sending message to the server
+                    self.client_socket.send(message.encode())
+
+                    # Receiving message from the server
+                    response = self.client_socket.recv(4096)
+                    response = response.decode()
+                    self.message_received.emit(f'Server message: {response}')
+            except Exception as e:
+                self.message_received.emit(f'Error: {e}')
+            finally:
+                self.client_socket.close()
+
+    # Crear una instancia de ClientCommunicator y ejecutar la comunicación del cliente en un hilo separado
+    client_communicator = ClientCommunicator('127.0.0.1', 12345)
+    client_thread = threading.Thread(target=client_communicator.run_client)
+    client_thread.start()
+
+    def print_message(message):
+        print('print_message>', message)
+    # Conectar la señal de mensaje a la función que muestra el mensaje en la interfaz de usuario
+    client_communicator.message_received.connect(print_message)
+
     sys.exit(app.exec())
