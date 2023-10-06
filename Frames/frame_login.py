@@ -6,7 +6,7 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import (QFileDialog,
                              QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button
+from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button, Chat_Button
 from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
 from PyQt6.QtCore import QTimer, QStandardPaths, QUrl
 from Frames.edit_profile import EditProfile
@@ -36,7 +36,6 @@ class FrameLogin(QWidget):
             self.play_media()
 
     def open_file(self) -> None:
-        sender = self.sender()
         initial_dir = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.DocumentsLocation)
         self.upload_qfile = QFileDialog.getOpenFileName(
@@ -136,6 +135,21 @@ class FrameLogin(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username_status'].repaint()
 
+        # CHAT
+        self.chat_button = Chat_Button(
+            'chatButton', (300, 250), 'CHAT', self)
+        self.chat_button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        self.chat_button.setStyleSheet(
+            button_style)
+        self.chat_button.clicked.connect(self.change_username_status)
+
+        self.labels['username_status'] = QLabel('', self)
+        self.labels['username_status'].setStyleSheet(login_label)
+        self.labels['username_status'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labels['username_status'].repaint()
+
         # Horizontal Layout
         hbox1 = QHBoxLayout()
         hbox1.addWidget(self.labels['username'])
@@ -154,6 +168,10 @@ class FrameLogin(QWidget):
         hbox4 = QHBoxLayout()
         hbox4.addWidget(self.edit_account)
         hbox4.addStretch(1)
+        # Five CHAT
+        hbox5 = QHBoxLayout()
+        hbox5.addWidget(self.chat_button)
+        hbox5.addStretch(1)
         # Vertical
         vbox = QVBoxLayout()
         vbox.addStretch(2)
