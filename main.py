@@ -25,7 +25,7 @@ aristotle_1 = 'aristotle_1.jpg'
 
 if __name__ == '__main__':
     try:
-        # Debug function
+        # Debug functionn
         def hook(type, value, traceback) -> None:
             print(type)
             print(traceback)
