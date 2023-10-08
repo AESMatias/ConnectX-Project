@@ -1,18 +1,19 @@
-from time import sleep
-import socket
 from threading import Thread
+from PyQt6.QtCore import pyqtSignal
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit)
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button
-from styles.styles import button_style, global_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import InputFieldStyle, button_style, global_style, login_label, login_label_wrong, login_label_ok
 
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
+from PyQt6.QtGui import QPixmap, QCursor
 
 
 class ChatFrame(QWidget):
+    send_message_signal = pyqtSignal(str)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -20,25 +21,35 @@ class ChatFrame(QWidget):
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
-        # Create the client socket
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # # Create the client socket
+        # self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.client_communicator = ClientCommunicator(
             self.host, self.port, self.username)
         self.client_thread = Thread(target=self.client_communicator.run_client)
 
-    def launch(self):
+    def keyPressEvent(self, event) -> None:
+        print('key pressed', event.key)
+        if event.key() == QtCore.Qt.Key.Key_Return or event.key() == 16777220:
+            self.send_message()
+
+    def launch(self) -> None:
         sender = self.sender()
-        print('sender', sender)
         if sender.login_status == True:
             print('CHAT initiated')
             self.labels['username_status'].setText('Credentials OK')
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
             self.show()
+            self.setFocus()
             self.client_thread.start()
             self.change_username_status()
-            return True
+
+    def send_message(self):
+        text = self.write_message.text()
+        message = f"{self.username}: {text}"
+        self.send_message_signal.emit(message)
+        self.write_message.setText('')
 
     def change_username_status(self):
         sender = self.sender()
@@ -56,8 +67,17 @@ class ChatFrame(QWidget):
     def new_message(self, message):
         sender = self.sender()
         if message:
+            print('SENDERRR', sender)
+            print('MESSAGEEEE', message)
             self.labels['msg'].setText(message)
             self.labels['msg'].repaint()  # To avoid bugs
+            if len(self.all_messages) < 6:
+                self.all_messages.append(message)
+                self.labels['msg'].setText('\n'.join(self.all_messages))
+            else:
+                self.all_messages.pop(0)
+                self.all_messages.append(message)
+                self.labels['msg'].setText('\n'.join(self.all_messages))
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -88,7 +108,7 @@ class ChatFrame(QWidget):
         self.labels['username_status'].repaint()
 
         # Message Label
-        self.labels['msg'] = QLabel('MESSAGE>', self)
+        self.labels['msg'] = QLabel('MESSAGES:', self)
         self.labels['msg'].setStyleSheet(login_label)
         self.labels['msg'].setStyleSheet(login_label_ok)
         self.labels['msg'].setAlignment(
@@ -96,12 +116,18 @@ class ChatFrame(QWidget):
         self.labels['msg'].repaint()
 
         # Write a message
+        # self.write_message = QLineEdit(self)
+        # self.write_message.setStyleSheet(login_label)
         self.write_message = QLineEdit(self)
-        self.write_message.setStyleSheet(login_label)
+        self.write_message.setStyleSheet(InputFieldStyle)
         self.write_message.setFixedSize(550, 60)
         self.write_message.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.write_message.repaint()
+        self.all_messages = []
+        for _ in range(5):
+            self.all_messages.append('')
+        self.labels['msg'].setText('\n'.join(self.all_messages))
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
@@ -112,8 +138,15 @@ class ChatFrame(QWidget):
         hbox2 = QHBoxLayout()
         hbox2.addWidget(self.write_message)
 
+        # # Third Horizontal Layout
+        # hbox3 = QHBoxLayout()
+        # hbox3.addStretch(1)
+        # hbox3.addWidget(self.labels['msg'])
+        # self.labels['msg'].setScaledContents(True)
+        # hbox3.addStretch(1)
+
         # Third Horizontal Layout
-        hbox3 = QHBoxLayout()
+        hbox3 = QVBoxLayout()
         hbox3.addStretch(1)
         hbox3.addWidget(self.labels['msg'])
         self.labels['msg'].setScaledContents(True)
@@ -137,7 +170,6 @@ class ChatFrame(QWidget):
         # vbox.addWidget(self.labels['image_input'])
         vbox.addStretch(5)
         self.setLayout(vbox)
-
         # if self.launch() == True:
         #     print('th4read startttt')
         #     self.client_thread.start()

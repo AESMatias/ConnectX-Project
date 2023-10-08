@@ -138,6 +138,8 @@ if __name__ == '__main__':
 
         chat_frame.client_communicator.message_received.connect(
             chat_frame.new_message)
+        chat_frame.send_message_signal.connect(
+            chat_frame.client_communicator.send_message)
 
         # # Host and port of FastAPI
         # host = "127.0.0.1"

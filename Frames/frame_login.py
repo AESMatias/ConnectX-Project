@@ -60,6 +60,7 @@ class FrameLogin(QWidget):
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
             self.show()
+            self.setFocus()
 
     def open_edit_account(self):
         sender = self.sender()
