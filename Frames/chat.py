@@ -4,12 +4,11 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit)
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button
-from styles.styles import InputFieldStyle, button_style, global_style, login_label, login_label_wrong, login_label_ok
-
+from styles.styles import InputFieldStyle, login_label, login_label_wrong, login_label_ok
+from components.global_functions import center_window
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
-from PyQt6.QtGui import QPixmap, QCursor
+from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
 
 
 class ChatFrame(QWidget):
@@ -21,15 +20,24 @@ class ChatFrame(QWidget):
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
-        # # Create the client socket
-        # self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         self.client_communicator = ClientCommunicator(
             self.host, self.port, self.username)
-        self.client_thread = Thread(target=self.client_communicator.run_client)
+        # self.client_thread = Thread(target=self.client_communicator.run_client)
+
+    def closeEvent(self, event):
+        print("Closing the window")
+        # Then, before closing the window, we need to close the sockets and threads
+        # self.client_communicator.client_socket.close()
+        # self.client_communicator.send_message_socket.close()
+        self.client_thread.join()
+
+    # def close_all(self):
+    #     print(f"Closing the window{self}")
+    #     self.client_communicator.client_socket.close()
+    #     self.client_communicator.send_message_socket.close()
+    #     self.client_thread.join()
 
     def keyPressEvent(self, event) -> None:
-        print('key pressed', event.key)
         if event.key() == QtCore.Qt.Key.Key_Return or event.key() == 16777220:
             self.send_message()
 
@@ -37,19 +45,31 @@ class ChatFrame(QWidget):
         sender = self.sender()
         if sender.login_status == True:
             print('CHAT initiated')
+            self.username = sender.username
+            self.labels['username'].setText(f'Welcome {self.username}')
+            self.setWindowTitle(f'ConectX Project - {self.username}')
+            self.client_communicator.username = self.username
             self.labels['username_status'].setText('Credentials OK')
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
+            center_window(self)
             self.show()
             self.setFocus()
+            self.client_thread = Thread(
+                target=self.client_communicator.run_client)
             self.client_thread.start()
             self.change_username_status()
 
     def send_message(self):
         text = self.write_message.text()
-        message = f"{self.username}: {text}"
+        message = f"{text}"
         self.send_message_signal.emit(message)
         self.write_message.setText('')
+        if text.endswith('close') or text.endswith('exit'):
+            print('closing threads and sockets by send_message func')
+            # self.client_communicator.client_socket.close()
+            self.client_communicator.send_message_socket.close()
+            self.client_thread.join()
 
     def change_username_status(self):
         sender = self.sender()
@@ -67,8 +87,6 @@ class ChatFrame(QWidget):
     def new_message(self, message):
         sender = self.sender()
         if message:
-            print('SENDERRR', sender)
-            print('MESSAGEEEE', message)
             self.labels['msg'].setText(message)
             self.labels['msg'].repaint()  # To avoid bugs
             if len(self.all_messages) < 6:
@@ -170,8 +188,3 @@ class ChatFrame(QWidget):
         # vbox.addWidget(self.labels['image_input'])
         vbox.addStretch(5)
         self.setLayout(vbox)
-        # if self.launch() == True:
-        #     print('th4read startttt')
-        #     self.client_thread.start()
-
-        # self.login_button.login_signal.connect(client_thread.start)

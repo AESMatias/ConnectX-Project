@@ -80,13 +80,3 @@ def register(user: str, password: str) -> None:
             if debugMode:
                 print('User created')
                 return True
-
-
-# register('Enrique', 'UnoDosTres')
-
-# """
-# Add
-#     User_path
-#     fecha de Creacio
-#     hacer que el usuario sea un id no un nombre
-# """

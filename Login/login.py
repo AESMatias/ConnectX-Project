@@ -2,11 +2,12 @@ from Login.edit import update_session_state
 from Login.bd import connect_to_db
 import os
 import sys
+from typing import Tuple
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
 
-def login(user: str, password: str) -> {bool, str}:
+def login(user: str, password: str) -> Tuple[bool, str]:
     db = connect_to_db()
     mycursor = db.cursor()
     mycursor.execute("SELECT password FROM Users WHERE nickName = %s", (user,))

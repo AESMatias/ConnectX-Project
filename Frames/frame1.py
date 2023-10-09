@@ -1,22 +1,25 @@
-from time import sleep
-import sys
 import os
-import typing
-from PyQt6.QtCore import QPropertyAnimation, Qt, QTimer, QUrl, QCoreApplication
-from PyQt6.QtGui import QIcon, QColor, QPalette
-from PyQt6 import QtCore, QtGui
-from PyQt6.QtWidgets import (QFileDialog,
-                             QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
+from PyQt6.QtCore import Qt
+from PyQt6 import QtCore
+from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import Register_Button, Login_Button, InputField
-from styles.styles import new_login_button, InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
+from components.global_functions import center_window
 
 
 class Frame1(QWidget):
+    signal_frame1 = QtCore.pyqtSignal(str)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.init_gui()
+
+    # def closeEvent(self, event):
+    #     print("Closing the main window")
+    #     # Then, before closing the window, we need to close the sockets and threads
+    #     self.signal_frame1.emit('close')
+    #     self.client_thread.join()
 
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Return or event.key() == 16777220:
@@ -162,4 +165,5 @@ class Frame1(QWidget):
 
         vbox.addStretch(5)
         self.setLayout(vbox)
+        center_window(self)
         self.show()

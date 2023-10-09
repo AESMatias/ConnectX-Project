@@ -3,6 +3,9 @@ import socket
 from typing import Optional, List, Dict, Set, Tuple, Union, Any, Literal, Text
 from PyQt6.QtGui import QPixmap, QCursor
 from threading import Thread
+from PyQt6.QtNetwork import QTcpSocket
+
+# TODO: Here, we need to change the way we are sending the username to the server
 
 
 class ClientCommunicator(QObject):
@@ -12,90 +15,63 @@ class ClientCommunicator(QObject):
         super().__init__()
         self.host = host
         self.port = port
+        self.username = username
         self.client_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
-        self.username = username
         self.send_message_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
 
-    def send_message(self, message):
+    def send_message(self, message: str) -> None:
         if message.lower() == 'exit' or message.lower() == 'close':
-            self.send_message_socket.sendall(message.encode('utf-8'))
-            response = self.send_message_socket.recv(4096)
-            response = response.decode('utf-8')
-            self.message_received.emit(f"{self.username}: {response}")
-            self.send_message_socket.send(message.encode())
-
-        # Sending message to the server
+            print('Sending closing request to the server')
+            message = f"{self.username}: {message}"
+            self.send_message_socket.send(message.encode('utf-8'))
+            # self.client_socket.close()
+            # self.send_message_socket.close()
+            self.message_received.emit('connecton_closed')
         message = f"{self.username}: {message}"
         self.send_message_socket.send(message.encode('utf-8'))
-        # self.message_received.emit(f"response")
 
-    def receive_messages(self):
-        print('receive_messages funcitiooon')
+    def receive_messages(self) -> None:
         try:
             while True:
                 data = self.client_socket.recv(4096)
                 if not data:
-                    print('Connection closed')
-                    break
-                elif data == 'closed':
-                    print('Connection closed from the successfully')
+                    print('Connection closed without data')
                     self.client_socket.close()
+                    self.send_message_socket.close()
+                    break
+                elif data.decode('utf-8').endswith('close_the_connection'):
+                    print('Connection closed from the server')
+                    self.client_socket.close()
+                    self.send_message_socket.close()
                     break
                 elif data:
                     data = data.decode('utf-8')
                     print(f"Received: {data}")
-                    # Emitir la señal en el hilo principal
+                    # Send the signal to the main thread
                     self.message_received.emit(data)
         except Exception as e:
             print("Error receiving message:", str(e))
+            # self.client_socket.close()
+            # self.send_message_socket.close()
 
-    def run_client(self):
-        print('run_client, chat socket has been started!')
+    def run_client(self) -> None:
         try:
-            # self.client_socket = socket.socket(
-            #     socket.AF_INET, socket.SOCK_STREAM)
+            print('NEW THREADDD')
+
             self.client_socket.connect((self.host, self.port))
             self.send_message_socket.connect((self.host, self.port))
 
-            # TODO: This thread receives messages from the server
+            # This thread receives messages from the server
+            # TODO: we need to use QThread instead of Thread
             receive_thread = Thread(target=self.receive_messages)
             receive_thread.start()
-
-            # receive_thread = QThread()
-            # receive_thread.started.connect(self.receive_messages)
-            # receive_thread.start()
-
-            # while True:
-            #     message = input('Write a message:\n')
-            #     if message.lower() == 'exit' or message.lower() == 'close':
-            #         self.client_socket.sendall(message.encode())
-            #         response = self.client_socket.recv(4096)
-            #         response = response.decode('utf-8')
-
-            #         self.message_received.emit(f"{self.username}: {response}")
-
-            #         self.client_socket.send(message.encode())
-            #         self.client_socket.close()
-            #         break
-
-            # # Sending message to the server
-            # message = f"{self.username}: {message}"
-            # self.client_socket.send(message.encode())
-
-            # # Receiving message from the server
-            # response = self.client_socket.recv(4096)
-            # response = response.decode('utf-8')
-            # self.message_received.emit(f"response")
 
         except ConnectionError as e:
             print('Connection error', e)
             self.client_socket.close()
             self.send_message_socket.close()
-        finally:
-            print('finallyyy')
-            # self.client_socket.close()
 
 
 class ClientThread(QThread):

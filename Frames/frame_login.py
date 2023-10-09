@@ -1,19 +1,16 @@
-from time import sleep
-import sys
 import os
-from PyQt6.QtGui import QIcon
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import (QFileDialog,
-                             QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
+from PyQt6.QtWidgets import QFileDialog, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Upload_file, Register_Button, Login_Button, InputField, Button, Chat_Button
-from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
-from PyQt6.QtCore import QTimer, QStandardPaths, QUrl
-from Frames.edit_profile import EditProfile
+from components.buttons import Upload_file, Login_Button, Button, Chat_Button
+from styles.styles import button_style, login_label, login_label_wrong, login_label_ok
+from PyQt6.QtCore import QStandardPaths, QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
+from components.global_functions import center_window
 
 
 class FrameLogin(QWidget):
+    signal_frame_login = QtCore.pyqtSignal(str)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -26,6 +23,11 @@ class FrameLogin(QWidget):
         self.media_player.setSource(file_url)
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
+
+    # def closeEvent(self, event):
+    #     # Then, before closing the window, we need to close the sockets and threads
+    #     self.signal_frame_login.emit('close')
+    #     self.client_thread.join()
 
     def play_media(self):
         self.media_player.play()
@@ -59,6 +61,7 @@ class FrameLogin(QWidget):
             self.labels['username_status'].setText('Credentials OK')
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
+            center_window(self)
             self.show()
             self.setFocus()
 
@@ -83,8 +86,6 @@ class FrameLogin(QWidget):
             self.labels['username'].repaint()  # To avoid bugs
 
     def init_gui(self) -> None:
-        # Window Geometry
-        self.setGeometry(100, 200, 1000, 800)
         # Grid Layout
         self.grid = QGridLayout()
         # Labels
@@ -99,8 +100,9 @@ class FrameLogin(QWidget):
         # QLabel image assignation
         window_size = self.size()
         self.labels['label_image'] = QLabel(self)
+        self.labels['label_image'].hide()
         self.labels['label_image'].setMaximumSize(window_size)
-        self.labels['label_image'].setGeometry(50, 50, 300, 300)
+        self.labels['label_image'].setGeometry(0, 0, 0, 0)
         self.labels['label_image'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
@@ -112,6 +114,7 @@ class FrameLogin(QWidget):
         self.upload_image.setStyleSheet(
             button_style)
         self.upload_image.clicked.connect(self.open_file)
+
         # Edtir profile
         self.edit_account = Button(
             'editAccount', (300, 250), 'Edit your account', self)
@@ -130,12 +133,6 @@ class FrameLogin(QWidget):
             button_style)
         self.logout_button.clicked.connect(self.change_username_status)
 
-        self.labels['username_status'] = QLabel('', self)
-        self.labels['username_status'].setStyleSheet(login_label)
-        self.labels['username_status'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['username_status'].repaint()
-
         # CHAT
         self.chat_button = Chat_Button(
             'chatButton', (300, 250), 'CHAT', self)
@@ -144,7 +141,7 @@ class FrameLogin(QWidget):
         self.chat_button.setStyleSheet(
             button_style)
         self.chat_button.clicked.connect(self.change_username_status)
-
+        # UsernameStatus
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
         self.labels['username_status'].setAlignment(
@@ -163,16 +160,23 @@ class FrameLogin(QWidget):
         # Third Horizontal Layout
         hbox3 = QHBoxLayout()
         hbox3.addStretch(1)
-        hbox3.addWidget(self.logout_button)
+        hbox3.addWidget(self.chat_button)
         hbox3.addStretch(1)
         # Four
         hbox4 = QHBoxLayout()
+        hbox4.addStretch(1)
         hbox4.addWidget(self.edit_account)
         hbox4.addStretch(1)
         # Five CHAT
         hbox5 = QHBoxLayout()
-        hbox5.addWidget(self.chat_button)
         hbox5.addStretch(1)
+        hbox5.addWidget(self.logout_button)
+        hbox5.addStretch(1)
+        # Hbox6
+        hbox6 = QHBoxLayout()
+        hbox6.addStretch(1)
+        hbox6.addWidget(self.labels['label_image'])
+        hbox6.addStretch(1)
         # Vertical
         vbox = QVBoxLayout()
         vbox.addStretch(2)
@@ -180,6 +184,8 @@ class FrameLogin(QWidget):
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
         vbox.addLayout(hbox4)
+        vbox.addLayout(hbox5)
+        vbox.addLayout(hbox6)
         vbox.addStretch(2)
         vbox.addWidget(self.labels['username_status'])
         self.labels['username_status'].setScaledContents(True)
