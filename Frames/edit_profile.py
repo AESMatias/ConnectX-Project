@@ -1,14 +1,8 @@
-from time import sleep
-import sys
-import os
-from PyQt6.QtGui import QIcon
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import (QFileDialog, QStackedLayout, QStackedWidget,
-                             QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
+from PyQt6.QtWidgets import QStackedLayout, QWidget, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Upload_file, Register_Button, Login_Button, InputField
-from styles.styles import InputFieldStyle, tag, button_style, global_style, login_label, login_label_wrong, login_label_ok
-from PyQt6.QtCore import QTimer, QStandardPaths
+from components.buttons import Login_Button
+from styles.styles import button_style
 
 image_florence = 'images/florence.jpg'
 aristotle_1 = 'images/aristotle_1.jpg'

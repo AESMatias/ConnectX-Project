@@ -3,12 +3,12 @@ from Login.login_debug import login
 # from Login.login import login
 # from Login.register import register
 from Login.register_debug import register
-from PyQt6.QtWidgets import (QPushButton, QLineEdit, QLabel)
+from PyQt6.QtWidgets import (QPushButton, QLineEdit)
 from PyQt6.QtCore import (QObject, pyqtSignal, QUrl)
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
+from PyQt6.QtGui import QIcon, QGuiApplication
 import os
 import sys
-import requests
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
@@ -55,6 +55,23 @@ class Register_Button(QPushButton):
         self.setGeometry(300, 250, 400, 150)
         self.move(*pos)
         self.clicked.connect(self.button_clicked)
+
+        # Obtaining the screen dimensions
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+
+        # Obtaining the screen dimensions
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # Central position of the button
+        button_width = self.sizeHint().width()
+        button_height = self.sizeHint().height()
+        x_position = (screen_width - button_width) // 2
+        y_position = (screen_height - button_height) // 2
+
+        # Stablish the button position in the center of the screen
+        self.setGeometry(x_position, y_position, button_width, button_height)
 
     def button_clicked(self) -> None:
         sender = self.sender()
@@ -204,12 +221,11 @@ class Chat_Button(QPushButton):
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
-        # self.resize(self.sizeHint())
+        self.resize(self.sizeHint())
         self.setGeometry(300, 250, 400, 150)
         self.move(*pos)
         self.login_status = True  # FIX THIS, NEEDS TO CHANGE
         self.clicked.connect(self.button_clicked)
-        # global form_username
         self.username = form_username
         self.register_status = False
 

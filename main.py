@@ -1,24 +1,15 @@
-from PyQt6.QtCore import QTimer, QCoreApplication, Qt, QObject, pyqtSignal
+from PyQt6.QtCore import QTimer, QCoreApplication
 import sys
 import os
-import socket
-import asyncio
-import os
-from typing import Optional, List, Dict, Set, Tuple, Union, Any, Literal, Text
 from PyQt6.QtGui import QIcon
-from PyQt6 import QtCore
-from PyQt6.QtWidgets import (QFileDialog,
-                             QApplication, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout)
-from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import Register_Button, Login_Button, InputField
-from styles.styles import InputFieldStyle, tag, button_style, global_style, global_style_changed, login_label, login_label_wrong, login_label_ok
-from Login.client_socket import ClientCommunicator
+from PyQt6.QtWidgets import QApplication
+from styles.styles import global_style
 from Frames.frame1 import Frame1
 from Frames.frame_login import FrameLogin
 from components.input_user import ImageViewer
+from components.global_functions import center_window
 from Frames.edit_profile import EditProfile
 from Frames.chat import ChatFrame
-from threading import Thread
 
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
@@ -42,6 +33,8 @@ if __name__ == '__main__':
         window.timer.setInterval(150)
         window.timer.start()
 
+        center_window(window)
+
         # RGB components for the gradient of the background
         window.r_first_cycle = True
         window.g_first_cycle = True
@@ -53,7 +46,7 @@ if __name__ == '__main__':
         window.g_colour = 115  # Green component
         window.b_colour = 255  # Blue component
 
-        def change_style():
+        def change_style() -> None:
             # Red component
             if window.r_colour >= 0 and window.r_first_cycle:
                 window.r_colour -= 1  # Red component
@@ -109,9 +102,6 @@ if __name__ == '__main__':
         edit_profile_window = EditProfile()
         chat_frame = ChatFrame()
 
-        # window2 = Frame()
-        # window2.setStyleSheet(global_style)
-        # window2.show()
         # This two code lines below, trigger to open a login window and close the main
         window.login_button.login_signal.connect(login_window.launch)
         window.login_button.login_signal.connect(window.close)
@@ -126,37 +116,24 @@ if __name__ == '__main__':
 
         window.register_button.clicked.connect(
             window.show_register_status)
-        # open the account configuration
+        # Opening the edit profile window
         login_window.edit_account.clicked.connect(edit_profile_window.show)
-        #
         input_image = ImageViewer()
         input_image.setStyleSheet(global_style)
 
-        # open the account configuration
-        # login_window.chat_button.clicked.connect(chat_frame.show)
+        # Opening the chat
+
         login_window.chat_button.clicked.connect(chat_frame.launch)
 
         chat_frame.client_communicator.message_received.connect(
             chat_frame.new_message)
         chat_frame.send_message_signal.connect(
             chat_frame.client_communicator.send_message)
-
-        # # Host and port of FastAPI
-        # host = "127.0.0.1"
-        # port = 12345
-        # # Create the client socket
-        # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        # client_communicator = ClientCommunicator('127.0.0.1', 12345)
-        # client_thread = Thread(target=client_communicator.run_client)
-        # window.login_button.login_signal.connect(client_thread.start)
-
-        # def print_message(message):
-        #     print('print_message>', message)
-        # client_communicator.message_received.connect(print_message)
-
+        # window.signal_frame1.connect(chat_frame.close_all)
+        # login_window.signal_frame_login.connect(chat_frame.close_all)
         sys.exit(app.exec())
-    except KeyboardInterrupt:
-        sys.exit(app.exec())
+    except KeyboardInterrupt as e:
+        window.timer.stop()
+        print(e)
     finally:
-        sys.exit(app.exec())
+        window.timer.stop()
