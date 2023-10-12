@@ -10,7 +10,6 @@ from components.input_user import ImageViewer
 from components.global_functions import center_window
 from Frames.edit_profile import EditProfile
 from Frames.chat import ChatFrame
-
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -26,8 +25,16 @@ if __name__ == '__main__':
         window = Frame1()
         login_window = FrameLogin()
         window.setStyleSheet(global_style)
+
         login_window.setStyleSheet(global_style)
-        # window.setFixedWidth(1280)
+        # background_style = f"""
+        # QWidget {{
+        #     background-image: url('images/759324.jpg');
+
+        # }}
+        # """
+        # login_window.setStyleSheet(background_style)
+
         window.show()
         window.timer = QTimer()
         window.timer.setInterval(150)
@@ -97,6 +104,7 @@ if __name__ == '__main__':
     """)
             QCoreApplication.processEvents()
             window.timer.start()
+
         window.timer.timeout.connect(change_style)
 
         edit_profile_window = EditProfile()
@@ -121,8 +129,11 @@ if __name__ == '__main__':
         input_image = ImageViewer()
         input_image.setStyleSheet(global_style)
 
+        # Volume label clicked
+        window.volume_label.clicked_signal.connect(login_window.manage_music)
+        window.volume_label.clicked_signal.connect(
+            window.volume_icon_change)
         # Opening the chat
-
         login_window.chat_button.clicked.connect(chat_frame.launch)
 
         chat_frame.client_communicator.message_received.connect(
