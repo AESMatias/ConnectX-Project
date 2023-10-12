@@ -27,6 +27,25 @@ class FrameLogin(QWidget):
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
 
+        # Crear un QPalette personalizado con la imagen de fondo
+        palette = QPalette()
+        background_image = QPixmap(os.path.join('images', '759324.jpg'))
+
+        background_image = background_image.scaled(
+            self.size()*2, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        self.setAutoFillBackground(True)
+        brush = QBrush(background_image)
+        palette.setBrush(QPalette.ColorRole.Window, brush)
+        self.setPalette(palette)
+        self.setStyleSheet(f"""
+            QWidget {{
+                background-image: url({background_image});
+                background-repeat: no-repeat;
+                background-position: center;
+                background-color: rgba(0, 0, 0, 128);  /* 128 es el valor de opacidad (0-255) */
+            }}
+        """)
+
     def manage_music(self):
         sender = self.sender()
         if sender.name == 'musicButton':
@@ -50,31 +69,31 @@ class FrameLogin(QWidget):
             self.media_player.setPosition(0)  # Restart song when finished
             self.play_media()
 
-    def open_file(self) -> None:
-        initial_dir = QStandardPaths.writableLocation(
-            QStandardPaths.StandardLocation.DocumentsLocation)
-        self.upload_qfile = QFileDialog.getOpenFileName(
-            self, 'Upload image', initial_dir, 'All files (*)')
-        if self.upload_qfile:
-            print(f'Selected file: {self.upload_qfile}')
-            dir_image = self.upload_qfile[0]
-            image_pixmap = QPixmap(dir_image)
+    # def open_file(self) -> None:
+    #     initial_dir = QStandardPaths.writableLocation(
+    #         QStandardPaths.StandardLocation.DocumentsLocation)
+    #     self.upload_qfile = QFileDialog.getOpenFileName(
+    #         self, 'Upload image', initial_dir, 'All files (*)')
+    #     if self.upload_qfile:
+    #         print(f'Selected file: {self.upload_qfile}')
+    #         dir_image = self.upload_qfile[0]
+    #         image_pixmap = QPixmap(dir_image)
 
-            self.labels['label_image'].setPixmap(image_pixmap)
-            self.labels['label_image'].setScaledContents(True)
-            self.labels['label_image'].setGeometry(200, 200, 300, 300)
-            self.labels['label_image'].setAlignment(
-                QtCore.Qt.AlignmentFlag.AlignCenter)
-            self.labels['label_image'].show()
-            image = image_pixmap.toImage()
-            buffer = QtCore.QBuffer()
-            buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
-            image.save(buffer, "PNG")
-            image_bytes = buffer.data()
-            url = 'http://localhost:8000/uploadimagen/'
-            files = {'files': ('blob', BytesIO(image_bytes))}
-            response = requests.post(url, files=files)
-            print(f'Response from server: {response.json()}')
+    #         self.labels['label_image'].setPixmap(image_pixmap)
+    #         self.labels['label_image'].setScaledContents(True)
+    #         self.labels['label_image'].setGeometry(200, 200, 300, 300)
+    #         self.labels['label_image'].setAlignment(
+    #             QtCore.Qt.AlignmentFlag.AlignCenter)
+    #         self.labels['label_image'].show()
+    #         image = image_pixmap.toImage()
+    #         buffer = QtCore.QBuffer()
+    #         buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
+    #         image.save(buffer, "PNG")
+    #         image_bytes = buffer.data()
+    #         url = 'http://localhost:8000/uploadimagen/'
+    #         files = {'files': ('blob', BytesIO(image_bytes))}
+    #         response = requests.post(url, files=files)
+    #         print(f'Response from server: {response.json()}')
 
     def launch(self):
         sender = self.sender()
@@ -128,18 +147,18 @@ class FrameLogin(QWidget):
         self.labels['label_image'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        # Upload profile image
-        self.upload_image = Upload_file(
-            'uploadButton', (300, 250), 'Upload file', self)
-        self.upload_image.setCursor(
-            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.upload_image.setStyleSheet(
-            button_style)
-        self.upload_image.clicked.connect(self.open_file)
+        # # Upload profile image
+        # self.upload_image = Upload_file(
+        #     'uploadButton', (300, 250), 'Upload file', self)
+        # self.upload_image.setCursor(
+        #     QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        # self.upload_image.setStyleSheet(
+        #     button_style)
+        # self.upload_image.clicked.connect(self.open_file)
 
         # Edtir profile
         self.edit_account = Button(
-            'editAccount', (300, 250), 'Edit your account', self)
+            'editAccount', (300, 250), 'My account', self)
         self.edit_account.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.edit_account.setStyleSheet(
@@ -157,7 +176,7 @@ class FrameLogin(QWidget):
 
         # CHAT
         self.chat_button = Chat_Button(
-            'chatButton', (300, 250), 'CHAT', self)
+            'chatButton', (300, 250), 'Chat', self)
         self.chat_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.chat_button.setStyleSheet(
@@ -174,12 +193,7 @@ class FrameLogin(QWidget):
         hbox1 = QHBoxLayout()
         hbox1.addWidget(self.labels['username'])
         self.labels['username'].setScaledContents(True)
-        # Second Horizontal Layout
-        hbox2 = QHBoxLayout()
-        hbox2.addStretch(1)
-        hbox2.addWidget(self.upload_image)
-        hbox2.addStretch(1)
-        # Third Horizontal Layout
+
         hbox3 = QHBoxLayout()
         hbox3.addStretch(1)
         hbox3.addWidget(self.chat_button)
@@ -222,7 +236,7 @@ class FrameLogin(QWidget):
         # self.background_label.setScaledContents(True)
 
         vbox.addLayout(hbox1)
-        vbox.addLayout(hbox2)
+
         vbox.addLayout(hbox3)
         vbox.addLayout(hbox4)
         vbox.addLayout(hbox5)

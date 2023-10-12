@@ -64,7 +64,7 @@ edit_profile_button = """
         
     }
     QPushButton:pressed {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.3);
         color: white;
         font-size: 20px;
         border: 1px solid white;
@@ -76,13 +76,13 @@ edit_profile_button_clicked = """
     QPushButton {
         padding: 10px;
         border: 1px solid black;
-        font-size: 30px;
+        font-size: 25px;
         font-weight: bold;
         color: white;
         padding: 10px 10px;
         margin: 2px 2px;
         border-radius: 2px;
-        background-color: rgba(0, 0, 0, 100);
+        background-color: rgba(0, 0, 0, 150);
     }
     
     QPushButton:hover {
@@ -90,7 +90,7 @@ edit_profile_button_clicked = """
     }
 
     QPushButton:pressed {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.3);
         color: white;
         font-size: 20px;
         font-weight: bold;

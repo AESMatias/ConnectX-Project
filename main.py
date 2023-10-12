@@ -26,7 +26,7 @@ if __name__ == '__main__':
         login_window = FrameLogin()
         window.setStyleSheet(global_style)
 
-        login_window.setStyleSheet(global_style)
+        # login_window.setStyleSheet(global_style)
         window.show()
         window.timer = QTimer()
         window.timer.setInterval(150)

@@ -8,6 +8,7 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import QStackedLayout, QWidget, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import EditProfileButton, Upload_file
+from Frames.change_profile_pic import ChangeAvatar
 from styles.styles import button_style, edit_profile_button, edit_profile_button_clicked
 image_florence = 'images/florence.jpg'
 aristotle_1 = 'images/aristotle_1.jpg'
@@ -46,6 +47,10 @@ class EditProfile(QWidget):
             response = requests.post(url, files=files)
             print(f'Response from server: {response.json()}')
 
+    def change_profile_pic(self) -> None:
+        change_avatar_frame = ChangeAvatar(self)
+        change_avatar_frame.show()
+
     def init_gui(self) -> None:
         window_size = self.size()
         self.labels = {}
@@ -63,12 +68,13 @@ class EditProfile(QWidget):
 
         # Upload profile image
         self.upload_image = Upload_file(
-            'uploadButton', (300, 250), 'Upload file', self)
+            'uploadButton', (300, 250), 'Change profile picture', self)
         self.upload_image.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.upload_image.setStyleSheet(
             button_style)
-        self.upload_image.clicked.connect(self.open_file)
+        # self.upload_image.clicked.connect(self.open_file)
+        self.upload_image.clicked.connect(self.change_profile_pic)
 
         # 1 Button
         self.stack_button1 = EditProfileButton(
@@ -190,11 +196,11 @@ class EditProfile(QWidget):
         self.buttons_grouped.addWidget(self.stack_button4)
         self.buttons_grouped.addWidget(self.stack_button5)
 
-        page1_layout = QVBoxLayout()
+        page1_layout = QHBoxLayout()
         page1_layout.addWidget(self.labels['label_image1'])
-
         page1_layout.addWidget(self.upload_image)
-
+        self.labels['label_image']
+        page1_layout.addWidget(self.labels['label_image'])
         container1 = QWidget()
         container1.setLayout(page1_layout)
 

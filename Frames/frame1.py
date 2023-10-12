@@ -3,7 +3,7 @@ from utils.AristotleQuotes_ES import generate_quote
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap, QCursor, QFont
+from PyQt6.QtGui import QPalette, QBrush, QIcon, QGuiApplication, QPixmap, QCursor, QFont
 from components.buttons import Register_Button, Login_Button, InputField
 from styles.styles import quote_style, InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
 from components.global_functions import center_window
@@ -27,6 +27,7 @@ class Frame1(QWidget):
     #     # Then, before closing the window, we need to close the sockets and threads
     #     self.signal_frame1.emit('close')
     #     self.client_thread.join()
+        # Crear un QPalette personalizado con la imagen de fondo
 
     def volume_icon_change(self):
         sender = self.sender()
