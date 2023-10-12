@@ -7,12 +7,9 @@ from components.buttons import Upload_file, Login_Button, Button, Chat_Button
 from styles.styles import welcome_user_style, button_style, login_label, login_label_wrong, login_label_ok
 from PyQt6.QtCore import QStandardPaths, QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
-<<<<<<< Updated upstream
 from components.global_functions import center_window
-=======
 import requests
 from io import BytesIO
->>>>>>> Stashed changes
 
 
 class FrameLogin(QWidget):
@@ -62,7 +59,7 @@ class FrameLogin(QWidget):
             print(f'Selected file: {self.upload_qfile}')
             dir_image = self.upload_qfile[0]
             image_pixmap = QPixmap(dir_image)
-            
+
             self.labels['label_image'].setPixmap(image_pixmap)
             self.labels['label_image'].setScaledContents(True)
             self.labels['label_image'].setGeometry(200, 200, 300, 300)
@@ -72,9 +69,9 @@ class FrameLogin(QWidget):
             image = image_pixmap.toImage()
             buffer = QtCore.QBuffer()
             buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
-            image.save(buffer, "PNG") 
-            image_bytes = buffer.data() 
-            url = 'http://localhost:8000/uploadimagen/'  
+            image.save(buffer, "PNG")
+            image_bytes = buffer.data()
+            url = 'http://localhost:8000/uploadimagen/'
             files = {'files': ('blob', BytesIO(image_bytes))}
             response = requests.post(url, files=files)
             print(f'Response from server: {response.json()}')

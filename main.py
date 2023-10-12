@@ -27,14 +27,6 @@ if __name__ == '__main__':
         window.setStyleSheet(global_style)
 
         login_window.setStyleSheet(global_style)
-        # background_style = f"""
-        # QWidget {{
-        #     background-image: url('images/759324.jpg');
-
-        # }}
-        # """
-        # login_window.setStyleSheet(background_style)
-
         window.show()
         window.timer = QTimer()
         window.timer.setInterval(150)
