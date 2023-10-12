@@ -31,7 +31,6 @@ if __name__ == '__main__':
         window.timer = QTimer()
         window.timer.setInterval(150)
         window.timer.start()
-
         center_window(window)
 
         # RGB components for the gradient of the background
@@ -132,6 +131,20 @@ if __name__ == '__main__':
             chat_frame.new_message)
         chat_frame.send_message_signal.connect(
             chat_frame.client_communicator.send_message)
+        # Changing the layout of the edit profile window
+        edit_profile_window.stack_button1.clicked.connect(
+            edit_profile_window.change_page)
+        edit_profile_window.stack_button1.clicked.connect(
+            edit_profile_window.change_page)
+        edit_profile_window.stack_button2.clicked.connect(
+            edit_profile_window.change_page)
+        edit_profile_window.stack_button3.clicked.connect(
+            edit_profile_window.change_page)
+        edit_profile_window.stack_button4.clicked.connect(
+            edit_profile_window.change_page)
+        edit_profile_window.stack_button5.clicked.connect(
+            edit_profile_window.change_page)
+
         # window.signal_frame1.connect(chat_frame.close_all)
         # login_window.signal_frame_login.connect(chat_frame.close_all)
         sys.exit(app.exec())
