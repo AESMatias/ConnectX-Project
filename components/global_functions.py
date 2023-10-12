@@ -15,4 +15,4 @@ def center_window(frame_to_center) -> None:
     y_position = (screen_height - frame_to_center.height()) // 2
 
     # Stablish the frame position in the center of the screen
-    frame_to_center.setGeometry(x_position, y_position, 800, 600)
+    frame_to_center.setGeometry(x_position, y_position, 1280, 720)

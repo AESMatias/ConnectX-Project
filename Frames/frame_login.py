@@ -1,17 +1,15 @@
 import os
 from PyQt6 import QtCore
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QFileDialog, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt6.QtGui import QPixmap, QCursor
+from PyQt6.QtGui import QBrush, QPalette, QPainter, QPixmap, QCursor
 from components.buttons import Upload_file, Login_Button, Button, Chat_Button
-from styles.styles import button_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import welcome_user_style, button_style, login_label, login_label_wrong, login_label_ok
 from PyQt6.QtCore import QStandardPaths, QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
-<<<<<<< Updated upstream
 from components.global_functions import center_window
-=======
 import requests
 from io import BytesIO
->>>>>>> Stashed changes
 
 
 class FrameLogin(QWidget):
@@ -28,6 +26,16 @@ class FrameLogin(QWidget):
         self.media_player.setSource(file_url)
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
+
+    def manage_music(self):
+        sender = self.sender()
+        if sender.name == 'musicButton':
+            if sender.music_status == True:
+                print('pausada')
+                self.media_player.pause()
+            elif sender.music_status == False:
+                print('reanudada')
+                self.media_player.play()
 
     # def closeEvent(self, event):
     #     # Then, before closing the window, we need to close the sockets and threads
@@ -51,7 +59,7 @@ class FrameLogin(QWidget):
             print(f'Selected file: {self.upload_qfile}')
             dir_image = self.upload_qfile[0]
             image_pixmap = QPixmap(dir_image)
-            
+
             self.labels['label_image'].setPixmap(image_pixmap)
             self.labels['label_image'].setScaledContents(True)
             self.labels['label_image'].setGeometry(200, 200, 300, 300)
@@ -61,9 +69,9 @@ class FrameLogin(QWidget):
             image = image_pixmap.toImage()
             buffer = QtCore.QBuffer()
             buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
-            image.save(buffer, "PNG") 
-            image_bytes = buffer.data() 
-            url = 'http://localhost:8000/uploadimagen/'  
+            image.save(buffer, "PNG")
+            image_bytes = buffer.data()
+            url = 'http://localhost:8000/uploadimagen/'
             files = {'files': ('blob', BytesIO(image_bytes))}
             response = requests.post(url, files=files)
             print(f'Response from server: {response.json()}')
@@ -81,7 +89,6 @@ class FrameLogin(QWidget):
             self.setFocus()
 
     def open_edit_account(self):
-        sender = self.sender()
         print('logoutbutton username:', self.logout_button.username)
         self.labels['username_status'].setText('Credentials OK')
         self.labels['username_status'].setStyleSheet(login_label_ok)
@@ -105,8 +112,8 @@ class FrameLogin(QWidget):
         self.grid = QGridLayout()
         # Labels
         self.labels = {}
-        self.labels['username'] = QLabel(f'Welcome {self.username}', self)
-        self.labels['username'].setStyleSheet(login_label_ok)
+        self.labels['username'] = QLabel(f'Welcome, {self.username}', self)
+        self.labels['username'].setStyleSheet(welcome_user_style)
         self.labels['username'].setFixedSize(550, 60)
         self.labels['username'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -195,6 +202,25 @@ class FrameLogin(QWidget):
         # Vertical
         vbox = QVBoxLayout()
         vbox.addStretch(2)
+
+        # Crear un QPalette personalizado con la imagen de fondo
+        palette = QPalette()
+        background_image = QPixmap('759324.jpg')
+        brush = QBrush(background_image)
+        palette.setBrush(QPalette.ColorRole.Window, brush)
+
+        # Aplicar el QPalette al widget
+        self.setPalette(palette)
+
+        # Pixmap background
+        # background_image = QPixmap(os.path.join('images', '759324.jpg'))
+        # self.background_label = QLabel(self)
+        # self.background_label.setPixmap(background_image)
+        # self.background_label.setGeometry(0, 0, 1280, 720)
+        # self.background_label.setStyleSheet(
+        #     'background-image: url(images/759324.jpg);')
+        # self.background_label.setScaledContents(True)
+
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
@@ -206,7 +232,5 @@ class FrameLogin(QWidget):
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
-
-        # vbox.addWidget(self.labels['image_input'])
         vbox.addStretch(5)
         self.setLayout(vbox)

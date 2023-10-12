@@ -1,11 +1,13 @@
 import os
+from utils.AristotleQuotes_ES import generate_quote
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt6.QtGui import QPixmap, QCursor
+from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap, QCursor, QFont
 from components.buttons import Register_Button, Login_Button, InputField
-from styles.styles import InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import quote_style, InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
 from components.global_functions import center_window
+from components.qlabels import MusicButton
 
 
 class Frame1(QWidget):
@@ -14,12 +16,28 @@ class Frame1(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.init_gui()
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.geometry()
 
+        # Monitor dimensions
+        self.screen_width = screen_geometry.width()
+        self.screen_height = screen_geometry.height()
     # def closeEvent(self, event):
     #     print("Closing the main window")
     #     # Then, before closing the window, we need to close the sockets and threads
     #     self.signal_frame1.emit('close')
     #     self.client_thread.join()
+
+    def volume_icon_change(self):
+        sender = self.sender()
+        if sender.music_status == True:
+            print(sender.music_status, 'music status')
+            self.volume_label.setPixmap(self.volume_label.pixmap_muted)
+            self.repaint()
+        elif sender.music_status == False:
+            print(sender.music_status, 'music status')
+            self.volume_label.setPixmap(self.volume_label.pixmap)
+            self.repaint()
 
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Return or event.key() == 16777220:
@@ -75,15 +93,15 @@ class Frame1(QWidget):
 
     def init_gui(self) -> None:
         # Window Geometry
-        self.setGeometry(100, 200, 1000, 800)
+        self.setGeometry(0, 0, 1280, 720)
         self.setWindowTitle('ConectX Project')
         # Grid Layout
         self.grid = QGridLayout()
         # Labels
         self.labels = {}
-        self.labels['username'] = QLabel('Your username:', self)
+        self.labels['username'] = QLabel('Username', self)
         self.labels['username'].setStyleSheet(tag)
-        self.labels['password'] = QLabel('Password', self)
+        self.labels['password'] = QLabel('Password ', self)
         self.labels['password'].setStyleSheet(tag)
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
@@ -101,6 +119,14 @@ class Frame1(QWidget):
         self.password_field.setFixedSize(200, 40)
         self.password_field.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.password_field.setStyleSheet(InputFieldStyle)
+
+        # Pixmap background
+        background_image = QPixmap(os.path.join('images', '759324.png'))
+        self.background_label = QLabel()
+        self.background_label.setPixmap(background_image)
+        self.background_label.setGeometry(
+            0, 0, 800, 600)
+
         # Register
         self.register_button = Register_Button(
             'registerButton', (300, 250), 'REGISTER', self)
@@ -130,14 +156,43 @@ class Frame1(QWidget):
         self.labels['logo_welcome'].setStyleSheet(
             'background:none;opacity:0.9')
 
+        self.volume_label = MusicButton(self)
+        self.volume_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.volume_label.setGeometry(1260-64, 780-64, 64, 64)
+        self.volume_label.setStyleSheet(
+            'background:none')
+
+        image_pixmap = self.volume_label.pixmap
+        image_pixmap = image_pixmap.scaled(
+            64, 64, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        self.volume_label.setPixmap(image_pixmap)
+        self.volume_label.show()
+
+        # Quote Label
+        self.labels['quote_label'] = QLabel(self)
+        self.labels['quote_label'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labels['quote_label'].setStyleSheet(quote_style)
+        self.labels['quote_label'].setText(
+            generate_quote()
+            + '\n - Aristotle'
+        )
+        self.labels['quote_label'].setFont(QFont('Times', 20))
+        self.labels['quote_label'].setWordWrap(True)
+
         # Horizontal Layout
         hbox1 = QHBoxLayout()
         hbox1.addStretch(1)
         hbox1.addWidget(self.labels['username'])
         hbox1.addWidget(self.username_field)
-        hbox1.addWidget(self.labels['password'])
-        hbox1.addWidget(self.password_field)
         hbox1.addStretch(1)
+       # Horizontal Layout 2
+        hbox_pass = QHBoxLayout()
+        hbox_pass.addStretch(1)
+        hbox_pass.addWidget(self.labels['password'])
+        hbox_pass.addWidget(self.password_field)
+        hbox_pass.addStretch(1)
         # Second Horizontal Layout
         hbox2 = QHBoxLayout()
         hbox2.addStretch(1)
@@ -148,21 +203,31 @@ class Frame1(QWidget):
         hbox3.addStretch(1)
         hbox3.addWidget(self.register_button)
         hbox3.addStretch(1)
+        # Third Horizontal Layout
+        hbox4 = QHBoxLayout()
+        hbox4.addStretch(1)
+        hbox4.addWidget(self.labels['quote_label'])
+        hbox4.addStretch(1)
         # Vertical Layout
         vbox = QVBoxLayout()
-        vbox.addStretch(2)
+        vbox.addSpacing(20)
+        vbox.addLayout(hbox4)
+        vbox.addSpacing(20)
         vbox.addLayout(hbox1)
+        vbox.addLayout(hbox_pass)
+        vbox.addSpacing(20)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox3)
+        vbox.addSpacing(20)
         vbox.addWidget(self.labels['username_status'])
+        vbox.addSpacing(1)
         vbox.addWidget(self.labels['registered_status'])
-        vbox.addStretch(1)
+        vbox.addSpacing(1)
+        vbox.addSpacing(10)
         vbox.addWidget(self.labels['logo_welcome'])
-
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
-
         vbox.addStretch(5)
         self.setLayout(vbox)
         center_window(self)
