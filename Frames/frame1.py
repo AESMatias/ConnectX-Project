@@ -3,7 +3,7 @@ from utils.AristotleQuotes_ES import generate_quote
 from PyQt6.QtCore import Qt
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt6.QtGui import QIcon, QGuiApplication, QPixmap, QCursor, QFont
+from PyQt6.QtGui import QPalette, QBrush, QIcon, QGuiApplication, QPixmap, QCursor, QFont
 from components.buttons import Register_Button, Login_Button, InputField
 from styles.styles import quote_style, InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
 from components.global_functions import center_window
@@ -27,6 +27,7 @@ class Frame1(QWidget):
     #     # Then, before closing the window, we need to close the sockets and threads
     #     self.signal_frame1.emit('close')
     #     self.client_thread.join()
+        # Crear un QPalette personalizado con la imagen de fondo
 
     def volume_icon_change(self):
         sender = self.sender()
@@ -155,16 +156,18 @@ class Frame1(QWidget):
         self.opacity_decimal = 9
         self.labels['logo_welcome'].setStyleSheet(
             'background:none;opacity:0.9')
-
+        # Volume label
         self.volume_label = MusicButton(self)
         self.volume_label.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.volume_label.setGeometry(1260-64, 780-64, 64, 64)
         self.volume_label.setStyleSheet(
             'background:none')
+        self.volume_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
 
         image_pixmap = self.volume_label.pixmap
-        image_pixmap = image_pixmap.scaled(
+        self.volume_label.pixmap = image_pixmap.scaled(
             64, 64, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
         self.volume_label.setPixmap(image_pixmap)
         self.volume_label.show()
@@ -208,6 +211,14 @@ class Frame1(QWidget):
         hbox4.addStretch(1)
         hbox4.addWidget(self.labels['quote_label'])
         hbox4.addStretch(1)
+        # Horizontal Layout logo+volume
+        hbox5 = QHBoxLayout()
+        hbox5.addStretch(13)
+        hbox5.addWidget(self.labels['logo_welcome'])
+        hbox5.addStretch(10)
+        hbox5.addWidget(self.volume_label)
+        hbox5.addStretch(1)
+
         # Vertical Layout
         vbox = QVBoxLayout()
         vbox.addSpacing(20)
@@ -224,7 +235,7 @@ class Frame1(QWidget):
         vbox.addWidget(self.labels['registered_status'])
         vbox.addSpacing(1)
         vbox.addSpacing(10)
-        vbox.addWidget(self.labels['logo_welcome'])
+        vbox.addLayout(hbox5)
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)

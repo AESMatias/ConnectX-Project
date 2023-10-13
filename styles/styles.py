@@ -24,9 +24,9 @@ QLabel {
 button_style = """
     QPushButton {
         border: 2px solid white;
-        border-radius: 5px;
+        border-radius: 1px;
         font-size: 40px;
-        font-weight: bold;
+        font-weight: 550;
         color: white;
         padding: 10px 10px;
         margin: 2px 2px;
@@ -35,22 +35,69 @@ button_style = """
     
     QPushButton:hover {
         border: 2px solid white;
-        border-radius: 5px;
         font-size: 38px;
         font-weight: bold;
         background: qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 #0000FF, stop: 1 #3333AA);
     }
     QPushButton:pressed {
         background: rgba(0,0,0,40);
+        border-radius: 1px;
         color: white;
         font-size: 30px;
         font-weight: bold;
         border: 1.5px solid white;
-        border-radius: 6px;
 }
-
+"""
+edit_profile_button = """
+    QPushButton {
+        border: 1px solid white;
+        border-radius: 0px;
+        font-size: 30px;
+        font-weight: 450;
+        color: white;
+        padding: 10px 10px;
+        margin: 2px 2px;
+        background: qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 #0000FF, stop: 0.7 #0000AA, stop: 1 #000088);
+    }
+    
+    QPushButton:hover {
+        
+    }
+    QPushButton:pressed {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: white;
+        font-size: 20px;
+        border: 1px solid white;
+        border-radius: 1.5px;
+}
 """
 
+edit_profile_button_clicked = """
+    QPushButton {
+        padding: 10px;
+        border: 1px solid black;
+        font-size: 25px;
+        font-weight: bold;
+        color: white;
+        padding: 10px 10px;
+        margin: 2px 2px;
+        border-radius: 2px;
+        background-color: rgba(0, 0, 0, 150);
+    }
+    
+    QPushButton:hover {
+        
+    }
+
+    QPushButton:pressed {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border: 1px solid white;
+        border-radius: 1.5px;
+}
+"""
 global_style = """
     QWidget {
         background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
@@ -77,11 +124,11 @@ tag = """
     QLabel {
         opacity: 0;
         font-size: 22px;
-        background: rgba(0,0,0,0);
+        background: rgba(50,80,255,.6);
         color: white;
         font-weight: bold;
-        border: 1.5px solid white;
-        border-radius: 6px;
+        border: 1.5px solid rgba(255,255,255,.8);
+        border-radius: 2.5px;
 }
 """
 InputFieldStyle = """ InputField {

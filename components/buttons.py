@@ -9,12 +9,27 @@ from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtGui import QGuiApplication, QPainter, QColor, QBrush
 import os
 import sys
+from styles.styles import edit_profile_button
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
 form_username = ''
 form_password = ''
 password_not_visible = ''
+
+
+class EditProfileButton(QPushButton):
+    edit_stack_layout = pyqtSignal(int)
+
+    def __init__(self, name: str, index: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = name
+        self.resize(self.sizeHint())
+        self.index = index
+        self.clicked.connect(self.button_clicked)
+
+    def button_clicked(self):
+        self.edit_stack_layout.emit(self.index)
 
 
 class Button(QPushButton):
