@@ -11,16 +11,14 @@ TABLEUSERS = """
     )
 """
 
-# Free to use for everyone lol
-
 
 def connect_to_db() -> None:
     return mysql.connector.connect(
         user='root',
-        password='o3Sq4FNPIrI0xYoYgQQM',
-        host='containers-us-west-75.railway.app',
-        database='railway',
-        port=6336
+        password='root',
+        host='localhost',
+        database='mysql',
+        port=3306
     )
 
 
