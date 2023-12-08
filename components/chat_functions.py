@@ -1,8 +1,21 @@
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QLabel
 from PyQt6 import QtCore
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout
+
+
+class ChatWidget(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
+                         Qt.WindowType.FramelessWindowHint)
+        self.setWindowTitle("Chat Flotante")
+        # Hace que el fondo sea transparente
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("Contenido del chat"))
+        self.setLayout(layout)
 
 
 class QLabelProfilePicture(QLabel):

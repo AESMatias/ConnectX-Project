@@ -9,7 +9,7 @@ from components.global_functions import center_window
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
-from components.chat_functions import QLabelProfilePicture
+from components.chat_functions import QLabelProfilePicture, ChatWidget
 from PyQt6.QtCore import Qt
 
 
@@ -28,7 +28,12 @@ class ChatFrame(QWidget):
         self.port = 12345
         self.client_communicator = ClientCommunicator(
             self.host, self.port, self.username)
+        self.intentos_restantes_jwt = 1
         # self.client_thread = Thread(target=self.client_communicator.run_client)
+
+        self.chat_widget = ChatWidget(self)
+        # Posición y tamaño de la ventana flotante
+        self.chat_widget.setGeometry(150, 150, 600, 400)
 
     def closeEvent(self, event):
         print("Closing the window")
@@ -47,7 +52,11 @@ class ChatFrame(QWidget):
         if event.key() == QtCore.Qt.Key.Key_Return or event.key() == 16777220:
             self.send_message()
 
-    def launch(self) -> None:
+    def jwt_receiver(self, jwt: str) -> None:
+        self.jwt = jwt
+        print('JWT:', self.jwt)
+
+    def launch(self, jwt: str) -> None:
         sender = self.sender()
         if sender.login_status == True:
             print('CHAT initiated')
@@ -69,6 +78,10 @@ class ChatFrame(QWidget):
     def send_message(self):
         text = self.write_message.text()
         message = f"{text}"
+        if self.intentos_restantes_jwt == 1:
+            self.client_communicator.send_message(self.jwt)
+            self.intentos_restantes_jwt -= 1
+
         self.send_message_signal.emit(message)
         self.write_message.setText('')
         if text.endswith('close') or text.endswith('exit'):
@@ -92,7 +105,7 @@ class ChatFrame(QWidget):
 
     def new_message(self, message):
         sender = self.sender()
-
+        self.chat_widget.show()
         qlabelpixamap = QLabelProfilePicture()
         qlabelpixamap.setPixmap(QPixmap(
             'images/cara_blue.jpg').scaled(

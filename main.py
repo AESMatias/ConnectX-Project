@@ -104,6 +104,7 @@ if __name__ == '__main__':
         # This two code lines below, trigger to open a login window and close the main
         window.login_button.login_signal.connect(login_window.launch)
         window.login_button.login_signal.connect(window.close)
+        window.login_button.signal_jwt_login.connect(login_window.jws_writter)
         # Once the login was successful, we adding the close session option
         login_window.logout_button.login_signal.connect(window.show)
         login_window.logout_button.login_signal.connect(login_window.close)
@@ -126,6 +127,7 @@ if __name__ == '__main__':
             window.volume_icon_change)
         # Opening the chat
         login_window.chat_button.clicked.connect(chat_frame.launch)
+        login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
 
         chat_frame.client_communicator.message_received.connect(
             chat_frame.new_message)

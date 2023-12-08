@@ -14,6 +14,7 @@ sys.path.append(project_root)
 form_username = ''
 form_password = ''
 password_not_visible = ''
+jwt_token = ''
 
 
 class EditProfileButton(QPushButton):
@@ -120,6 +121,7 @@ class Register_Button(QPushButton):
 
 class Login_Button(QPushButton):
     login_signal = pyqtSignal()
+    signal_jwt_login = pyqtSignal(str)
 
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -145,6 +147,7 @@ class Login_Button(QPushButton):
             print('Login status:', self.login_status)
         elif status_login[0] == True:
             print(f"soy un jwt {status_login[1]}")
+            self.signal_jwt_login.emit(status_login[1])
             self.username = form_username
             self.login_status = True
             print('SELF.USERNAME ', self.username)
@@ -230,7 +233,8 @@ class InputField(QLineEdit):
 
 
 class Chat_Button(QPushButton):
-    login_signal = pyqtSignal()
+    login_signal = pyqtSignal(str)
+    jwt_emit = pyqtSignal(str)
 
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -244,30 +248,30 @@ class Chat_Button(QPushButton):
         self.register_status = False
 
     def button_clicked(self) -> None:
-        sender = self.sender()
         status_login = login(form_username, password_not_visible)
+        jwt_token = status_login[1]
         print('chatRETORNAAA', status_login)
         if status_login and self.name == 'chatButton':
             self.username = form_username
             print('SELF.USERNAME ', self.username)
             self.login_status = True
-            self.login_signal.emit()
+            self.jwt_emit.emit(jwt_token)
             print('Login status:', self.login_status)
-        elif status_login and self.name == 'chatButton':
-            self.username = form_username
-            self.login_status = True
-            print('SELF.USERNAME ', self.username)
-            self.login_signal.emit()
-            print('Login status:', self.login_status)\
 
-        # Login successfull sound
-            self.media_player = QMediaPlayer(self)
-            self.media_player.setAudioOutput(QAudioOutput(self))
-            file_url = QUrl.fromLocalFile(os.path.join(
-                'Music', 'mixkit-fantasy-game-sweep-notification-255.wav'))
-            self.media_player.setSource(file_url)
-            # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
-            self.media_player.play()
+        # elif status_login and self.name == 'chatButton':
+        #     self.username = form_username
+        #     self.login_status = True
+        #     print('SELF.USERNAME ', self.username)
+        #     self.login_signal.emit()
+        #     print('Login status:', self.login_status)
+        # # Login successfull sound
+        #     self.media_player = QMediaPlayer(self)
+        #     self.media_player.setAudioOutput(QAudioOutput(self))
+        #     file_url = QUrl.fromLocalFile(os.path.join(
+        #         'Music', 'mixkit-fantasy-game-sweep-notification-255.wav'))
+        #     self.media_player.setSource(file_url)
+        #     # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+        #     self.media_player.play()
         elif status_login:
             self.username = form_username
             print('SELF.USERNAME ', self.username)

@@ -18,7 +18,7 @@ class FrameLogin(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.username = ''
-        self.init_gui()
+        self.jwt_token = ''
         # Lounge looped music
         self.media_player = QMediaPlayer(self)
         self.media_player.setAudioOutput(QAudioOutput(self))
@@ -26,6 +26,7 @@ class FrameLogin(QWidget):
         self.media_player.setSource(file_url)
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
+        self.init_gui()
 
         # Crear un QPalette personalizado con la imagen de fondo
         palette = QPalette()
@@ -45,6 +46,10 @@ class FrameLogin(QWidget):
                 background-color: rgba(0, 0, 0, 128);  /* 128 es el valor de opacidad (0-255) */
             }}
         """)
+
+    def jws_writter(self, jwt_token: str) -> None:
+        self.jwt_token = jwt_token
+        print("it's the actual token:", jwt_token)
 
     def manage_music(self):
         sender = self.sender()
