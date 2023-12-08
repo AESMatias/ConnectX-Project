@@ -1,4 +1,3 @@
-from Login.bd import TABLEUSERS, connect_to_db
 import os
 import sys
 import requests
@@ -21,7 +20,6 @@ def register(user: str, password: str) -> bool:
     if response.status_code == 200:
         return True
     return False
-
 
 # from Login.bd import TABLEUSERS, connect_to_db
 # import os

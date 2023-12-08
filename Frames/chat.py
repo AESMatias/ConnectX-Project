@@ -56,7 +56,7 @@ class ChatFrame(QWidget):
         self.jwt = jwt
         print('JWT:', self.jwt)
 
-    def launch(self, jwt: str) -> None:
+    def launch(self) -> None:
         sender = self.sender()
         if sender.login_status == True:
             print('CHAT initiated')
@@ -104,7 +104,6 @@ class ChatFrame(QWidget):
             self.client_communicator.username = username
 
     def new_message(self, message):
-        sender = self.sender()
         self.chat_widget.show()
         qlabelpixamap = QLabelProfilePicture()
         qlabelpixamap.setPixmap(QPixmap(
@@ -208,6 +207,8 @@ class ChatFrame(QWidget):
 
         # Crear un layout horizontal
         self.messages_images_layout = QVBoxLayout()
+        self.messages_images_layout.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
@@ -218,19 +219,18 @@ class ChatFrame(QWidget):
         hbox2 = QHBoxLayout()
         hbox2.addWidget(self.write_message)
 
-        # Third Horizontal Layout
-        hbox3 = QVBoxLayout()
-        hbox3.addStretch(1)
-        # hbox3.addWidget(self.labels['msg'])
-        # self.labels['msg'].setScaledContents(True)
-        hbox3.addStretch(1)
+        # hbox_messages_container
+        hbox_messages_container = QHBoxLayout()
+        hbox_messages_container.addStretch(1)
+        hbox_messages_container.addLayout(self.messages_images_layout)
+        hbox_messages_container.addStretch(1)
 
         # Vertical
         vbox = QVBoxLayout()
         vbox.addStretch(2)
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
-        vbox.addLayout(self.messages_images_layout)
+        vbox.addLayout(hbox_messages_container)
 
         # vbox.addLayout(hbox3)
 

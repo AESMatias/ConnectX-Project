@@ -15,6 +15,7 @@ class ChatWidget(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel("Contenido del chat"))
+        self.setStyleSheet('background-color: rgba(255, 255, 255, 100);')
         self.setLayout(layout)
 
 

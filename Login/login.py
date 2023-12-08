@@ -1,9 +1,8 @@
 import os
 import sys
 import requests
-import json
 from typing import Tuple
-from Login.edit import update_session_state
+
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
@@ -32,7 +31,6 @@ def login(user: str, password: str) -> Tuple[bool, str]:
 def logout(user: str) -> bool:
     update_session_state(user, False)
     return False, "Logout successful"
-
 
 # from Login.bd import connect_to_db
 # import os
