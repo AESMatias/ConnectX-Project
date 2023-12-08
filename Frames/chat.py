@@ -9,6 +9,8 @@ from components.global_functions import center_window
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
+from components.chat_functions import QLabelProfilePicture
+from PyQt6.QtCore import Qt
 
 
 class ChatFrame(QWidget):
@@ -17,6 +19,10 @@ class ChatFrame(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.username = ''
+        qlabelpixamap = QLabel(self)
+        qlabelpixamap.setPixmap(QPixmap('images/logo32.png'))
+        self.image_pixmap_1 = qlabelpixamap
+        self.image_pixmap_1.setVisible(False)
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
@@ -51,7 +57,7 @@ class ChatFrame(QWidget):
             self.client_communicator.username = self.username
             self.labels['username_status'].setText('Credentials OK')
             self.labels['username_status'].setStyleSheet(login_label_ok)
-            self.labels['username_status'].repaint()  # To avoid bugs
+            self.labels['username_status'].repaint()  # To avoid bug
             center_window(self)
             self.show()
             self.setFocus()
@@ -86,16 +92,48 @@ class ChatFrame(QWidget):
 
     def new_message(self, message):
         sender = self.sender()
+
+        qlabelpixamap = QLabelProfilePicture()
+        qlabelpixamap.setPixmap(QPixmap(
+            'images/cara_blue.jpg').scaled(
+            32, 32, Qt.AspectRatioMode.KeepAspectRatio))
+        qlabelpixamap.setContentsMargins(100, 100, 100, 100)
+        qlabelpixamap.setStyleSheet(
+            "QLabel { padding: 50px;}")
+        qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+
         if message:
-            self.labels['msg'].setText(message)
-            self.labels['msg'].repaint()  # To avoid bugs
-            if len(self.all_messages) < 6:
-                self.all_messages.append(message)
-                self.labels['msg'].setText('\n'.join(self.all_messages))
+
+            if len(self.all_messages2) < 6:
+                self.all_messages.append([self.image_pixmap_1, message])
+                self.all_messages2.append(message)
+
+                qlabel_message = QLabel(message, self)
+                horizontal_layout = QHBoxLayout()
+
+                image_pixmap_1 = qlabelpixamap
+                qlabel_message.setWordWrap(True)
+
+                horizontal_layout.addWidget(image_pixmap_1)
+                horizontal_layout.addWidget(qlabel_message)
+                self.messages_images_layout.addLayout(horizontal_layout)
+
             else:
                 self.all_messages.pop(0)
-                self.all_messages.append(message)
-                self.labels['msg'].setText('\n'.join(self.all_messages))
+                self.all_messages.append([self.image_pixmap_1, message])
+                self.all_messages2.append(message)
+                # self.labels['msg'].setText('\n'.join(self.all_messages2))
+
+                # Label para el mensaje
+                qlabel_message = QLabel(message, self)
+                horizontal_layout = QHBoxLayout()
+
+                image_pixmap_1 = qlabelpixamap
+                qlabel_message.setWordWrap(True)
+
+                horizontal_layout.addWidget(image_pixmap_1)
+                horizontal_layout.addWidget(qlabel_message)
+                self.messages_images_layout.addLayout(horizontal_layout)
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -125,13 +163,13 @@ class ChatFrame(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username_status'].repaint()
 
-        # Message Label
-        self.labels['msg'] = QLabel('MESSAGES:', self)
-        self.labels['msg'].setStyleSheet(login_label)
-        self.labels['msg'].setStyleSheet(login_label_ok)
-        self.labels['msg'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['msg'].repaint()
+        # # Message Label
+        # self.labels['msg'] = QLabel('MESSAGES:', self)
+        # self.labels['msg'].setStyleSheet(login_label)
+        # self.labels['msg'].setStyleSheet(login_label_ok)
+        # self.labels['msg'].setAlignment(
+        #     QtCore.Qt.AlignmentFlag.AlignCenter)
+        # self.labels['msg'].repaint()
 
         # Write a message
         # self.write_message = QLineEdit(self)
@@ -143,9 +181,20 @@ class ChatFrame(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.write_message.repaint()
         self.all_messages = []
+        self.all_messages2 = []
+
         for _ in range(5):
-            self.all_messages.append('')
-        self.labels['msg'].setText('\n'.join(self.all_messages))
+            self.all_messages2.append('')
+        # self.labels['msg'].setText('\n'.join(self.all_messages))
+
+        # All the messages will be stored in a list of tuples (image,username,message)
+
+        # for _ in range(5):
+        #     self.all_messages.append([self.image_pixmap_1, ''])
+        # self.labels['msg'].setText('\n'.join(self.all_messages2))
+
+        # Crear un layout horizontal
+        self.messages_images_layout = QVBoxLayout()
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
@@ -156,18 +205,11 @@ class ChatFrame(QWidget):
         hbox2 = QHBoxLayout()
         hbox2.addWidget(self.write_message)
 
-        # # Third Horizontal Layout
-        # hbox3 = QHBoxLayout()
-        # hbox3.addStretch(1)
-        # hbox3.addWidget(self.labels['msg'])
-        # self.labels['msg'].setScaledContents(True)
-        # hbox3.addStretch(1)
-
         # Third Horizontal Layout
         hbox3 = QVBoxLayout()
         hbox3.addStretch(1)
-        hbox3.addWidget(self.labels['msg'])
-        self.labels['msg'].setScaledContents(True)
+        # hbox3.addWidget(self.labels['msg'])
+        # self.labels['msg'].setScaledContents(True)
         hbox3.addStretch(1)
 
         # Vertical
@@ -175,7 +217,7 @@ class ChatFrame(QWidget):
         vbox.addStretch(2)
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
-        vbox.addLayout(hbox3)
+        vbox.addLayout(self.messages_images_layout)
 
         # vbox.addLayout(hbox3)
 

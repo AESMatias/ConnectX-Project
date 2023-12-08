@@ -137,14 +137,13 @@ class Login_Button(QPushButton):
         sender = self.sender()
         status_login = login(form_username, password_not_visible)
         print('RETORNAAA', status_login)
-        if status_login[0] == False:
+        if status_login and self.name == 'logoutnButton':
             self.username = form_username
             print('SELF.USERNAME ', self.username)
             self.login_status = False
             self.login_signal.emit()
             print('Login status:', self.login_status)
-        elif status_login[0] == True:
-            print(f"soy un jwt {status_login[1]}")
+        elif status_login and self.name == 'loginButton':
             self.username = form_username
             self.login_status = True
             print('SELF.USERNAME ', self.username)

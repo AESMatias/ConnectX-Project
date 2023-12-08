@@ -18,7 +18,7 @@ def connect_to_db() -> None:
         password='root',
         host='localhost',
         database='mysql',
-        port=3306
+        port=32769
     )
 
 
