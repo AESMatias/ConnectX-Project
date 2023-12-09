@@ -2,7 +2,7 @@ from threading import Thread
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
-    QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit)
+    QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QScrollArea, QFrame, QSpacerItem, QSizePolicy, QPushButton)
 from PyQt6.QtGui import QPixmap, QCursor
 from styles.styles import InputFieldStyle, login_label, login_label_wrong, login_label_ok
 from components.global_functions import center_window
@@ -10,7 +10,9 @@ from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
 from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import QTextBrowser
+from PyQt6.QtGui import QTextOption
 
 
 class ChatFrame(QWidget):
@@ -18,6 +20,8 @@ class ChatFrame(QWidget):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.setFixedSize(1000, 750)
+        self.counter_messages = 0
         self.username = ''
         qlabelpixamap = QLabel(self)
         qlabelpixamap.setPixmap(QPixmap('images/logo32.png'))
@@ -38,12 +42,17 @@ class ChatFrame(QWidget):
         self.background_widget.hide()
 
         self.pixmaps_profiles_array = []
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        # self.scroll_area.setWidget(self.scroll_content)
 
     def closeEvent(self, event):
         print("Closing the window")
         # Then, before closing the window, we need to close the sockets and threads
         # self.client_communicator.client_socket.close()
         # self.client_communicator.send_message_socket.close()
+
+        # We need to close the thread too, fix this!!!!!!!!! TO-DO:
         self.client_thread.join()
 
     # def close_all(self):
@@ -109,9 +118,12 @@ class ChatFrame(QWidget):
 
     def new_message(self, message):
         qlabelpixamap = QLabelProfilePicture()
-        qlabelpixamap.setPixmap(QPixmap(
-            'images/cara_blue.jpg').scaled(
-            32, 32, Qt.AspectRatioMode.KeepAspectRatio))
+        qpixmap = QPixmap('images/cara_blue.jpg')
+        qlabelpixamap.setPixmap(qpixmap.scaledToWidth(
+            32, QtCore.Qt.TransformationMode.SmoothTransformation))
+        # qlabelpixamap.setPixmap(QPixmap(
+        #     'images/cara_blue.jpg').scaled(
+        #     32, 32, Qt.AspectRatioMode.KeepAspectRatio))
         qlabelpixamap.setContentsMargins(100, 100, 100, 100)
         qlabelpixamap.setStyleSheet(
             "QLabel { padding: 50px;}")
@@ -121,20 +133,49 @@ class ChatFrame(QWidget):
         self.pixmaps_profiles_array.append(qlabelpixamap)
 
         if message:
+            self.counter_messages += 1
 
             if len(self.all_messages2) < 6:
                 self.all_messages.append([self.image_pixmap_1, message])
                 self.all_messages2.append(message)
 
-                qlabel_message = QLabel(message, self)
+                # qlabel_message = QTextBrowser(self)
+                # qlabel_message.setText(message)
+                # qlabel_message.setStyleSheet(
+                #     "QTextBrowser { background-color: #f0f0f0; \
+                #         border-radius: 10px; padding: 10px; margin: 10px;\
+                #             border: 1px solid #f0f0f0;font: 75 12pt 'MS Shell Dlg 2';\
+                #                     color: black;\
+                #                             text-decoration: underline;\
+                #                                 text-decoration-color: rgb(0, 0, 128);}")
+                # qlabel_message.setFixedSize(550, 60)
+                # qlabel_message.document().setDefaultStyleSheet(
+                #     "p { line-height: 120%; }")
+                # qlabel_message.setVerticalScrollBarPolicy(
+                #     Qt.ScrollBarPolicy.ScrollBarAsNeeded)  # Opcional
+                # qlabel_message.setHorizontalScrollBarPolicy(
+                #     Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+                # qlabel_message.setPlainText(message)
+
+                qlabel_message = QLabel(self)
+                qlabel_message.setWordWrap(True)
+                qlabel_message.setText(message)
+                qlabel_message.setTextInteractionFlags(
+                    Qt.TextInteractionFlag.TextSelectableByMouse)
+                # Allow vertical expansion
+                size_policy = QSizePolicy(
+                    QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+                qlabel_message.setSizePolicy(size_policy)
+
                 horizontal_layout = QHBoxLayout()
 
                 image_pixmap_1 = self.qlabelpixamap
-                qlabel_message.setWordWrap(True)
 
                 horizontal_layout.addWidget(image_pixmap_1)
                 horizontal_layout.addWidget(qlabel_message)
-                self.messages_images_layout.addLayout(horizontal_layout)
+                horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
+                # horizontal_layout.setContentsMargins(0, 0, 0, 10)
+                self.container_layout.addLayout(horizontal_layout)
 
             else:
                 self.all_messages.pop(0)
@@ -142,16 +183,32 @@ class ChatFrame(QWidget):
                 self.all_messages2.append(message)
                 # self.labels['msg'].setText('\n'.join(self.all_messages2))
 
-                # Label para el mensaje
-                qlabel_message = QLabel(message, self)
-                horizontal_layout = QHBoxLayout()
+                qlabel_message = QLabel(self)
 
-                image_pixmap_1 = self.qlabelpixamap
                 qlabel_message.setWordWrap(True)
+                qlabel_message.setText(message)
+                qlabel_message.setTextInteractionFlags(
+                    Qt.TextInteractionFlag.TextSelectableByMouse)
+
+                qlabel_message.setStyleSheet(
+                    "QLabel { background-color: #f0f0f0; border-radius:\
+                        0px; padding: 0px; margin: 0px;\
+                            border: 1px solid #f0f0f0; \
+                                font: 75 12pt 'MS Shell Dlg 2'; \
+                                    color: black;}")
+
+                horizontal_layout = QHBoxLayout()
+                image_pixmap_1 = self.qlabelpixamap
 
                 horizontal_layout.addWidget(image_pixmap_1)
                 horizontal_layout.addWidget(qlabel_message)
-                self.messages_images_layout.addLayout(horizontal_layout)
+                horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
+                # horizontal_layout.setContentsMargins(0, 0, 0, 10)
+                self.container_layout.addLayout(horizontal_layout)
+                # self.messages_images_layout.setAlignment(
+                #     Qt.AlignmentFlag.AlignCenter)
+            # Agregar al contenedor principal
+
             # for elem in self.pixmaps_profiles_array:
             #     elem.signal_profile_picture_clicked.connect(
             #         self.chat_widget.show_profile)
@@ -161,10 +218,24 @@ class ChatFrame(QWidget):
                 self.chat_widget.show_profile)
             self.background_widget.signal_profile_close.connect(
                 self.chat_widget.hide)
+            # self.container_widget.setFixedSize(
+            #     256, 500+132*self.counter_messages*0)
+            # self.scroll_area.setFixedSize(
+            #     600, 500+132*self.counter_messages)
+
+            # Después de inicializar el QScrollArea
+            scroll_bar = self.scroll_area.verticalScrollBar()
+
+            # Conectar la señal rangeChanged al método que establece el valor máximo
+            scroll_bar.rangeChanged.connect(self.scroll_to_bottom)
+
+    def scroll_to_bottom(self, min_val, max_val):
+        scroll_bar = self.scroll_area.verticalScrollBar()
+        scroll_bar.setValue(max_val)
 
     def init_gui(self) -> None:
         # Window Geometry
-        self.setGeometry(100, 200, 1000, 800)
+        self.setGeometry(100, 200, 1200, 900)
         # Grid Layout
         self.grid = QGridLayout()
         # Labels
@@ -176,13 +247,13 @@ class ChatFrame(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username'].repaint()
 
-        # QLabel image assignation
-        window_size = self.size()
-        self.labels['label_image'] = QLabel(self)
-        self.labels['label_image'].setMaximumSize(window_size)
-        self.labels['label_image'].setGeometry(0, 0, 300, 300)
-        self.labels['label_image'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
+        # # QLabel image assignation
+        # window_size = self.size()
+        # self.labels['label_image'] = QLabel(self)
+        # self.labels['label_image'].setMaximumSize(window_size)
+        # self.labels['label_image'].setGeometry(0, 0, 300, 300)
+        # self.labels['label_image'].setAlignment(
+        #     QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.labels['username_status'] = QLabel('', self)
         self.labels['username_status'].setStyleSheet(login_label)
@@ -234,18 +305,42 @@ class ChatFrame(QWidget):
         hbox2 = QHBoxLayout()
         hbox2.addWidget(self.write_message)
 
-        # hbox_messages_container
-        hbox_messages_container = QHBoxLayout()
-        hbox_messages_container.addStretch(1)
-        hbox_messages_container.addLayout(self.messages_images_layout)
-        hbox_messages_container.addStretch(1)
+        # Create a scroll area and the container
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+        # Create a widget to contain the layout
+        self.container_widget = QWidget(self.scroll_area)
+        self.container_layout = QVBoxLayout(self.container_widget)
+        # Set the container widget as the scroll area's widget
+        self.scroll_area.setWidget(self.container_widget)
+        self.scroll_area.setWidgetResizable(True)
+
+        self.container_widget.setMinimumHeight(500)
+        self.scroll_area.setMinimumHeight(500)
+        self.scroll_area.setMaximumHeight(500)
+        self.scroll_area.setMaximumHeight(500)
+
+        self.scroll_area.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.container_widget.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+
+        # self.container_widget.setLayout(self.container_layout)
+        # self.container_layout.addLayout(messages_layout)
+        # messages_layout = QVBoxLayout()
+        # # Add your existing self.messages_images_layout to the messages_layout
+        # messages_layout.addLayout(self.messages_images_layout)
 
         # Vertical
         vbox = QVBoxLayout()
+        vbox.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         vbox.addStretch(2)
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
-        vbox.addLayout(hbox_messages_container)
+        vbox.addWidget(self.scroll_area)
+        # vbox.addWidget(self.container_widget)
         vbox.addStretch(2)
         vbox.addWidget(self.labels['username_status'])
         self.labels['username_status'].setScaledContents(True)
