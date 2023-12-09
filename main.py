@@ -146,6 +146,16 @@ if __name__ == '__main__':
             edit_profile_window.change_page)
         edit_profile_window.stack_button5.clicked.connect(
             edit_profile_window.change_page)
+        # Profile picture chat clicked
+        # timer = QTimer()
+        # timer.timeout.connect(enviar_senal)
+        # timer.start(1000)  # Cada 1000 milisegundos (1 segundo)
+        # def enviar_senal():
+        #     for element in chat_frame.pixmaps_profiles_array:
+        #         element.signal_profile_picture_clicked.emit('press')
+        # def printear():
+        #     print("Clic en la imagen del chat")
+        # chat_frame.pixmaps_profiles_array[0].signal_profile_picture_clicked.connect(printear)
 
         # window.signal_frame1.connect(chat_frame.close_all)
         # login_window.signal_frame_login.connect(chat_frame.close_all)

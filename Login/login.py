@@ -28,9 +28,9 @@ def login(user: str, password: str) -> Tuple[bool, str]:
     return False, response.text
 
 
-def logout(user: str) -> bool:
-    update_session_state(user, False)
-    return False, "Logout successful"
+# def logout(user: str) -> bool:
+#     update_session_state(user, False)
+#     return False, "Logout successful"
 
 # from Login.bd import connect_to_db
 # import os

@@ -32,8 +32,10 @@ class ChatFrame(QWidget):
         # self.client_thread = Thread(target=self.client_communicator.run_client)
 
         self.chat_widget = ChatWidget(self)
-        # Posición y tamaño de la ventana flotante
-        self.chat_widget.setGeometry(150, 150, 600, 400)
+        self.chat_widget.setGeometry(150, 150, 400, 600)
+        self.chat_widget.hide()
+
+        self.pixmaps_profiles_array = []
 
     def closeEvent(self, event):
         print("Closing the window")
@@ -104,7 +106,6 @@ class ChatFrame(QWidget):
             self.client_communicator.username = username
 
     def new_message(self, message):
-        self.chat_widget.show()
         qlabelpixamap = QLabelProfilePicture()
         qlabelpixamap.setPixmap(QPixmap(
             'images/cara_blue.jpg').scaled(
@@ -113,6 +114,9 @@ class ChatFrame(QWidget):
         qlabelpixamap.setStyleSheet(
             "QLabel { padding: 50px;}")
         qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+        # This is the last message
+        self.qlabelpixamap = qlabelpixamap
+        self.pixmaps_profiles_array.append(qlabelpixamap)
 
         if message:
 
@@ -123,7 +127,7 @@ class ChatFrame(QWidget):
                 qlabel_message = QLabel(message, self)
                 horizontal_layout = QHBoxLayout()
 
-                image_pixmap_1 = qlabelpixamap
+                image_pixmap_1 = self.qlabelpixamap
                 qlabel_message.setWordWrap(True)
 
                 horizontal_layout.addWidget(image_pixmap_1)
@@ -140,12 +144,15 @@ class ChatFrame(QWidget):
                 qlabel_message = QLabel(message, self)
                 horizontal_layout = QHBoxLayout()
 
-                image_pixmap_1 = qlabelpixamap
+                image_pixmap_1 = self.qlabelpixamap
                 qlabel_message.setWordWrap(True)
 
                 horizontal_layout.addWidget(image_pixmap_1)
                 horizontal_layout.addWidget(qlabel_message)
                 self.messages_images_layout.addLayout(horizontal_layout)
+            for elem in self.pixmaps_profiles_array:
+                elem.signal_profile_picture_clicked.connect(
+                    self.chat_widget.show_profile)
 
     def init_gui(self) -> None:
         # Window Geometry

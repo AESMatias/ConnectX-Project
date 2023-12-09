@@ -1,6 +1,7 @@
+import typing
 from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QLabel
-from PyQt6 import QtCore
+from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout
@@ -15,11 +16,24 @@ class ChatWidget(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel("Contenido del chat"))
-        self.setStyleSheet('background-color: rgba(255, 255, 255, 100);')
+        self.setStyleSheet('background-color: rgba(150, 150, 150, 50);')
         self.setLayout(layout)
+
+    def show_profile(self):
+        self.show()
+        self.setStyleSheet('background-color: rgba(150, 150, 150, 50);')
+        self.raise_()
+        print(' show profileeeee')
+
+    def leaveEvent(self, event):
+        self.hide()
+        print(' hjideee')
+        event.accept()
 
 
 class QLabelProfilePicture(QLabel):
+    signal_profile_picture_clicked = QtCore.pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         # Right Alignment
@@ -48,6 +62,16 @@ class QLabelProfilePicture(QLabel):
                 32, 32), QtCore.Qt.AspectRatioMode.KeepAspectRatio)
             self.setPixmap(pixmap_scaled)
             event.accept()
+
+    def mousePressEvent(self, event) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            print("Clic izquierdo en el QLabel")
+            self.signal_profile_picture_clicked.emit('press')
+
+    def mouseReleaseEvent(self, event) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.signal_profile_picture_clicked.emit('release')
+            print("Soltar clic izquierdo en el QLabel")
 
     def animate_size_start(self):
         self.current_step += 1
