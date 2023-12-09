@@ -7,28 +7,80 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout
 
 
+class ProfileViewBackground(QWidget):
+    signal_profile_close = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
+                         Qt.WindowType.FramelessWindowHint)
+        self.setWindowTitle("Background Profile View")
+        # Makes the background transparent
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        self.setGeometry(-500, -500, 8000, 8000)
+        self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
+
+        # REPLACE THIS WITH ADD BUTTON ETC
+        # REPLACE THIS WITH ADD BUTTON ETC
+        # REPLACE THIS WITH ADD BUTTON ETC
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel(""))
+        self.setLayout(layout)
+
+        self.setStyleSheet('background-color: rgba(40, 40, 40, 200);')
+        self.setStyleSheet(
+            'background-color: red;')
+
+    def show_profile(self):
+        self.show()
+        self.raise_()
+        print(' show profileeeee de elem: ', self)
+
+    def mousePressEvent(self, event) -> None:
+        self.signal_profile_close.emit()
+        self.hide()
+
+
 class ChatWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
         self.setWindowTitle("Chat Flotante")
-        # Hace que el fondo sea transparente
+        # Makes the background transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         layout = QVBoxLayout(self)
-        layout.addWidget(QLabel("Contenido del chat"))
-        self.setStyleSheet('background-color: rgba(150, 150, 150, 50);')
+        layout.addWidget(QLabel("PROFILE VIEW QLABEL"))
         self.setLayout(layout)
+        self.setGeometry(400, 80, 20, 120)
+        self.animation_steps = 100
+        self.current_step = 0
+        self.timer_expand_animation = QtCore.QTimer(self)
+        self.timer_expand_animation.timeout.connect(self.animate_size_start)
 
     def show_profile(self):
         self.show()
-        self.setStyleSheet('background-color: rgba(150, 150, 150, 50);')
-        self.raise_()
-        print(' show profileeeee')
+        self.setStyleSheet(
+            'background-color: rgba(0, 128, 0, 1); border: 1px solid red;')
 
-    def leaveEvent(self, event):
-        self.hide()
-        print(' hjideee')
-        event.accept()
+        # self.background_widget.raise_()
+        # self.background_widget.show()
+        self.raise_()
+
+        print(' show profileeeee de elem: ', self)
+        self.timer_expand_animation.start(2)
+
+    def animate_size_start(self):
+        self.current_step += 1
+        if self.current_step <= self.animation_steps:
+            factor = 1.0 + self.current_step / self.animation_steps * 0.6
+            scaled_width = int(20 * factor*8)
+            scaled_height = int(120 * factor*2)
+            # self.setFixedSize(scaled_width, scaled_height)
+            # Expanding the pixmap as well
+            self.resize(scaled_width, scaled_height)
+            # self.setGeometry(400, 80, scaled_width, scaled_height)
+        else:
+            self.current_step = 0
+            self.timer_expand_animation.stop()
 
 
 class QLabelProfilePicture(QLabel):
@@ -69,9 +121,10 @@ class QLabelProfilePicture(QLabel):
             self.signal_profile_picture_clicked.emit('press')
 
     def mouseReleaseEvent(self, event) -> None:
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.signal_profile_picture_clicked.emit('release')
-            print("Soltar clic izquierdo en el QLabel")
+        # if event.button() == Qt.MouseButton.LeftButton:
+        #     self.signal_profile_picture_clicked.emit('release')
+        #     print("Soltar clic izquierdo en el QLabel")
+        pass
 
     def animate_size_start(self):
         self.current_step += 1

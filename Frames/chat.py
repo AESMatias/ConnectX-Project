@@ -9,7 +9,7 @@ from components.global_functions import center_window
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
-from components.chat_functions import QLabelProfilePicture, ChatWidget
+from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground
 from PyQt6.QtCore import Qt
 
 
@@ -30,10 +30,12 @@ class ChatFrame(QWidget):
             self.host, self.port, self.username)
         self.intentos_restantes_jwt = 1
         # self.client_thread = Thread(target=self.client_communicator.run_client)
-
+        # Profile View
         self.chat_widget = ChatWidget(self)
-        self.chat_widget.setGeometry(150, 150, 400, 600)
         self.chat_widget.hide()
+        # Profile View Background
+        self.background_widget = ProfileViewBackground(self)
+        self.background_widget.hide()
 
         self.pixmaps_profiles_array = []
 
@@ -150,9 +152,15 @@ class ChatFrame(QWidget):
                 horizontal_layout.addWidget(image_pixmap_1)
                 horizontal_layout.addWidget(qlabel_message)
                 self.messages_images_layout.addLayout(horizontal_layout)
-            for elem in self.pixmaps_profiles_array:
-                elem.signal_profile_picture_clicked.connect(
-                    self.chat_widget.show_profile)
+            # for elem in self.pixmaps_profiles_array:
+            #     elem.signal_profile_picture_clicked.connect(
+            #         self.chat_widget.show_profile)
+            self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
+                self.background_widget.show_profile)
+            self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
+                self.chat_widget.show_profile)
+            self.background_widget.signal_profile_close.connect(
+                self.chat_widget.hide)
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -172,7 +180,7 @@ class ChatFrame(QWidget):
         window_size = self.size()
         self.labels['label_image'] = QLabel(self)
         self.labels['label_image'].setMaximumSize(window_size)
-        self.labels['label_image'].setGeometry(50, 50, 300, 300)
+        self.labels['label_image'].setGeometry(0, 0, 300, 300)
         self.labels['label_image'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
@@ -238,9 +246,6 @@ class ChatFrame(QWidget):
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
         vbox.addLayout(hbox_messages_container)
-
-        # vbox.addLayout(hbox3)
-
         vbox.addStretch(2)
         vbox.addWidget(self.labels['username_status'])
         self.labels['username_status'].setScaledContents(True)
