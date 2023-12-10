@@ -6,6 +6,10 @@ from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QPixmap, QImage
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtWidgets import QHBoxLayout, QGridLayout, QSizePolicy, QSpacerItem, QFrame, QScrollArea
+from PIL import Image
+import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 
 class ProfileViewBackground(QWidget):
@@ -45,6 +49,9 @@ class ChatWidget(QWidget):
                          Qt.WindowType.FramelessWindowHint)
         self.setWindowTitle("Chat Flotante")
         self.profile_image = QPixmap('images/profile_image.png')
+        # This is the average color of the image
+        image_array = self.load_image('images/profile_image.png')
+        average_color = self.get_average_color(image_array)
         # Makes the background transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.username_label = QLabel('Username')
@@ -54,25 +61,34 @@ class ChatWidget(QWidget):
                 underline;text-decoration-color: rgb(0, 0, 128)\
                 ;font: 75 20pt "MS Shell Dlg 2";')
         self.add_friend = QPushButton("Friend Request")
-        self.add_friend.setStyleSheet(
-            'QPushButton {color: white; background-color: rgba(0, 0, 128, 1);\
-                solid black; font: bold 10pt "MS Shell Dlg 2";} \
-            QPushButton:pressed {color: rgb(0, 0, 128); background-color: white;}')
+        self.add_friend.setStyleSheet(f'QPushButton {{ \
+            background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
+            stop:0 rgba({average_color[0]-40}, {average_color[1]-40}, {average_color[2]-40}, 1), \
+            stop:1 rgba({average_color[0]}, {average_color[1]}, {average_color[2]}, 1)); \
+            color: white; font: bold 10pt "MS Shell Dlg 2";}} \
+            QPushButton:pressed {{color: rgb(0, 0, 128); background-color: white;}}')
+        # self.add_friend.setStyleSheet(
+        #     'QPushButton {color: white; background-color: rgba(0, 0, 128, 1);\
+        #         solid black; font: bold 10pt "MS Shell Dlg 2";} \
+        #     QPushButton:pressed {color: rgb(0, 0, 128); background-color: white;}')
         self.add_friend.setCursor(Qt.CursorShape.PointingHandCursor)
         self.send_message = QPushButton("Send Message")
         self.send_message.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.send_message.setStyleSheet(
-            'QPushButton {color: white; background-color: rgba(0, 0, 128, 1); \
-                solid black; font: bold 10pt "MS Shell Dlg 2";} \
-    QPushButton:pressed {color: rgb(0, 0, 128); background-color: white;}')
+        self.send_message.setStyleSheet(f'QPushButton {{ \
+            background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
+            stop:0 rgba({average_color[0]-40}, {average_color[1]-40}, {average_color[2]-40}, 1), \
+            stop:1 rgba({average_color[0]}, {average_color[1]}, {average_color[2]}, 1)); \
+            color: white; font: bold 10pt "MS Shell Dlg 2";}} \
+            QPushButton:pressed {{color: rgb(0, 0, 128); background-color: white;}}')
 
         # Create a container widget for the layout
         container_widget = QWidget(self)
         container_widget.setGeometry(0, 0, 256, 384)
-        # Set the style for the container
+
         container_widget.setStyleSheet(
-            'background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
-                stop:0 rgba(0, 0, 150, 1), stop:1 rgba(0, 80, 255, 1)); \
+            f'background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
+                stop:0 rgba({average_color[0]-40}, {average_color[1]-40}, {average_color[2]-40}, 1), \
+                    stop:1 rgba({average_color[0]+20}, {average_color[1]+20}, {average_color[2]+20}, 1)); \
     border: 1px solid black; border-radius: 2px;')
 
         # We make the layout
@@ -100,11 +116,6 @@ class ChatWidget(QWidget):
 
     def show_profile(self):
         self.show()
-        # self.setStyleSheet(
-        #     'background-color: rgba(0, 0, 128, 0.8); border: 1px solid rgb(0, 0, 128);')
-
-        # self.background_widget.raise_()
-        # self.background_widget.show()
         self.raise_()
 
         print(' show profileeeee de elem: ', self)
@@ -123,6 +134,14 @@ class ChatWidget(QWidget):
         else:
             self.current_step = 0
             self.timer_expand_animation.stop()
+
+    def load_image(self, image_path):
+        image = Image.open(image_path)
+        return np.array(image)
+
+    def get_average_color(self, image_array):
+        average_color = np.mean(image_array, axis=(0, 1)).astype(int)
+        return average_color
 
 
 class QLabelProfilePicture(QLabel):

@@ -69,14 +69,14 @@ class EditProfile(QWidget):
 
         # Upload profile image
         self.image_viewer = ImageViewer()
-        self.upload_image = Upload_file(
-            'uploadButton', (300, 250), 'Change profile picture', self)
-        self.upload_image.setCursor(
-            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.upload_image.setStyleSheet(
-            button_style)
+        # self.upload_image = Upload_file(
+        #     'uploadButton', (300, 250), 'Change profile picture', self)
+        # self.upload_image.setCursor(
+        #     QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        # self.upload_image.setStyleSheet(
+        #     button_style)
         # self.upload_image.clicked.connect(self.open_file)
-        self.upload_image.clicked.connect(self.change_profile_pic)
+        # self.upload_image.clicked.connect(self.change_profile_pic)
 
         # 1 Button
         self.stack_button1 = EditProfileButton(
@@ -85,6 +85,7 @@ class EditProfile(QWidget):
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button1.setStyleSheet(
             edit_profile_button)
+        self.stack_button1.setStyleSheet(edit_profile_button_clicked)
         # 1 Layout
         # QLabel image assignation
         self.labels['label_image1'] = QLabel(self)
@@ -200,8 +201,8 @@ class EditProfile(QWidget):
 
         page1_layout = QHBoxLayout()
         page1_layout.addWidget(self.labels['label_image1'])
-        page1_layout.addWidget(self.upload_image)
         page1_layout.addWidget(self.image_viewer)
+        # page1_layout.addWidget(self.upload_image)
         self.labels['label_image']
         page1_layout.addWidget(self.labels['label_image'])
         container1 = QWidget()

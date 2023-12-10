@@ -4,3 +4,6 @@
 requests
 mysql.connector-python==8.1.0
 PyQt6
+Pillow
+matplotlib
+scikit-learn

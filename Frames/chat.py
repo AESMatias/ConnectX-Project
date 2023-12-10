@@ -16,6 +16,8 @@ from PyQt6.QtGui import QTextOption
 from Login.login import login
 from typing import Tuple
 import requests
+import os
+from PyQt6.QtGui import QPalette, QBrush
 
 
 class ChatFrame(QWidget):
@@ -47,8 +49,28 @@ class ChatFrame(QWidget):
 
         self.pixmaps_profiles_array = []
         self.scroll_area = QScrollArea()
-        self.scroll_area.setWidgetResizable(True)
-        # self.scroll_area.setWidget(self.scroll_content)
+        # aplicamos transparencia al scroll area
+        self.scroll_area.setAttribute(
+            Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        # Crear un QPalette personalizado con la imagen de fondo
+        palette = QPalette()
+        background_image = QPixmap(
+            os.path.join('images', 'chat_wallpaper.jpg'))
+
+        # background_image = background_image.scaled(
+        #     self.size()*2, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        self.setAutoFillBackground(True)
+        self.brush = QBrush(background_image)
+        palette.setBrush(QPalette.ColorRole.Window, self.brush)
+        self.setPalette(palette)
+        self.setStyleSheet(f"""
+            QWidget {{
+                background-image: url({background_image});
+                background-repeat: no-repeat;
+                background-position: center;
+                background-color: rgba(0, 0, 0, 128);
+            }}
+        """)
 
     def retrieve_image_get(jwt_token: str) -> Tuple[bool, str]:
         status_login = login("admin", "admin")
@@ -96,9 +118,9 @@ class ChatFrame(QWidget):
             self.labels['username'].setText(f'Welcome {self.username}')
             self.setWindowTitle(f'ConectX Project - {self.username}')
             self.client_communicator.username = self.username
-            self.labels['username_status'].setText('Credentials OK')
-            self.labels['username_status'].setStyleSheet(login_label_ok)
-            self.labels['username_status'].repaint()  # To avoid bug
+            # self.labels['username_status'].setText('Credentials OK')
+            # self.labels['username_status'].setStyleSheet(login_label_ok)
+            # self.labels['username_status'].repaint()  # To avoid bug
             center_window(self)
             self.show()
             self.setFocus()
@@ -111,8 +133,12 @@ class ChatFrame(QWidget):
         text = self.write_message.text()
         message = f"{text}"
         if self.intentos_restantes_jwt == 1:
-            self.client_communicator.send_message(self.jwt)
+            # self.client_communicator.send_message(self.jwt)
             self.intentos_restantes_jwt -= 1
+            self.send_message_signal.emit(message)
+            self.write_message.setText('')
+            # no lee las siguientes lineas del codigo, asi que salimos de la func
+            return
 
         self.send_message_signal.emit(message)
         self.write_message.setText('')
@@ -125,15 +151,36 @@ class ChatFrame(QWidget):
     def change_username_status(self):
         sender = self.sender()
         if sender.login_status == False:
-            self.labels['username_status'].setText('Invalid credentials')
-            self.labels['username_status'].setStyleSheet(login_label_wrong)
-            self.labels['username_status'].repaint()  # To avoid bugs
+            # self.labels['username_status'].setText('Invalid credentials')
+            # self.labels['username_status'].setStyleSheet(login_label_wrong)
+            # self.labels['username_status'].repaint()  # To avoid bugs
+            pass
         elif sender.login_status == True:
             username = sender.username
-            self.labels['username'].setText(f'Welcome {username}')
-            self.setWindowTitle(f'ConectX Project - {username}')
-            self.labels['username'].repaint()  # To avoid bugs
-            self.client_communicator.username = username
+            # self.labels['username'].setText(f'Welcome {username}')
+            # self.setWindowTitle(f'ConectX Project - {username}')
+            # self.labels['username'].repaint()  # To avoid bugs
+            # self.client_communicator.username = username
+            pass
+
+    def get_pic_by_name(self, name: str) -> QPixmap:
+        import requests
+
+        url = "http://localhost:8000/user/picture/"
+
+        name = 'admin'
+
+        querystring = {"user_name": f"{name}"}
+
+        headers = {
+            "Accept": "image/png"
+        }
+
+        response = requests.request(
+            "GET", url, headers=headers, params=querystring)
+
+        with open(f"{name}.png", "wb") as f:
+            f.write(response.content)
 
     def new_message(self, message):
         self.retrieve_image_get()
@@ -143,7 +190,7 @@ class ChatFrame(QWidget):
             32, QtCore.Qt.TransformationMode.SmoothTransformation))
         qlabelpixamap.setContentsMargins(100, 100, 100, 100)
         qlabelpixamap.setStyleSheet(
-            "QLabel { padding: 50px;}")
+            "QLabel { padding: 50px; background-color: rgba(0,0,0,0); border-radius:10px;}")
         qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
         # This is the last message
         self.qlabelpixamap = qlabelpixamap
@@ -152,36 +199,22 @@ class ChatFrame(QWidget):
         self.qlabelpixamap.repaint()
         self.chat_widget.profile_image = self.profile_pixmap
         self.chat_widget.__init__(self)
+        print('nuevo MENSAJEEEEEEEEEEEEEEEEEEEEEEEE')
         if message:
             self.counter_messages += 1
 
-            if len(self.all_messages2) < 6:
-                self.all_messages.append([self.image_pixmap_1, message])
-                self.all_messages2.append(message)
-
-                # qlabel_message = QTextBrowser(self)
-                # qlabel_message.setText(message)
-                # qlabel_message.setStyleSheet(
-                #     "QTextBrowser { background-color: #f0f0f0; \
-                #         border-radius: 10px; padding: 10px; margin: 10px;\
-                #             border: 1px solid #f0f0f0;font: 75 12pt 'MS Shell Dlg 2';\
-                #                     color: black;\
-                #                             text-decoration: underline;\
-                #                                 text-decoration-color: rgb(0, 0, 128);}")
-                # qlabel_message.setFixedSize(550, 60)
-                # qlabel_message.document().setDefaultStyleSheet(
-                #     "p { line-height: 120%; }")
-                # qlabel_message.setVerticalScrollBarPolicy(
-                #     Qt.ScrollBarPolicy.ScrollBarAsNeeded)  # Opcional
-                # qlabel_message.setHorizontalScrollBarPolicy(
-                #     Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-                # qlabel_message.setPlainText(message)
-
+            if len(self.all_messages) < 1:
+                print('aquiiiiiiiiiiiiiiiii')
+                # self.all_messages.append([self.image_pixmap_1, message])
+                # self.all_messages2.append(message)
                 qlabel_message = QLabel(self)
                 qlabel_message.setWordWrap(True)
                 qlabel_message.setText(message)
                 qlabel_message.setTextInteractionFlags(
                     Qt.TextInteractionFlag.TextSelectableByMouse)
+                qlabel_message.setStyleSheet(
+                    "QLabel { background-color: rgba(0,0,0,0); border-radius:0px;padding:\
+                    0px; margin: 0px; font: bold 10pt 'MS Shell Dlg 2';color: white;}")
                 # Allow vertical expansion
                 size_policy = QSizePolicy(
                     QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -198,24 +231,21 @@ class ChatFrame(QWidget):
                 self.container_layout.addLayout(horizontal_layout)
 
             else:
-                self.all_messages.pop(0)
-                self.all_messages.append([self.image_pixmap_1, message])
+                print('ELSEEEEEEEEEEEEEE')
+                # self.all_messages.pop(0)
+                # self.all_messages.append([self.image_pixmap_1, message])
                 self.all_messages2.append(message)
                 # self.labels['msg'].setText('\n'.join(self.all_messages2))
 
                 qlabel_message = QLabel(self)
-
                 qlabel_message.setWordWrap(True)
                 qlabel_message.setText(message)
                 qlabel_message.setTextInteractionFlags(
                     Qt.TextInteractionFlag.TextSelectableByMouse)
 
                 qlabel_message.setStyleSheet(
-                    "QLabel { background-color: #f0f0f0; border-radius:\
-                        0px; padding: 0px; margin: 0px;\
-                            border: 1px solid #f0f0f0; \
-                                font: 75 12pt 'MS Shell Dlg 2'; \
-                                    color: black;}")
+                    "QLabel {;padding:\
+                    0px; margin: 0px; font: bold 10pt 'MS Shell Dlg 2';color: black;}")
 
                 horizontal_layout = QHBoxLayout()
                 image_pixmap_1 = self.qlabelpixamap
@@ -248,6 +278,7 @@ class ChatFrame(QWidget):
 
             # Conectar la señal rangeChanged al método que establece el valor máximo
             scroll_bar.rangeChanged.connect(self.scroll_to_bottom)
+            self.scroll_to_bottom(scroll_bar.minimum(), scroll_bar.maximum())
 
     def scroll_to_bottom(self, min_val, max_val):
         scroll_bar = self.scroll_area.verticalScrollBar()
@@ -275,11 +306,11 @@ class ChatFrame(QWidget):
         # self.labels['label_image'].setAlignment(
         #     QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.labels['username_status'] = QLabel('', self)
-        self.labels['username_status'].setStyleSheet(login_label)
-        self.labels['username_status'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['username_status'].repaint()
+        # self.labels['username_status'] = QLabel('', self)
+        # self.labels['username_status'].setStyleSheet(login_label)
+        # self.labels['username_status'].setAlignment(
+        #     QtCore.Qt.AlignmentFlag.AlignCenter)
+        # self.labels['username_status'].repaint()
 
         # # Message Label
         # self.labels['msg'] = QLabel('MESSAGES:', self)
@@ -297,6 +328,10 @@ class ChatFrame(QWidget):
         self.write_message.setFixedSize(550, 60)
         self.write_message.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.write_message.setPlaceholderText('Write a message...')
+        self.write_message.setStyleSheet(
+            "QLineEdit { background-color: rgba(255,255,255,0.25); border-radius:0px;padding:\
+            0px; margin: 0px; font: bold 15pt 'MS Shell Dlg 2';color: white;}")
         self.write_message.repaint()
         self.all_messages = []
         self.all_messages2 = []
@@ -332,6 +367,8 @@ class ChatFrame(QWidget):
 
         # Create a widget to contain the layout
         self.container_widget = QWidget(self.scroll_area)
+        self.scroll_area.setStyleSheet(
+            "background-color: rgba(0, 0, 0, 0.2); color: white;")
         self.container_layout = QVBoxLayout(self.container_widget)
         # Set the container widget as the scroll area's widget
         self.scroll_area.setWidget(self.container_widget)
@@ -358,14 +395,14 @@ class ChatFrame(QWidget):
         vbox.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         vbox.addStretch(2)
         vbox.addLayout(hbox1)
-        vbox.addLayout(hbox2)
         vbox.addWidget(self.scroll_area)
+        vbox.addLayout(hbox2)
         # vbox.addWidget(self.container_widget)
         vbox.addStretch(2)
-        vbox.addWidget(self.labels['username_status'])
-        self.labels['username_status'].setScaledContents(True)
-        self.labels['username_status'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
+        # vbox.addWidget(self.labels['username_status'])
+        # self.labels['username_status'].setScaledContents(True)
+        # self.labels['username_status'].setAlignment(
+        #     QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # vbox.addWidget(self.labels['image_input'])
         vbox.addStretch(5)

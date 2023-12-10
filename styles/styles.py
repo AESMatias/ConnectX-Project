@@ -23,7 +23,7 @@ QLabel {
 
 button_style = """
     QPushButton {
-        border: 2px solid white;
+        border: 1px solid white;
         border-radius: 1px;
         font-size: 40px;
         font-weight: 550;
@@ -34,7 +34,8 @@ button_style = """
     }
     
     QPushButton:hover {
-        border: 2px solid white;
+        margin: 1.4px 1.4px;
+        border: 1.5px solid white;
         font-size: 38px;
         font-weight: bold;
         background: qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 #0000FF, stop: 1 #3333AA);
@@ -45,7 +46,7 @@ button_style = """
         color: white;
         font-size: 30px;
         font-weight: bold;
-        border: 1.5px solid white;
+        border: 2px solid white;
 }
 """
 edit_profile_button = """
@@ -154,6 +155,6 @@ login_label_ok = """
         opacity: 0;
         font-size: 30px;
         font-weight: bold;
-        background: white;
+        background: rgba(255,255,255,0.6);
     }
 """
