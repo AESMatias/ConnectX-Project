@@ -13,6 +13,9 @@ from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileV
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QTextBrowser
 from PyQt6.QtGui import QTextOption
+from Login.login import login
+from typing import Tuple
+import requests
 
 
 class ChatFrame(QWidget):
@@ -27,6 +30,7 @@ class ChatFrame(QWidget):
         qlabelpixamap.setPixmap(QPixmap('images/logo32.png'))
         self.image_pixmap_1 = qlabelpixamap
         self.image_pixmap_1.setVisible(False)
+        self.profile_pixmap = QPixmap('images/profile_image.png')
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
@@ -45,6 +49,21 @@ class ChatFrame(QWidget):
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         # self.scroll_area.setWidget(self.scroll_content)
+
+    def retrieve_image_get(jwt_token: str) -> Tuple[bool, str]:
+        status_login = login("admin", "admin")
+        jwt_token = status_login[1]
+        print('jwt_token: ', jwt_token)
+        url = 'http://localhost:8000/user/profilePIC/'
+        headers = {
+            'accept': 'application/json',
+            'Authorization': f'Bearer {str(jwt_token)}'
+        }
+        response = requests.get(url, headers=headers)
+        print(response)
+        if response.status_code == 200:
+            with open("images/profile_image.png", "wb") as f:
+                f.write(response.content)
 
     def closeEvent(self, event):
         print("Closing the window")
@@ -117,13 +136,11 @@ class ChatFrame(QWidget):
             self.client_communicator.username = username
 
     def new_message(self, message):
+        self.retrieve_image_get()
+        self.profile_pixmap = QPixmap('images/profile_image.png')
         qlabelpixamap = QLabelProfilePicture()
-        qpixmap = QPixmap('images/cara_blue.jpg')
-        qlabelpixamap.setPixmap(qpixmap.scaledToWidth(
+        qlabelpixamap.setPixmap(self.profile_pixmap.scaledToWidth(
             32, QtCore.Qt.TransformationMode.SmoothTransformation))
-        # qlabelpixamap.setPixmap(QPixmap(
-        #     'images/cara_blue.jpg').scaled(
-        #     32, 32, Qt.AspectRatioMode.KeepAspectRatio))
         qlabelpixamap.setContentsMargins(100, 100, 100, 100)
         qlabelpixamap.setStyleSheet(
             "QLabel { padding: 50px;}")
@@ -131,7 +148,10 @@ class ChatFrame(QWidget):
         # This is the last message
         self.qlabelpixamap = qlabelpixamap
         self.pixmaps_profiles_array.append(qlabelpixamap)
-
+        # repintamos la imagen
+        self.qlabelpixamap.repaint()
+        self.chat_widget.profile_image = self.profile_pixmap
+        self.chat_widget.__init__(self)
         if message:
             self.counter_messages += 1
 

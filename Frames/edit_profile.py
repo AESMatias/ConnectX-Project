@@ -10,6 +10,7 @@ from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import EditProfileButton, Upload_file
 from Frames.change_profile_pic import ChangeAvatar
 from styles.styles import button_style, edit_profile_button, edit_profile_button_clicked
+from components.input_user import ImageViewer
 image_florence = 'images/florence.jpg'
 aristotle_1 = 'images/aristotle_1.jpg'
 
@@ -54,7 +55,7 @@ class EditProfile(QWidget):
     def init_gui(self) -> None:
         window_size = self.size()
         self.labels = {}
-        self.setGeometry(100, 200, 800, 500)
+        self.setGeometry(100, 200, 500, 600)
         self.setWindowTitle(f'ConectX Project - {self.username}')
 
         # QLabel image assignation
@@ -67,6 +68,7 @@ class EditProfile(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Upload profile image
+        self.image_viewer = ImageViewer()
         self.upload_image = Upload_file(
             'uploadButton', (300, 250), 'Change profile picture', self)
         self.upload_image.setCursor(
@@ -199,6 +201,7 @@ class EditProfile(QWidget):
         page1_layout = QHBoxLayout()
         page1_layout.addWidget(self.labels['label_image1'])
         page1_layout.addWidget(self.upload_image)
+        page1_layout.addWidget(self.image_viewer)
         self.labels['label_image']
         page1_layout.addWidget(self.labels['label_image'])
         container1 = QWidget()

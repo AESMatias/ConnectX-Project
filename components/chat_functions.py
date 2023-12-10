@@ -44,7 +44,7 @@ class ChatWidget(QWidget):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
         self.setWindowTitle("Chat Flotante")
-        self.profile_image = QPixmap('images/cara_blue.jpg')
+        self.profile_image = QPixmap('images/profile_image.png')
         # Makes the background transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.username_label = QLabel('Username')
@@ -140,7 +140,7 @@ class QLabelProfilePicture(QLabel):
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
         self.animation_steps = 100
         self.current_step = 0
-        self.original_pixmap = QPixmap('images/cara_blue.jpg').scaledToWidth(
+        self.original_pixmap = QPixmap('images/profile_image.png').scaledToWidth(
             50, QtCore.Qt.TransformationMode.SmoothTransformation)
         self.scaled_pixmap = None
 

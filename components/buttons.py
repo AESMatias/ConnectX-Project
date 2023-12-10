@@ -8,6 +8,8 @@ from PyQt6.QtGui import QGuiApplication, QPainter, QColor, QBrush
 import os
 import sys
 from styles.styles import edit_profile_button
+from typing import Tuple
+import requests
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 
@@ -247,6 +249,19 @@ class Chat_Button(QPushButton):
         self.username = form_username
         self.register_status = False
 
+    def retrieve_image_get(jwt_token: str) -> Tuple[bool, str]:
+        print('jwt_token: ', jwt_token)
+        url = 'http://localhost:8000/user/profilePIC/'
+        headers = {
+            'accept': 'application/json',
+            'Authorization': f'Bearer {str(jwt_token)}'
+        }
+        response = requests.get(url, headers=headers)
+        print(response)
+        if response.status_code == 200:
+            with open("images/profile_image.png", "wb") as f:
+                f.write(response.content)
+
     def button_clicked(self) -> None:
         status_login = login(form_username, password_not_visible)
         jwt_token = status_login[1]
@@ -257,6 +272,7 @@ class Chat_Button(QPushButton):
             self.login_status = True
             self.jwt_emit.emit(jwt_token)
             print('Login status:', self.login_status)
+            self.retrieve_image_get(jwt_token)
 
         # elif status_login and self.name == 'chatButton':
         #     self.username = form_username
