@@ -207,3 +207,62 @@ class QLabelProfilePicture(QLabel):
             # print("Current size of the pixmap:", self.pixmap().size())
             self.current_step = 0
             self.timer_expand_animation.stop()
+
+
+class QLabelMessage(QLabel):
+    signal_profile_picture_clicked = QtCore.pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        # Right Alignment
+        self.original_size = self.sizeHint()
+        self.enterEvent = self.label_enter_event
+        self.leaveEvent = self.label_leave_event
+        self.timer_expand_animation = QtCore.QTimer(self)
+        self.timer_expand_animation.timeout.connect(self.animate_size_start)
+        self.timer_expand_animation.start(1)
+        self.animation_steps = 100
+        self.current_step = 0
+        self.setStyleSheet(
+            "QLabel {font: bold 0pt 'MS Shell Dlg 2'; background-color: rgba(0, 0, 0, 0);}")
+
+    def label_enter_event(self, event):
+        # self.timer_expand_animation.start(2)
+        event.accept()
+
+    def label_leave_event(self, event):
+        pass
+        # self.timer_expand_animation.stop()
+        # if self.scaled_pixmap is not None:
+        #     self.setPixmap(self.scaled_pixmap)
+        # else:
+        #     self.setPixmap(self.original_pixmap.scaledToWidth(
+        #         32, QtCore.Qt.TransformationMode.SmoothTransformation))
+        #     event.accept()
+
+    def mousePressEvent(self, event) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            print("Text copied! -We need to add this funcionality- ")
+
+    def mouseReleaseEvent(self, event) -> None:
+        # if event.button() == Qt.MouseButton.LeftButton:
+        #     self.signal_profile_picture_clicked.emit('release')
+        #     print("Soltar clic izquierdo en el QLabel")
+        pass
+
+    def animate_size_start(self):
+        self.current_step += 1
+        if self.current_step <= self.animation_steps:
+            factor = 1.0 + self.current_step / self.animation_steps * 0.3
+            scaled_width = int(self.original_size.width() * factor)
+            scaled_height = int(self.original_size.height() * factor)
+            style_sheet = (
+                "QLabel {"
+                f"font: bold {4*factor*2}pt 'MS Shell Dlg 2';"
+                "background-color: rgba(0, 0, 0, 0);"
+                "}"
+            )
+            self.setStyleSheet(style_sheet)
+        else:
+            self.current_step = 0
+            self.timer_expand_animation.stop()

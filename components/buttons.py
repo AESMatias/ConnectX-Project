@@ -249,7 +249,7 @@ class Chat_Button(QPushButton):
         self.username = form_username
         self.register_status = False
 
-    def retrieve_image_get(jwt_token: str) -> Tuple[bool, str]:
+    def retrieve_image_get(self, jwt_token: str) -> Tuple[bool, str]:
         print('jwt_token: ', jwt_token)
         url = 'http://localhost:8000/user/profilePIC/'
         headers = {

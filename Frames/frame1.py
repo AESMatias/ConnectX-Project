@@ -7,7 +7,7 @@ from PyQt6.QtGui import QPalette, QBrush, QIcon, QGuiApplication, QPixmap, QCurs
 from components.buttons import Register_Button, Login_Button, InputField
 from styles.styles import quote_style, InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
 from components.global_functions import center_window
-from components.qlabels import MusicButton
+from components.qlabels import MusicButton, ConnectXLogo
 
 
 class Frame1(QWidget):
@@ -148,7 +148,7 @@ class Frame1(QWidget):
         image_pixmap = QPixmap(dir_image)
         image_pixmap = image_pixmap.scaled(
             200, 200, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-        self.labels['logo_welcome'] = QLabel(self)
+        self.labels['logo_welcome'] = ConnectXLogo(self)
         self.labels['logo_welcome'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['logo_welcome'].setPixmap(image_pixmap)
@@ -156,6 +156,8 @@ class Frame1(QWidget):
         self.opacity_decimal = 9
         self.labels['logo_welcome'].setStyleSheet(
             'background:none;opacity:0.9')
+        self.labels['logo_welcome'].setCursor(
+            Qt.CursorShape.PointingHandCursor)
         # Volume label
         self.volume_label = MusicButton(self)
         self.volume_label.setAlignment(
@@ -166,10 +168,10 @@ class Frame1(QWidget):
         self.volume_label.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        image_pixmap = self.volume_label.pixmap
-        self.volume_label.pixmap = image_pixmap.scaled(
+        volume_pixmap = self.volume_label.pixmap
+        self.volume_label.pixmap = volume_pixmap.scaled(
             64, 64, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-        self.volume_label.setPixmap(image_pixmap)
+        self.volume_label.setPixmap(volume_pixmap)
         self.volume_label.show()
 
         # Quote Label

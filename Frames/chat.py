@@ -9,7 +9,7 @@ from components.global_functions import center_window
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
-from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground
+from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground, QLabelMessage
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtWidgets import QTextBrowser
 from PyQt6.QtGui import QTextOption
@@ -18,6 +18,8 @@ from typing import Tuple
 import requests
 import os
 from PyQt6.QtGui import QPalette, QBrush
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtWidgets import QAbstractSlider
 
 
 class ChatFrame(QWidget):
@@ -199,22 +201,20 @@ class ChatFrame(QWidget):
         self.qlabelpixamap.repaint()
         self.chat_widget.profile_image = self.profile_pixmap
         self.chat_widget.__init__(self)
-        print('nuevo MENSAJEEEEEEEEEEEEEEEEEEEEEEEE')
         if message:
             self.counter_messages += 1
 
             if len(self.all_messages) < 1:
-                print('aquiiiiiiiiiiiiiiiii')
                 # self.all_messages.append([self.image_pixmap_1, message])
                 # self.all_messages2.append(message)
-                qlabel_message = QLabel(self)
+                qlabel_message = QLabelMessage()
                 qlabel_message.setWordWrap(True)
                 qlabel_message.setText(message)
                 qlabel_message.setTextInteractionFlags(
                     Qt.TextInteractionFlag.TextSelectableByMouse)
-                qlabel_message.setStyleSheet(
-                    "QLabel { background-color: rgba(0,0,0,0); border-radius:0px;padding:\
-                    0px; margin: 0px; font: bold 10pt 'MS Shell Dlg 2';color: white;}")
+                # qlabel_message.setStyleSheet(
+                #     "QLabel { background-color: rgba(0,0,0,0); border-radius:0px;padding:\
+                #     0px; margin: 0px; font: bold 10pt 'MS Shell Dlg 2';color: white;}")
                 # Allow vertical expansion
                 size_policy = QSizePolicy(
                     QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -243,9 +243,9 @@ class ChatFrame(QWidget):
                 qlabel_message.setTextInteractionFlags(
                     Qt.TextInteractionFlag.TextSelectableByMouse)
 
-                qlabel_message.setStyleSheet(
-                    "QLabel {;padding:\
-                    0px; margin: 0px; font: bold 10pt 'MS Shell Dlg 2';color: black;}")
+                # qlabel_message.setStyleSheet(
+                #     "QLabel {;padding:\
+                #     0px; margin: 0px; font: bold 10pt 'MS Shell Dlg 2';color: black;}")
 
                 horizontal_layout = QHBoxLayout()
                 image_pixmap_1 = self.qlabelpixamap
@@ -273,16 +273,22 @@ class ChatFrame(QWidget):
             # self.scroll_area.setFixedSize(
             #     600, 500+132*self.counter_messages)
 
+            # Permitir que la interfaz gráfica de usuario (GUI) se actualice
+            QCoreApplication.processEvents()
+
             # Después de inicializar el QScrollArea
             scroll_bar = self.scroll_area.verticalScrollBar()
 
-            # Conectar la señal rangeChanged al método que establece el valor máximo
-            scroll_bar.rangeChanged.connect(self.scroll_to_bottom)
-            self.scroll_to_bottom(scroll_bar.minimum(), scroll_bar.maximum())
+            # Set the scrollbar value directly to the maximum
+            scroll_bar.setValue(scroll_bar.maximum())
+            # ASEGURAMOS QUE ESTE EN UN VALOR
+            scroll_bar.setValue(800)
 
-    def scroll_to_bottom(self, min_val, max_val):
-        scroll_bar = self.scroll_area.verticalScrollBar()
-        scroll_bar.setValue(max_val)
+            # Print some information for debugging
+            print('Scroll Bar Value After:', scroll_bar.value())
+
+            # Permitir que la interfaz gráfica de usuario (GUI) se actualice nuevamente
+            QCoreApplication.processEvents()
 
     def init_gui(self) -> None:
         # Window Geometry
