@@ -2,12 +2,12 @@ from PyQt6.QtCore import QStandardPaths
 import requests
 from PyQt6.QtWidgets import QFileDialog
 from PyQt6.QtGui import QPixmap
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore
 from io import BytesIO
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QStackedLayout, QWidget, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QPixmap, QCursor
-from components.buttons import EditProfileButton, Upload_file
+from components.buttons import EditProfileButton
 from Frames.change_profile_pic import ChangeAvatar
 from styles.styles import button_style, edit_profile_button, edit_profile_button_clicked
 from components.input_user import ImageViewer

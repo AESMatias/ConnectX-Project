@@ -1,7 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QFileDialog, QWidget
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QFileDialog
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import Qt
 from typing import Tuple
 import requests
 from Login.login import login

@@ -2,24 +2,19 @@ from threading import Thread
 from PyQt6.QtCore import pyqtSignal
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import (
-    QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QScrollArea, QFrame, QSpacerItem, QSizePolicy, QPushButton)
-from PyQt6.QtGui import QPixmap, QCursor
-from styles.styles import InputFieldStyle, login_label, login_label_wrong, login_label_ok
+    QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QScrollArea, QSizePolicy)
+from PyQt6.QtGui import QPixmap
+from styles.styles import InputFieldStyle, login_label_ok
 from components.global_functions import center_window
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
 from Login.client_socket import ClientCommunicator
-from PyQt6.QtGui import QPixmap, QCursor, QCloseEvent
 from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground, QLabelMessage
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtWidgets import QTextBrowser
-from PyQt6.QtGui import QTextOption
 from Login.login import login
 from typing import Tuple
 import requests
 import os
 from PyQt6.QtGui import QPalette, QBrush
 from PyQt6.QtCore import QCoreApplication
-from PyQt6.QtWidgets import QAbstractSlider
+from PyQt6.QtCore import Qt
 
 
 class ChatFrame(QWidget):
@@ -30,6 +25,7 @@ class ChatFrame(QWidget):
         self.setFixedSize(1000, 750)
         self.counter_messages = 0
         self.username = ''
+        self.username_tuple = ()
         qlabelpixamap = QLabel(self)
         qlabelpixamap.setPixmap(QPixmap('images/logo32.png'))
         self.image_pixmap_1 = qlabelpixamap
@@ -43,7 +39,7 @@ class ChatFrame(QWidget):
         self.intentos_restantes_jwt = 1
         # self.client_thread = Thread(target=self.client_communicator.run_client)
         # Profile View
-        self.chat_widget = ChatWidget(self)
+        self.chat_widget = ChatWidget()
         self.chat_widget.hide()
         # Profile View Background
         self.background_widget = ProfileViewBackground(self)
@@ -97,7 +93,10 @@ class ChatFrame(QWidget):
 
         # We need to close the thread too, fix this!!!!!!!!! TO-DO:
         self.client_thread.join()
-
+        self.client_communicator._stop_threads = True
+        # cerramos los hilos todos y los sockets abiedrtos tambien
+        self.client_communicator.client_socket.close()
+        self.client_communicator.send_message_socket.close()
     # def close_all(self):
     #     print(f"Closing the window{self}")
     #     self.client_communicator.client_socket.close()
@@ -170,8 +169,6 @@ class ChatFrame(QWidget):
 
         url = "http://localhost:8000/user/picture/"
 
-        name = 'admin'
-
         querystring = {"user_name": f"{name}"}
 
         headers = {
@@ -181,25 +178,47 @@ class ChatFrame(QWidget):
         response = requests.request(
             "GET", url, headers=headers, params=querystring)
 
-        with open(f"{name}.png", "wb") as f:
+        with open(f"profiles/images/{name}.png", "wb") as f:
             f.write(response.content)
+        return QPixmap(f"profiles/images/{name}.png")
 
     def new_message(self, message):
+        username, message = message.split(':')
+        print('the message is ', message, 'and the username is ', username)
+        if username not in self.username_tuple:
+            self.username_tuple += (username,)
+
+            # abrimos /profiles/images/username.png y miramos si existe tal archivo
+            # si existe, lo cargamos, si no, lo descargamos
+            ruta_archivo = f'profiles/images/{username}.png'
+
+            # Verificar si el archivo existe
+            if os.path.exists(ruta_archivo):
+                print(
+                    f'El archivo {ruta_archivo} existe, ergo no lo descargamos')
+            else:
+                print(f'El archivo {ruta_archivo} NO existe.')
+                self.pixmap_username = self.get_pic_by_name(username)
+                print('Obteniendo pixmap del usuario ', username)
+
+        message = username + ':' + message
         self.retrieve_image_get()
-        self.profile_pixmap = QPixmap('images/profile_image.png')
-        qlabelpixamap = QLabelProfilePicture()
-        qlabelpixamap.setPixmap(self.profile_pixmap.scaledToWidth(
-            32, QtCore.Qt.TransformationMode.SmoothTransformation))
+        # NO SE USA ESTO TODO
+        qlabelpixamap = QLabelProfilePicture(username)
+        # qlabelpixamap.setPixmap(self.pixmap_username.scaledToWidth(
+        #     32, QtCore.Qt.TransformationMode.SmoothTransformation))
         qlabelpixamap.setContentsMargins(100, 100, 100, 100)
         qlabelpixamap.setStyleSheet(
             "QLabel { padding: 50px; background-color: rgba(0,0,0,0); border-radius:10px;}")
         qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+        # abajo enviamos un evento al qlabelpixamap
+        qlabelpixamap.label_enter_event_first()
         # This is the last message
         self.qlabelpixamap = qlabelpixamap
         self.pixmaps_profiles_array.append(qlabelpixamap)
         # repintamos la imagen
         self.qlabelpixamap.repaint()
-        self.chat_widget.profile_image = self.profile_pixmap
+        # self.chat_widget.profile_image = self.pixmap_username #does not exist  pixmapusername before
         self.chat_widget.__init__(self)
         if message:
             self.counter_messages += 1
@@ -227,7 +246,7 @@ class ChatFrame(QWidget):
                 horizontal_layout.addWidget(image_pixmap_1)
                 horizontal_layout.addWidget(qlabel_message)
                 horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
-                # horizontal_layout.setContentsMargins(0, 0, 0, 10)
+
                 self.container_layout.addLayout(horizontal_layout)
 
             else:
@@ -250,7 +269,7 @@ class ChatFrame(QWidget):
                 horizontal_layout = QHBoxLayout()
                 image_pixmap_1 = self.qlabelpixamap
 
-                horizontal_layout.addWidget(image_pixmap_1)
+                # horizontal_layout.addWidget(pixmap_username)
                 horizontal_layout.addWidget(qlabel_message)
                 horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
                 # horizontal_layout.setContentsMargins(0, 0, 0, 10)

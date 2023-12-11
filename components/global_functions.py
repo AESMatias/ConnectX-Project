@@ -1,4 +1,4 @@
-from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtGui import QGuiApplication
 
 
 def center_window(frame_to_center) -> None:

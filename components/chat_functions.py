@@ -1,15 +1,11 @@
-import typing
-from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QLabel
 from PyQt6 import QtCore, QtGui
-from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QPixmap, QImage
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QVBoxLayout, QPushButton
-from PyQt6.QtWidgets import QHBoxLayout, QGridLayout, QSizePolicy, QSpacerItem, QFrame, QScrollArea
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QHBoxLayout
 from PIL import Image
 import numpy as np
-from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 
 
 class ProfileViewBackground(QWidget):
@@ -47,10 +43,12 @@ class ChatWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
+        self.username = 'admin'
+        print('USERNAME ESSSSSSSSSSSSSSSSSSSSSSSSSSS', self.username)
         self.setWindowTitle("Chat Flotante")
-        self.profile_image = QPixmap('images/profile_image.png')
+        self.profile_image = QPixmap(f'profiles/images/{self.username}.png')
         # This is the average color of the image
-        image_array = self.load_image('images/profile_image.png')
+        image_array = self.load_image(f'profiles/images/{self.username}.png')
         average_color = self.get_average_color(image_array)
         # Makes the background transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
@@ -114,6 +112,18 @@ class ChatWidget(QWidget):
         self.timer_expand_animation = QtCore.QTimer(self)
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
 
+    def change_pixmap(self, image_path):
+        ''' TODO AQUI LA IDEA ES DE ALGUNA FORMA CAMBIAR EL PIXMAP CADA VEZ QUE
+        LLEGUE UN NUEVO MENSAJE, PERO DESDE FUERA NO SE PUEDE ACTUALIZAR
+        NI TAMPOCO LLAMANDO A ESTA FUNCION (podría probarse haciendo .self de las variables de __init__)
+        ASI QUE LA SOLUCION MAS FACTIBLE PARECE SER INGRESAR A ESTA INSTANCIA EL NOMBRE DE USUARIO
+        Y MANEJARLO DIRECTAMENTE DESDE AQUI, PARA QUE EN CADA NUEVO MENSAJE SE INSTANCIE UN NUEVO OBJETO DE ESTE TIPO
+        Y SE PUEDA ENLAZAR CON CIERTA LAYOUT HORIZONTAL QUE COMPONE CADA MENSAJE.
+        RECORDAR QUE LUEGO DE CREARSE LA INSTANCIA DEBE ENLAZARSE  AL self.pixmaps_profiles_array del frame CHAT.
+        '''
+        self.profile_image = QPixmap(image_path)
+        self.update()
+
     def show_profile(self):
         self.show()
         self.raise_()
@@ -136,8 +146,12 @@ class ChatWidget(QWidget):
             self.timer_expand_animation.stop()
 
     def load_image(self, image_path):
-        image = Image.open(image_path)
-        return np.array(image)
+        # if the image does not exist, we return a default image
+        try:
+            image = Image.open(image_path)
+            return np.array(image)
+        except:
+            return np.array(Image.open('images/profile_image.png'))
 
     def get_average_color(self, image_array):
         average_color = np.mean(image_array, axis=(0, 1)).astype(int)
@@ -147,10 +161,11 @@ class ChatWidget(QWidget):
 class QLabelProfilePicture(QLabel):
     signal_profile_picture_clicked = QtCore.pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, username, *args, **kwargs):
         super().__init__()
         # Right Alignment
         self.setFixedSize(50, 50)
+        self.username = username
         self.original_size = self.sizeHint()
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.enterEvent = self.label_enter_event
@@ -159,9 +174,15 @@ class QLabelProfilePicture(QLabel):
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
         self.animation_steps = 100
         self.current_step = 0
-        self.original_pixmap = QPixmap('images/profile_image.png').scaledToWidth(
-            50, QtCore.Qt.TransformationMode.SmoothTransformation)
+        pixmap = QPixmap(f'profiles/images/{username}.png')
+        self.original_pixmap = pixmap.scaledToWidth(
+            32, QtCore.Qt.TransformationMode.SmoothTransformation)
         self.scaled_pixmap = None
+        self.setPixmap(self.original_pixmap)
+
+    def label_enter_event_first(self):
+        self.setPixmap(self.original_pixmap.scaledToWidth(
+            32, QtCore.Qt.TransformationMode.SmoothTransformation))
 
     def label_enter_event(self, event):
         self.timer_expand_animation.start(2)

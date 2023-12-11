@@ -20,6 +20,7 @@ class ClientCommunicator(QObject):
             socket.AF_INET, socket.SOCK_STREAM)
         self.send_message_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
+        self._stop_threads = False  # Bandera para detener los hilos
 
     def send_message(self, message: str) -> None:
         if message.lower() == 'exit' or message.lower() == 'close':

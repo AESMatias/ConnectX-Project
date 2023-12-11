@@ -2,12 +2,10 @@
 from Login.login import login
 from Login.register import register
 from PyQt6.QtWidgets import (QPushButton, QLineEdit)
-from PyQt6.QtCore import (QTimer, pyqtSignal, QUrl)
+from PyQt6.QtCore import (pyqtSignal, QUrl)
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PyQt6.QtGui import QGuiApplication, QPainter, QColor, QBrush
 import os
 import sys
-from styles.styles import edit_profile_button
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 

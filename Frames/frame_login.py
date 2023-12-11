@@ -1,15 +1,12 @@
 import os
 from PyQt6 import QtCore
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QFileDialog, QWidget, QLabel, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt6.QtGui import QBrush, QPalette, QPainter, QPixmap, QCursor
-from components.buttons import Upload_file, Login_Button, Button, Chat_Button
+from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout
+from PyQt6.QtGui import QBrush, QPalette, QPixmap, QCursor
+from components.buttons import Login_Button, Button, Chat_Button
 from styles.styles import welcome_user_style, button_style, login_label, login_label_wrong, login_label_ok
-from PyQt6.QtCore import QStandardPaths, QUrl
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput, QAudio
+from PyQt6.QtCore import QUrl
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from components.global_functions import center_window
-import requests
-from io import BytesIO
 
 
 class FrameLogin(QWidget):

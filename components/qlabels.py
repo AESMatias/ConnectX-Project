@@ -4,12 +4,6 @@ from PyQt6 import QtCore
 import os
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QPropertyAnimation
-from PyQt6.QtCore import QRectF
-from PyQt6.QtCore import QEasingCurve
-from PyQt6.QtCore import pyqtProperty
-from PyQt6.QtCore import QSequentialAnimationGroup
-from PyQt6.QtCore import QObject
 from PyQt6.QtGui import QPainter
 from PyQt6.QtCore import QTimer
 
@@ -78,8 +72,6 @@ class MusicButton(QLabel):
 
         return result_pixmap
 
-# ConnectXLogo
-
 
 class ConnectXLogo(QLabel):
     def __init__(self, *args, **kwargs):
@@ -100,12 +92,11 @@ class ConnectXLogo(QLabel):
         # Configuración inicial de opacidad
         self.current_opacity = 1.0
         self.setPixmap(self.pixmap)
-
         # Iniciar el temporizador de ciclo cada 5 segundos
         self.cycle_timer.start(30)
-
         # Iniciar el cambio de opacidad al instanciar el objeto
         self.timer.start(self.animation_duration // self.animation_steps)
+        self.timer.stop()
 
     def change_pixmap_opacity(self, pixmap, opacity):
         result_pixmap = QPixmap(pixmap.size())
@@ -119,7 +110,6 @@ class ConnectXLogo(QLabel):
         painter.setOpacity(opacity)
         painter.drawPixmap(0, 0, pixmap)
         painter.end()
-
         return result_pixmap
 
     def cycle_opacity(self):
