@@ -93,10 +93,10 @@ class ChatFrame(QWidget):
 
         # We need to close the thread too, fix this!!!!!!!!! TO-DO:
         self.client_thread.join()
-        self.client_communicator._stop_threads = True
+        # self.client_communicator._stop_threads = True
         # cerramos los hilos todos y los sockets abiedrtos tambien
-        self.client_communicator.client_socket.close()
-        self.client_communicator.send_message_socket.close()
+        # self.client_communicator.client_socket.close()
+        # self.client_communicator.send_message_socket.close()
     # def close_all(self):
     #     print(f"Closing the window{self}")
     #     self.client_communicator.client_socket.close()

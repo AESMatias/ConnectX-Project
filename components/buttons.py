@@ -140,13 +140,13 @@ class Login_Button(QPushButton):
         sender = self.sender()
         status_login = login(form_username, password_not_visible)
         print('RETORNAAA', status_login)
-        if status_login[0] == False:
-            self.username = form_username
-            print('SELF.USERNAME ', self.username)
-            self.login_status = False
-            self.login_signal.emit()
-            print('Login status:', self.login_status)
-        elif status_login[0] == True:
+        # if status_login[0] == False:
+        #     self.username = form_username
+        #     print('SELF.USERNAME ', self.username)
+        #     self.login_status = False
+        #     self.login_signal.emit()
+        #     print('Login status:', self.login_status)
+        if status_login[0] == True:
             print(f"soy un jwt {status_login[1]}")
             self.signal_jwt_login.emit(status_login[1])
             self.username = form_username
@@ -163,13 +163,13 @@ class Login_Button(QPushButton):
             self.media_player.setSource(file_url)
             # self.media_player.mediaStatusChanged.connect(self.handle_media_status)
             self.media_player.play()
-        elif status_login:
-            self.username = form_username
-            print('SELF.USERNAME ', self.username)
-            self.login_status = True
-            self.login_signal.emit()
-            print('Login status:', self.login_status)
-        else:
+        # elif status_login:
+        #     self.username = form_username
+        #     print('SELF.USERNAME ', self.username)
+        #     self.login_status = True
+        #     self.login_signal.emit()
+        #     print('Login status:', self.login_status)
+        elif status_login[0] == False:
             # Login unsuccessfull sound
             self.media_player = QMediaPlayer(self)
             self.media_player.setAudioOutput(QAudioOutput(self))
