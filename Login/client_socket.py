@@ -66,7 +66,7 @@ class ClientCommunicator(QObject):
 
             # This thread receives messages from the server
             # TODO: we need to use QThread instead of Thread
-            receive_thread = Thread(target=self.receive_messages)
+            receive_thread = Thread(target=self.receive_messages, daemon=True)
             receive_thread.start()
 
         except ConnectionError as e:
