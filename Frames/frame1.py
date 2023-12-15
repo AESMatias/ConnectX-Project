@@ -94,7 +94,7 @@ class Frame1(QWidget):
 
     def init_gui(self) -> None:
         # Window Geometry
-        self.setGeometry(0, 0, 1280, 720)
+        self.setGeometry(0, 0, 1280, 700)
         self.setWindowTitle('ConectX Project')
         # Grid Layout
         self.grid = QGridLayout()

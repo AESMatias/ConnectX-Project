@@ -31,7 +31,6 @@ if __name__ == '__main__':
         window.timer = QTimer()
         window.timer.setInterval(150)
         window.timer.start()
-        center_window(window)
 
         # RGB components for the gradient of the background
         window.r_first_cycle = True

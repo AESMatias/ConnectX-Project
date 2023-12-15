@@ -134,9 +134,10 @@ class ChatFrame(QWidget):
         text = self.write_message.text()
         message = f"{text}"
         if self.intentos_restantes_jwt == 1:
-            # self.client_communicator.send_message(self.jwt)
+
             self.intentos_restantes_jwt -= 1
-            self.send_message_signal.emit(message)
+            self.send_message_signal.emit(self.jwt)
+            # self.send_message_signal.emit(message)
             self.write_message.setText('')
             # no lee las siguientes lineas del codigo, asi que salimos de la func
             return
