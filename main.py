@@ -128,10 +128,17 @@ if __name__ == '__main__':
         login_window.chat_button.clicked.connect(chat_frame.launch)
         login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
 
-        chat_frame.client_communicator.message_received.connect(
-            chat_frame.new_message)
+        # chat_frame.client_communicator.message_received.connect(
+        #     chat_frame.new_message)
+        # Here, we send the first message through the socket to the server with the token:
+        # TODO
+        login_window.send_message_login.connect(
+            login_window.client_communicator.send_message)
         chat_frame.send_message_signal.connect(
-            chat_frame.client_communicator.send_message)
+            login_window.client_communicator.send_message)
+        # new message
+        login_window.client_communicator.message_received.connect(
+            chat_frame.new_message)
         # Changing the layout of the edit profile window
         edit_profile_window.stack_button1.clicked.connect(
             edit_profile_window.change_page)

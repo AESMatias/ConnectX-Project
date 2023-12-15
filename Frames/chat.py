@@ -34,8 +34,8 @@ class ChatFrame(QWidget):
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
-        self.client_communicator = ClientCommunicator(
-            self.host, self.port, self.username)
+        # self.client_communicator = ClientCommunicator(
+        #     self.host, self.port, self.username)
         self.intentos_restantes_jwt = 1
         # self.client_thread = Thread(target=self.client_communicator.run_client)
         # Profile View
@@ -92,7 +92,7 @@ class ChatFrame(QWidget):
         # self.client_communicator.send_message_socket.close()
 
         # We need to close the thread too, fix this!!!!!!!!! TO-DO:
-        self.client_thread.join()
+        # self.client_thread.join()
         # self.client_communicator._stop_threads = True
         # cerramos los hilos todos y los sockets abiedrtos tambien
         # self.client_communicator.client_socket.close()
@@ -118,21 +118,22 @@ class ChatFrame(QWidget):
             self.username = sender.username
             self.labels['username'].setText(f'Welcome {self.username}')
             self.setWindowTitle(f'ConectX Project - {self.username}')
-            self.client_communicator.username = self.username
+            # self.client_communicator.username = self.username
             # self.labels['username_status'].setText('Credentials OK')
             # self.labels['username_status'].setStyleSheet(login_label_ok)
             # self.labels['username_status'].repaint()  # To avoid bug
             center_window(self)
             self.show()
             self.setFocus()
-            self.client_thread = Thread(
-                target=self.client_communicator.run_client)
-            self.client_thread.start()
+            # self.client_thread = Thread(
+            #     target=self.client_communicator.run_client)
+            # self.client_thread.start()
             self.change_username_status()
 
     def send_message(self):
         text = self.write_message.text()
-        message = f"{text}"
+        # message = f"{text}"
+        message = f"general|{self.jwt}|general|{text}"
         # if self.intentos_restantes_jwt == 1:
 
         #     self.intentos_restantes_jwt -= 1
@@ -144,11 +145,12 @@ class ChatFrame(QWidget):
 
         self.send_message_signal.emit(message)
         self.write_message.setText('')
-        if text.endswith('close') or text.endswith('exit'):
-            print('closing threads and sockets by send_message func')
-            # self.client_communicator.client_socket.close()
-            self.client_communicator.send_message_socket.close()
-            self.client_thread.join()
+        if text.endswith('/close') or text.endswith('/exit'):
+            pass
+            # print('closing threads and sockets by send_message func')
+            # # self.client_communicator.client_socket.close()
+            # self.client_communicator.send_message_socket.close()
+            # self.client_thread.join()
 
     def change_username_status(self):
         sender = self.sender()
@@ -185,7 +187,7 @@ class ChatFrame(QWidget):
 
     def new_message(self, message):
         # TODO Change the username tuple
-        username, message = message.split(':')
+        # username, message = message.split(':')
         username = 'USERNAME_TEST'
         print('the message is ', message, 'and the username is ', username)
         if username not in self.username_tuple:
@@ -204,8 +206,9 @@ class ChatFrame(QWidget):
                 self.pixmap_username = self.get_pic_by_name(username)
                 print('Obteniendo pixmap del usuario ', username)
 
-        # message = username + ':' + message
-        message = f"general|{self.jwt}|general|{message}"
+        # message = username + ':' + message\
+
+        # message = f"general|{self.jwt}|general|{message}"
         # general | token | general |Holaa
         # p2p | token | juanito | adios
         self.retrieve_image_get()

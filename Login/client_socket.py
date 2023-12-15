@@ -25,12 +25,14 @@ class ClientCommunicator(QObject):
     def send_message(self, message: str) -> None:
         if message.lower() == 'exit' or message.lower() == 'close':
             print('Sending closing request to the server')
-            message = f"{self.username}: {message}"
+            # message = f"{self.username}: {message}"
+            message = str(message)
+
             self.send_message_socket.send(message.encode('utf-8'))
             # self.client_socket.close()
             # self.send_message_socket.close()
             self.message_received.emit('connecton_closed')
-        message = f"{self.username}: {message}"
+        # message = f"{self.username}: {message}"
         self.send_message_socket.send(message.encode('utf-8'))
 
     def receive_messages(self) -> None:

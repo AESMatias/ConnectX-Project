@@ -7,15 +7,23 @@ from styles.styles import welcome_user_style, button_style, login_label, login_l
 from PyQt6.QtCore import QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from components.global_functions import center_window
+from threading import Thread
+from Login.client_socket import ClientCommunicator
+from PyQt6.QtCore import pyqtSignal
 
 
 class FrameLogin(QWidget):
-    signal_frame_login = QtCore.pyqtSignal(str)
+    signal_frame_login = pyqtSignal(str)
+    send_message_login = pyqtSignal(str)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.username = ''
-        self.jwt_token = ''
+        self.jwt = ''
+        self.host = "127.0.0.1"
+        self.port = 12345
+        self.client_communicator = ClientCommunicator(
+            self.host, self.port, self.username)
         # Lounge looped music
         self.media_player = QMediaPlayer(self)
         self.media_player.setAudioOutput(QAudioOutput(self))
@@ -24,6 +32,8 @@ class FrameLogin(QWidget):
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
         self.init_gui()
+        message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
+        self.send_message_login.emit(message)
 
         # Crear un QPalette personalizado con la imagen de fondo
         palette = QPalette()
@@ -44,9 +54,9 @@ class FrameLogin(QWidget):
             }}
         """)
 
-    def jws_writter(self, jwt_token: str) -> None:
-        self.jwt_token = jwt_token
-        print("it's the actual token:", jwt_token)
+    def jws_writter(self, jwt: str) -> None:
+        self.jwt = jwt
+        print("it's the actual token:", jwt)
 
     def manage_music(self):
         sender = self.sender()
@@ -102,12 +112,27 @@ class FrameLogin(QWidget):
         if sender.login_status == True:
             print('Session initiated')
             print('logoutbutton username:', self.logout_button.username)
+            self.change_username_status()
             self.labels['username_status'].setText('Credentials OK')
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
             center_window(self)
             self.show()
             self.setFocus()
+            # self.client_communicator.username = self.username
+
+            self.client_communicator.username = self.username
+            self.client_thread = Thread(
+                target=self.client_communicator.run_client)
+            self.client_thread.start()
+            message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
+            print(' ----------------------------------------------------')
+            print(self.host, self.port, self.username, ' aaaa')
+            print(' self.username, self.client_communicator.username: ', self.username,
+                  self.client_communicator.username, ' aaaa')
+            print(' ----------------------------------------------------')
+            # self.send_message_login.emit(message)
+            print('THREAD STARTED WITH self.username = ', self.username)
 
     def open_edit_account(self):
         print('logoutbutton username:', self.logout_button.username)
@@ -123,9 +148,9 @@ class FrameLogin(QWidget):
             self.labels['username_status'].setStyleSheet(login_label_wrong)
             self.labels['username_status'].repaint()  # To avoid bugs
         elif sender.login_status == True:
-            username = sender.username
-            self.labels['username'].setText(f'Welcome {username}')
-            self.setWindowTitle(f'ConectX Project - {username}')
+            self.username = sender.username
+            self.labels['username'].setText(f'Welcome {self.username}')
+            self.setWindowTitle(f'ConectX Project - {self.username}')
             self.labels['username'].repaint()  # To avoid bugs
 
     def init_gui(self) -> None:
