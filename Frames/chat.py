@@ -133,14 +133,14 @@ class ChatFrame(QWidget):
     def send_message(self):
         text = self.write_message.text()
         message = f"{text}"
-        if self.intentos_restantes_jwt == 1:
+        # if self.intentos_restantes_jwt == 1:
 
-            self.intentos_restantes_jwt -= 1
-            self.send_message_signal.emit(self.jwt)
-            # self.send_message_signal.emit(message)
-            self.write_message.setText('')
-            # no lee las siguientes lineas del codigo, asi que salimos de la func
-            return
+        #     self.intentos_restantes_jwt -= 1
+        #     # self.send_message_signal.emit(self.jwt)
+        #     # self.send_message_signal.emit(message)
+        #     self.write_message.setText('')
+        #     # no lee las siguientes lineas del codigo, asi que salimos de la func
+        #     return
 
         self.send_message_signal.emit(message)
         self.write_message.setText('')
@@ -184,7 +184,9 @@ class ChatFrame(QWidget):
         return QPixmap(f"profiles/images/{name}.png")
 
     def new_message(self, message):
+        # TODO Change the username tuple
         username, message = message.split(':')
+        username = 'USERNAME_TEST'
         print('the message is ', message, 'and the username is ', username)
         if username not in self.username_tuple:
             self.username_tuple += (username,)
@@ -202,7 +204,10 @@ class ChatFrame(QWidget):
                 self.pixmap_username = self.get_pic_by_name(username)
                 print('Obteniendo pixmap del usuario ', username)
 
-        message = username + ':' + message
+        # message = username + ':' + message
+        message = f"general|{self.jwt}|general|{message}"
+        # general | token | general |Holaa
+        # p2p | token | juanito | adios
         self.retrieve_image_get()
         # NO SE USA ESTO TODO
         qlabelpixamap = QLabelProfilePicture(username)
