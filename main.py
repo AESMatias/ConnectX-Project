@@ -128,7 +128,10 @@ if __name__ == '__main__':
             window.volume_icon_change)
         # Opening the chat
         login_window.chat_button.clicked.connect(chat_frame.launch)
-        login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
+        # login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
+        # todo this TODO arreglar esto JWT UNO SOLOOO
+        window.login_button.signal_jwt_login.connect(chat_frame.jwt_receiver)
+
         # new message
         login_window.client_communicator.message_received.connect(
             chat_frame.new_message)

@@ -261,9 +261,13 @@ class Chat_Button(QPushButton):
             with open("images/profile_image.png", "wb") as f:
                 f.write(response.content)
 
+    def recive_first_token(self, jwt_token: str) -> None:
+        self.jwt_token = jwt_token
+
     def button_clicked(self) -> None:
-        status_login = login(form_username, password_not_visible)
-        jwt_token = status_login[1]
+        status_login = True
+        # status_login = login(form_username, password_not_visible)
+        # jwt_token = status_login[1]
         print('chatRETORNAAA', status_login)
         if status_login and self.name == 'chatButton':
             self.username = form_username
