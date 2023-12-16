@@ -33,6 +33,8 @@ class EditProfileButton(QPushButton):
 
 
 class Button(QPushButton):
+    signal_pressed = pyqtSignal(str)
+
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
@@ -41,8 +43,7 @@ class Button(QPushButton):
         self.clicked.connect(self.button_clicked)
 
     def button_clicked(self):
-        sender = self.sender
-        pass
+        self.signal_pressed.emit(form_username)
 
 
 class Upload_file(QPushButton):
@@ -236,6 +237,7 @@ class InputField(QLineEdit):
 class Chat_Button(QPushButton):
     login_signal = pyqtSignal(str)
     jwt_emit = pyqtSignal(str)
+    signal_pressed = pyqtSignal(str)
 
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -276,6 +278,18 @@ class Chat_Button(QPushButton):
             self.jwt_emit.emit(jwt_token)
             print('Login status:', self.login_status)
             self.retrieve_image_get(jwt_token)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            print(self.username)
+            self.signal_pressed.emit(self.username)
 
         # elif status_login and self.name == 'chatButton':
         #     self.username = form_username

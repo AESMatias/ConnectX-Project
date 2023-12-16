@@ -119,6 +119,11 @@ if __name__ == '__main__':
             window.show_register_status)
         # Opening the edit profile window
         login_window.edit_account.clicked.connect(edit_profile_window.show)
+        login_window.chat_button.signal_pressed.connect(
+            edit_profile_window.get_username)
+        # When the chat opens, we need to charging the .png image or set the default one
+        login_window.chat_button.clicked.connect(
+            edit_profile_window.get_username)
         input_image = ImageViewer()
         input_image.setStyleSheet(global_style)
 

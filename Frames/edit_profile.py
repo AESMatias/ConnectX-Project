@@ -11,6 +11,7 @@ from components.buttons import EditProfileButton
 from Frames.change_profile_pic import ChangeAvatar
 from styles.styles import button_style, edit_profile_button, edit_profile_button_clicked
 from components.input_user import ImageViewer
+import os
 image_florence = 'images/florence.jpg'
 aristotle_1 = 'images/aristotle_1.jpg'
 
@@ -22,6 +23,11 @@ class EditProfile(QWidget):
         self.username = ''
         self.init_gui()
 
+    def get_username(self, username):
+        self.username = username
+        self.setWindowTitle(f'ConectX Project - {self.username}')
+        self.charging_image()
+
     def open_file(self) -> None:
         initial_dir = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.DocumentsLocation)
@@ -30,15 +36,15 @@ class EditProfile(QWidget):
         if self.upload_qfile:
             print(f'Selected file: {self.upload_qfile}')
             dir_image = self.upload_qfile[0]
-            image_pixmap = QPixmap(dir_image)
+            self.image_pixmap = QPixmap(dir_image)
 
-            self.labels['label_image'].setPixmap(image_pixmap)
+            self.labels['label_image'].setPixmap(self.image_pixmap)
             self.labels['label_image'].setScaledContents(True)
             self.labels['label_image'].setGeometry(200, 200, 300, 300)
             self.labels['label_image'].setAlignment(
                 QtCore.Qt.AlignmentFlag.AlignCenter)
             self.labels['label_image'].show()
-            image = image_pixmap.toImage()
+            image = self.image_pixmap.toImage()
             buffer = QtCore.QBuffer()
             buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
             image.save(buffer, "PNG")
@@ -52,6 +58,20 @@ class EditProfile(QWidget):
         change_avatar_frame = ChangeAvatar(self)
         change_avatar_frame.show()
 
+    def charging_image(self):
+        path_file = f'profiles/images/{self.username}.png'
+        if os.path.exists(path_file):
+            print(
+                f'El archivo {path_file} existe, ergo no lo descargamos')
+        else:
+            print(f'El archivo {path_file} NO existe.')
+            create_new_os_image = open(path_file, 'wb')
+            # Ahora creamos la imagen a partir de Anonoymous.png
+            create_new_os_image.write(
+                open('profiles/images/Anonymous.png', 'rb').read())
+            create_new_os_image.close()
+            self.image_pixmap = QPixmap(path_file)
+
     def init_gui(self) -> None:
         window_size = self.size()
         self.labels = {}
@@ -62,6 +82,17 @@ class EditProfile(QWidget):
         window_size = self.size()
         self.labels['label_image'] = QLabel(self)
         self.labels['label_image'].hide()
+        # TODO
+        # TODO Empezamos con la imagen de perfil por defecto, luego hay que
+        # pedirla cada vez que se inicie la aplicación, pero revisando
+        # antes si esta descargada en la ubicacion de self.username TODO
+        # self.labels['label_image'].setPixmap(self.image_pixmap)
+        self.labels['label_image'].setScaledContents(True)
+        self.labels['label_image'].setGeometry(200, 200, 300, 300)
+        self.labels['label_image'].setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.labels['label_image'].show()
+        # TODO
         self.labels['label_image'].setMaximumSize(window_size)
         self.labels['label_image'].setGeometry(0, 0, 0, 0)
         self.labels['label_image'].setAlignment(

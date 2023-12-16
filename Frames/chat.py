@@ -42,7 +42,7 @@ class ChatFrame(QWidget):
         self.chat_widget = ChatWidget()
         self.chat_widget.hide()
         # Profile View Background
-        self.background_widget = ProfileViewBackground(self)
+        self.background_widget = ProfileViewBackground(self, self.username)
         self.background_widget.hide()
 
         self.pixmaps_profiles_array = []
@@ -70,20 +70,28 @@ class ChatFrame(QWidget):
             }}
         """)
 
-    def retrieve_image_get(jwt_token: str) -> Tuple[bool, str]:
-        status_login = login("admin", "admin")
-        jwt_token = status_login[1]
-        print('jwt_token: ', jwt_token)
+    def retrieve_image_get(self, username: str) -> Tuple[bool, str]:
+        # status_login = login("admin", "admin")
+        # jwt_token = status_login[1]
+        # print('jwt_token: ', jwt_token)
         url = 'http://localhost:8000/user/profilePIC/'
         headers = {
             'accept': 'application/json',
-            'Authorization': f'Bearer {str(jwt_token)}'
+            'Authorization': f'Bearer {str(self.jwt)}'
         }
         response = requests.get(url, headers=headers)
         print(response)
         if response.status_code == 200:
-            with open("images/profile_image.png", "wb") as f:
+            with open(f"profiles/images/{username}.png", "wb") as f:
                 f.write(response.content)
+                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
+                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
+                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
+                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
+                return None
+        elif response.status_code == 404:
+            print('status_code 404: No existe la imagen de perfil')
+            return QPixmap('profiles/images/Anonymous.png')
 
     def closeEvent(self, event):
         print("Closing the window")
@@ -133,7 +141,7 @@ class ChatFrame(QWidget):
     def send_message(self):
         text = self.write_message.text()
         # message = f"{text}"
-        message = f"general|{self.jwt}|general|{text}"
+        message = f"general|{self.jwt}|{self.username}|{text}"
         # if self.intentos_restantes_jwt == 1:
 
         #     self.intentos_restantes_jwt -= 1
@@ -167,12 +175,12 @@ class ChatFrame(QWidget):
             # self.client_communicator.username = username
             pass
 
-    def get_pic_by_name(self, name: str) -> QPixmap:
+    def get_pic_by_name(self, username: str, optional_object=None) -> QPixmap:
         import requests
 
         url = "http://localhost:8000/user/picture/"
 
-        querystring = {"user_name": f"{name}"}
+        querystring = {"user_name": f"{username}"}
 
         headers = {
             "Accept": "image/png"
@@ -180,16 +188,23 @@ class ChatFrame(QWidget):
 
         response = requests.request(
             "GET", url, headers=headers, params=querystring)
-
-        with open(f"profiles/images/{name}.png", "wb") as f:
-            f.write(response.content)
-        return QPixmap(f"profiles/images/{name}.png")
+        if username == 'Anonymous':
+            # If the username does not have a profile picture, we return the default one
+            return QPixmap('profiles/images/Anonymous.png')
+        else:
+            with open(f"profiles/images/{username}.png", "rb") as f:
+                # f.write(response.content)
+                if optional_object and username:
+                    optional_object.change_pixmap(username)
+                return QPixmap(f"profiles/images/{username}.png")
 
     def new_message(self, message):
         # TODO Change the username tuple
         # username, message = message.split(':')
-        username = 'USERNAME_TEST'
-        print('the message is ', message, 'and the username is ', username)
+        username = message.split('|')[2]
+        message_text = message.split('|')[3]
+        print('the message is ', message_text,
+              'and the username is ', username)
         if username not in self.username_tuple:
             self.username_tuple += (username,)
 
@@ -203,16 +218,22 @@ class ChatFrame(QWidget):
                     f'El archivo {ruta_archivo} existe, ergo no lo descargamos')
             else:
                 print(f'El archivo {ruta_archivo} NO existe.')
-                self.pixmap_username = self.get_pic_by_name(username)
-                print('Obteniendo pixmap del usuario ', username)
+                image_retrieved = self.retrieve_image_get(username)
+                if image_retrieved is not None:
+                    print(' not NONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE A A A A A')
+                    self.pixmap_username = image_retrieved
+                else:
+                    self.pixmap_username = self.get_pic_by_name(username)
+                    print('Obteniendo pixmap del usuario ', username)
 
         # message = username + ':' + message\
 
         # message = f"general|{self.jwt}|general|{message}"
         # general | token | general |Holaa
         # p2p | token | juanito | adios
-        self.retrieve_image_get()
+        # self.retrieve_image_get(username)
         # NO SE USA ESTO TODO
+        self.retrieve_image_get(username)
         qlabelpixamap = QLabelProfilePicture(username)
         # qlabelpixamap.setPixmap(self.pixmap_username.scaledToWidth(
         #     32, QtCore.Qt.TransformationMode.SmoothTransformation))
@@ -262,12 +283,12 @@ class ChatFrame(QWidget):
                 print('ELSEEEEEEEEEEEEEE')
                 # self.all_messages.pop(0)
                 # self.all_messages.append([self.image_pixmap_1, message])
-                self.all_messages2.append(message)
+                self.all_messages2.append(message_text)
                 # self.labels['msg'].setText('\n'.join(self.all_messages2))
 
                 qlabel_message = QLabel(self)
                 qlabel_message.setWordWrap(True)
-                qlabel_message.setText(message)
+                qlabel_message.setText(message_text)
                 qlabel_message.setTextInteractionFlags(
                     Qt.TextInteractionFlag.TextSelectableByMouse)
 
@@ -290,12 +311,23 @@ class ChatFrame(QWidget):
             # for elem in self.pixmaps_profiles_array:
             #     elem.signal_profile_picture_clicked.connect(
             #         self.chat_widget.show_profile)
+            # Profile View Background
+            background_widget = ProfileViewBackground(self, username)
+            background_widget.hide()
+            # Profile View
+            chat_widget = ChatWidget(self, username)
+            chat_widget.hide()
+
+            self.get_pic_by_name(
+                username, chat_widget)
+
             self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
-                self.background_widget.show_profile)
+                background_widget.show_profile)
             self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
-                self.chat_widget.show_profile)
-            self.background_widget.signal_profile_close.connect(
-                self.chat_widget.hide)
+                chat_widget.show_profile)
+            background_widget.signal_profile_close.connect(
+                chat_widget.hide)
+
             # self.container_widget.setFixedSize(
             #     256, 500+132*self.counter_messages*0)
             # self.scroll_area.setFixedSize(

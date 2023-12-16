@@ -11,10 +11,11 @@ import numpy as np
 class ProfileViewBackground(QWidget):
     signal_profile_close = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, username=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
-        self.setWindowTitle("Background Profile View")
+        self.setWindowTitle(f"Background Profile View of {username}")
+        self.username = username
         # Makes the background transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setGeometry(-500, -500, 8000, 8000)
@@ -32,7 +33,7 @@ class ProfileViewBackground(QWidget):
     def show_profile(self):
         self.show()
         self.raise_()
-        print(' show profileeeee de elem: ', self)
+        print(' show profileeeee de elem: ', self.username, self)
 
     def mousePressEvent(self, event) -> None:
         self.signal_profile_close.emit()
@@ -40,10 +41,10 @@ class ProfileViewBackground(QWidget):
 
 
 class ChatWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, username=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
-        self.username = 'admin'
+        self.username = username
         print('USERNAME ESSSSSSSSSSSSSSSSSSSSSSSSSSS', self.username)
         self.setWindowTitle("Chat Flotante")
         self.profile_image = QPixmap(f'profiles/images/{self.username}.png')
@@ -52,7 +53,7 @@ class ChatWidget(QWidget):
         average_color = self.get_average_color(image_array)
         # Makes the background transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
-        self.username_label = QLabel('Username')
+        self.username_label = QLabel(self.username)
         self.username_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.username_label.setStyleSheet(
             'color: white;text-align: center;text-decoration: \
@@ -123,12 +124,11 @@ class ChatWidget(QWidget):
         '''
         self.profile_image = QPixmap(image_path)
         self.update()
+        print('CHANGING PIXMAP AT ChatWidget.change_pixmap method!')
 
     def show_profile(self):
         self.show()
         self.raise_()
-
-        print(' show profileeeee de elem: ', self)
         self.timer_expand_animation.start(2)
 
     def animate_size_start(self):
