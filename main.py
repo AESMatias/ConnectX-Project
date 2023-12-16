@@ -102,6 +102,7 @@ if __name__ == '__main__':
 
         # This two code lines below, trigger to open a login window and close the main
         window.login_button.login_signal.connect(login_window.launch)
+
         window.login_button.login_signal.connect(window.close)
         window.login_button.signal_jwt_login.connect(login_window.jws_writter)
         # Once the login was successful, we adding the close session option
@@ -110,6 +111,7 @@ if __name__ == '__main__':
         #
         window.login_button.clicked.connect(
             login_window.change_username_status)
+
         login_window.logout_button.clicked.connect(
             window.remove_registered_label)
 
@@ -127,7 +129,9 @@ if __name__ == '__main__':
         # Opening the chat
         login_window.chat_button.clicked.connect(chat_frame.launch)
         login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
-
+        # new message
+        login_window.client_communicator.message_received.connect(
+            chat_frame.new_message)
         # chat_frame.client_communicator.message_received.connect(
         #     chat_frame.new_message)
         # Here, we send the first message through the socket to the server with the token:
@@ -136,9 +140,9 @@ if __name__ == '__main__':
             login_window.client_communicator.send_message)
         chat_frame.send_message_signal.connect(
             login_window.client_communicator.send_message)
-        # new message
-        login_window.client_communicator.message_received.connect(
-            chat_frame.new_message)
+        # When the client is ready, send the first message
+        # login_window.client_communicator.client_ready.connect(
+        #     login_window.send_first_message)
         # Changing the layout of the edit profile window
         edit_profile_window.stack_button1.clicked.connect(
             edit_profile_window.change_page)

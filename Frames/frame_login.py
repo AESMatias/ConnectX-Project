@@ -10,6 +10,7 @@ from components.global_functions import center_window
 from threading import Thread
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtCore import pyqtSignal
+from time import sleep
 
 
 class FrameLogin(QWidget):
@@ -24,6 +25,8 @@ class FrameLogin(QWidget):
         self.port = 12345
         self.client_communicator = ClientCommunicator(
             self.host, self.port, self.username)
+        self.client_thread = Thread(
+            target=self.client_communicator.run_client)
         # Lounge looped music
         self.media_player = QMediaPlayer(self)
         self.media_player.setAudioOutput(QAudioOutput(self))
@@ -32,8 +35,6 @@ class FrameLogin(QWidget):
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
         self.play_media()
         self.init_gui()
-        message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
-        self.send_message_login.emit(message)
 
         # Crear un QPalette personalizado con la imagen de fondo
         palette = QPalette()
@@ -53,6 +54,19 @@ class FrameLogin(QWidget):
                 background-color: rgba(0, 0, 0, 128);  /* 128 es el valor de opacidad (0-255) */
             }}
         """)
+
+    def send_first_message(self):
+        # Método para enviar el primer mensaje después de que el cliente esté listo
+        # self.first_message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
+        # print(' SENDING AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        # self.send_message_login.emit(self.first_message)
+        sleep(1)  # Without this sleep, the first message is not sent
+        self.client_communicator.username = self.username
+        # self.client_thread = Thread(
+        #     target=self.client_communicator.run_client)
+        # self.client_thread.start()
+        message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
+        self.send_message_login.emit(message)
 
     def jws_writter(self, jwt: str) -> None:
         self.jwt = jwt
@@ -119,20 +133,49 @@ class FrameLogin(QWidget):
             center_window(self)
             self.show()
             self.setFocus()
-            # self.client_communicator.username = self.username
 
             self.client_communicator.username = self.username
-            self.client_thread = Thread(
-                target=self.client_communicator.run_client)
-            self.client_thread.start()
-            message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
+
             print(' ----------------------------------------------------')
             print(self.host, self.port, self.username, ' aaaa')
             print(' self.username, self.client_communicator.username: ', self.username,
                   self.client_communicator.username, ' aaaa')
             print(' ----------------------------------------------------')
+
+            # self.client_communicator.username = self.username
+            # self.client_thread = Thread(
+            #     target=self.client_communicator.run_client)
+            # self.client_thread.start()
+            # message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
             # self.send_message_login.emit(message)
             print('THREAD STARTED WITH self.username = ', self.username)
+            # Asigna el nombre de usuario antes de iniciar el hilo del cliente
+
+            self.client_communicator.username = self.username
+            self.client_thread.start()
+            self.send_first_message()
+            # # Verifica si el hilo del cliente ya se está ejecutando
+            # if not self.client_communicator.is_running():
+            #     self.client_thread = Thread(
+            #         target=self.client_communicator.run_client)
+            #     self.client_thread.start()
+            #     self.send_first_message()
+            #     print(" no esta running asi que STARTED AAAAAAAAAAAAAA")
+            # else:
+            #     self.send_first_message()
+            #     print("Client thread is already running.")
+
+            # # Envía el mensaje de inicio de sesión solo si el hilo del cliente está en ejecución
+            # if self.client_communicator.is_running():
+            #     message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
+            #     self.client_thread = Thread(
+            #         target=self.client_communicator.run_client)
+            #     self.client_thread.start()
+            #     self.send_first_message()
+
+            #     print('THREAD STARTED WITH self.username = ', self.username)
+            # else:
+            #     print("Unable to send login message. Client thread is not running.")
 
     def open_edit_account(self):
         print('logoutbutton username:', self.logout_button.username)
@@ -152,6 +195,8 @@ class FrameLogin(QWidget):
             self.labels['username'].setText(f'Welcome {self.username}')
             self.setWindowTitle(f'ConectX Project - {self.username}')
             self.labels['username'].repaint()  # To avoid bugs
+            # self.send_first_message()
+            # TODO
 
     def init_gui(self) -> None:
         # Grid Layout

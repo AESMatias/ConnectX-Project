@@ -10,6 +10,7 @@ from PyQt6.QtNetwork import QTcpSocket
 
 class ClientCommunicator(QObject):
     message_received = pyqtSignal(str)
+    client_ready = pyqtSignal()
 
     def __init__(self, host, port, username):
         super().__init__()
@@ -21,24 +22,42 @@ class ClientCommunicator(QObject):
         self.send_message_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
         self._stop_threads = False  # Bandera para detener los hilos
+        self.socket_connected()
+        self.first_message = True
+
+    def socket_connected(self):
+        self.client_ready.emit()
 
     def send_message(self, message: str) -> None:
-        if message.lower() == 'exit' or message.lower() == 'close':
-            print('Sending closing request to the server')
-            # message = f"{self.username}: {message}"
-            message = str(message)
+        if self.is_running():
+            try:
+                if message.lower() == 'exit' or message.lower() == 'close':
+                    print('Sending closing request to the server')
+                    # message = f"{self.username}: {message}"
+                    message = str(message)
 
-            self.send_message_socket.send(message.encode('utf-8'))
-            # self.client_socket.close()
-            # self.send_message_socket.close()
-            self.message_received.emit('connecton_closed')
-        # message = f"{self.username}: {message}"
-        self.send_message_socket.send(message.encode('utf-8'))
+                    self.send_message_socket.send(message.encode('utf-8'))
+                    # self.client_socket.close()
+                    # self.send_message_socket.close()
+                    self.message_received.emit('connecton_closed')
+                # message = f"{self.username}: {message}"
+                self.send_message_socket.send(message.encode('utf-8'))
+            except OSError as e:
+                print(f"Error sending message: {e} AAAAAAAAAAAAAAA")
+
+    def is_running(self):
+        # Verifica si el socket está conectado
+        return self.send_message_socket and self.send_message_socket.fileno() != -1
 
     def receive_messages(self) -> None:
         try:
             while True:
                 data = self.client_socket.recv(4096)
+                if self.first_message == True:
+                    self.first_message = False
+                    print(' first message at Login button: ',
+                          data.decode('utf-8'))
+                    continue
                 if not data:
                     print('Connection closed without data')
                     self.client_socket.close()
@@ -61,7 +80,8 @@ class ClientCommunicator(QObject):
 
     def run_client(self) -> None:
         try:
-            print('NEW THREADDD')
+            print('NEW THREADDD iniciado con run_client',
+                  self.username, self.host, self.port)
 
             self.client_socket.connect((self.host, self.port))
             self.send_message_socket.connect((self.host, self.port))
@@ -72,7 +92,7 @@ class ClientCommunicator(QObject):
             receive_thread.start()
 
         except ConnectionError as e:
-            print('Connection error', e)
+            print('Connection error at run_client inside ClientCommunicator:', e)
             self.client_socket.close()
             self.send_message_socket.close()
 
