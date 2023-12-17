@@ -204,8 +204,8 @@ class ChatFrame(QWidget):
     def new_message(self, message):
         # TODO Change the username tuple
         # username, message = message.split(':')
-        username = message.split('|')[2]
-        message_text = message.split('|')[3]
+        username, message_text = message.split(':')
+
         print('the message is ', message_text,
               'and the username is ', username)
         if message_text == 'MESSAGE_LOGIN':
