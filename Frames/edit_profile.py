@@ -21,6 +21,7 @@ class EditProfile(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.username = ''
+        self.jwt = ''
         self.init_gui()
 
     def get_username(self, username):
@@ -28,41 +29,56 @@ class EditProfile(QWidget):
         self.setWindowTitle(f'ConectX Project - {self.username}')
         self.charging_image()
 
-    def open_file(self) -> None:
-        initial_dir = QStandardPaths.writableLocation(
-            QStandardPaths.StandardLocation.DocumentsLocation)
-        self.upload_qfile = QFileDialog.getOpenFileName(
-            self, 'Upload image', initial_dir, 'All files (*)')
-        if self.upload_qfile:
-            print(f'Selected file: {self.upload_qfile}')
-            dir_image = self.upload_qfile[0]
-            self.image_pixmap = QPixmap(dir_image)
+    # def open_file(self) -> None:
+    #     initial_dir = QStandardPaths.writableLocation(
+    #         QStandardPaths.StandardLocation.DocumentsLocation)
+    #     self.upload_qfile = QFileDialog.getOpenFileName(
+    #         self, 'Upload image', initial_dir, 'All files (*)')
+    #     if self.upload_qfile:
+    #         print(f'Selected file: {self.upload_qfile}')
+    #         dir_image = self.upload_qfile[0]
+    #         self.image_pixmap = QPixmap(dir_image)
 
-            self.labels['label_image'].setPixmap(self.image_pixmap)
-            self.labels['label_image'].setScaledContents(True)
-            self.labels['label_image'].setGeometry(200, 200, 300, 300)
-            self.labels['label_image'].setAlignment(
-                QtCore.Qt.AlignmentFlag.AlignCenter)
-            self.labels['label_image'].show()
-            image = self.image_pixmap.toImage()
-            buffer = QtCore.QBuffer()
-            buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
-            image.save(buffer, "PNG")
-            image_bytes = buffer.data()
-            url = 'http://localhost:8000/uploadimagen/'
-            files = {'files': ('blob', BytesIO(image_bytes))}
-            response = requests.post(url, files=files)
-            print(f'Response from server: {response.json()}')
+    #         self.labels['label_image'].setPixmap(self.image_pixmap)
+    #         self.labels['label_image'].setScaledContents(True)
+    #         self.labels['label_image'].setGeometry(200, 200, 300, 300)
+    #         self.labels['label_image'].setAlignment(
+    #             QtCore.Qt.AlignmentFlag.AlignCenter)
+    #         self.labels['label_image'].show()
+    #         image = self.image_pixmap.toImage()
+    #         buffer = QtCore.QBuffer()
+    #         buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
+    #         image.save(buffer, "PNG")
+    #         image_bytes = buffer.data()
+    #         url = 'http://localhost:8000/uploadimagen/'
+    #         files = {'files': ('blob', BytesIO(image_bytes))}
+    #         response = requests.post(url, files=files)
+    #         print(f'Response from server: {response.json()}')
 
     def change_profile_pic(self) -> None:
         change_avatar_frame = ChangeAvatar(self)
         change_avatar_frame.show()
 
+    def jwt_receiver(self, jwt: str, username: str) -> None:
+        self.jwt = jwt
+        self.username = username
+        print('USERNAME DE SIGNAL A A A A A A A', username)
+
+        # The following lines are for set the profile image
+        # Upload profile image
+        image_viewer = ImageViewer(username=self.username, jwt=self.jwt)
+        print('AHOAR SE CREO CON ', self.username, ' y ', self.jwt)
+        self.image_viewer.jwt = jwt
+        self.image_viewer.username = self.username
+        self.image_viewer.retrieve_image_get(self.username, jwt)
+        self.page1_layout.update(self.image_viewer, image_viewer)
+        self.image_viewer.destroyLater()
+
     def charging_image(self):
         path_file = f'profiles/images/{self.username}.png'
         if os.path.exists(path_file):
             print(
-                f'El archivo {path_file} existe, ergo no lo descargamos')
+                f'El archivo {path_file} existe, ergo no la creamos')
         else:
             print(f'El archivo {path_file} NO existe.')
             create_new_os_image = open(path_file, 'wb')
@@ -99,7 +115,7 @@ class EditProfile(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Upload profile image
-        self.image_viewer = ImageViewer()
+        self.image_viewer = ImageViewer(username=self.username, jwt=self.jwt)
         # self.upload_image = Upload_file(
         #     'uploadButton', (300, 250), 'Change profile picture', self)
         # self.upload_image.setCursor(
@@ -230,14 +246,14 @@ class EditProfile(QWidget):
         self.buttons_grouped.addWidget(self.stack_button4)
         self.buttons_grouped.addWidget(self.stack_button5)
 
-        page1_layout = QHBoxLayout()
-        page1_layout.addWidget(self.labels['label_image1'])
-        page1_layout.addWidget(self.image_viewer)
+        self.page1_layout = QHBoxLayout()
+        self.page1_layout.addWidget(self.labels['label_image1'])
+        self.page1_layout.addWidget(self.image_viewer)
         # page1_layout.addWidget(self.upload_image)
         self.labels['label_image']
-        page1_layout.addWidget(self.labels['label_image'])
+        self.page1_layout.addWidget(self.labels['label_image'])
         container1 = QWidget()
-        container1.setLayout(page1_layout)
+        container1.setLayout(self.page1_layout)
 
         page2_layout = QVBoxLayout()
         page2_layout.addWidget(self.labels['label_image2'])

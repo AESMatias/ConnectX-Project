@@ -80,7 +80,7 @@ class ChatFrame(QWidget):
             'Authorization': f'Bearer {str(self.jwt)}'
         }
         response = requests.get(url, headers=headers)
-        print(response)
+        print(f'RETRIEVE GET DEL USUARIO {username}', response)
         if response.status_code == 200:
             with open(f"profiles/images/{username}.png", "wb") as f:
                 f.write(response.content)
@@ -115,7 +115,7 @@ class ChatFrame(QWidget):
         if event.key() == QtCore.Qt.Key.Key_Return or event.key() == 16777220:
             self.send_message()
 
-    def jwt_receiver(self, jwt: str) -> None:
+    def jwt_receiver(self, jwt: str, username: str = None) -> None:
         self.jwt = jwt
         print('JWT:', self.jwt)
 
@@ -176,18 +176,17 @@ class ChatFrame(QWidget):
             pass
 
     def get_pic_by_name(self, username: str, optional_object=None) -> QPixmap:
-        import requests
 
-        url = "http://localhost:8000/user/picture/"
+        # url = "http://localhost:8000/user/picture/"
 
-        querystring = {"user_name": f"{username}"}
+        # querystring = {"user_name": f"{username}"}
 
-        headers = {
-            "Accept": "image/png"
-        }
+        # headers = {
+        #     "Accept": "image/png"
+        # }
 
-        response = requests.request(
-            "GET", url, headers=headers, params=querystring)
+        # response = requests.request(
+        #     "GET", url, headers=headers, params=querystring)
         if username == 'Anonymous':
             # If the username does not have a profile picture, we return the default one
             return QPixmap('profiles/images/Anonymous.png')
@@ -195,8 +194,12 @@ class ChatFrame(QWidget):
             with open(f"profiles/images/{username}.png", "rb") as f:
                 # f.write(response.content)
                 if optional_object and username:
+                    print('OPTIONAL OBJECT WIDGETTT')
                     optional_object.change_pixmap(username)
-                return QPixmap(f"profiles/images/{username}.png")
+                    return QPixmap(f"profiles/images/{username}.png")
+                else:
+                    print('ELSEEEEEEE')
+                    return QPixmap(f"profiles/images/{username}.png")
 
     def new_message(self, message):
         # TODO Change the username tuple
@@ -205,8 +208,10 @@ class ChatFrame(QWidget):
         message_text = message.split('|')[3]
         print('the message is ', message_text,
               'and the username is ', username)
+        if message_text == 'MESSAGE_LOGIN':
+            return
         if username not in self.username_tuple:
-            self.username_tuple += (username,)
+            # self.username_tuple += (username,)
 
             # abrimos /profiles/images/username.png y miramos si existe tal archivo
             # si existe, lo cargamos, si no, lo descargamos
@@ -217,14 +222,15 @@ class ChatFrame(QWidget):
                 print(
                     f'El archivo {ruta_archivo} existe, ergo no lo descargamos')
             else:
-                print(f'El archivo {ruta_archivo} NO existe.')
-                image_retrieved = self.retrieve_image_get(username)
-                if image_retrieved is not None:
-                    print(' not NONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE A A A A A')
-                    self.pixmap_username = image_retrieved
-                else:
-                    self.pixmap_username = self.get_pic_by_name(username)
-                    print('Obteniendo pixmap del usuario ', username)
+                pass  # mientras
+                # print(f'El archivo {ruta_archivo} NO existe.')
+                # image_retrieved = self.retrieve_image_get(username)
+                # if image_retrieved is not None:
+                #     print(' not NONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE A A A A A')
+                #     self.pixmap_username = image_retrieved
+                # else:
+                #     self.pixmap_username = self.get_pic_by_name(username)
+                #     print('Obteniendo pixmap del usuario ', username)
 
         # message = username + ':' + message\
 
@@ -233,7 +239,7 @@ class ChatFrame(QWidget):
         # p2p | token | juanito | adios
         # self.retrieve_image_get(username)
         # NO SE USA ESTO TODO
-        self.retrieve_image_get(username)
+        # self.retrieve_image_get(username)
         qlabelpixamap = QLabelProfilePicture(username)
         # qlabelpixamap.setPixmap(self.pixmap_username.scaledToWidth(
         #     32, QtCore.Qt.TransformationMode.SmoothTransformation))

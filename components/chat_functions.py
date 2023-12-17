@@ -56,9 +56,7 @@ class ChatWidget(QWidget):
         self.username_label = QLabel(self.username)
         self.username_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.username_label.setStyleSheet(
-            'color: white;text-align: center;text-decoration: \
-                underline;text-decoration-color: rgb(0, 0, 128)\
-                ;font: 75 20pt "MS Shell Dlg 2";')
+            'color: white;text-align: center;font: 75 20pt "MS Shell Dlg 2";')
         self.add_friend = QPushButton("Friend Request")
         self.add_friend.setStyleSheet(f'QPushButton {{ \
             background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
@@ -113,7 +111,7 @@ class ChatWidget(QWidget):
         self.timer_expand_animation = QtCore.QTimer(self)
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
 
-    def change_pixmap(self, image_path):
+    def change_pixmap(self, username: str):
         ''' TODO AQUI LA IDEA ES DE ALGUNA FORMA CAMBIAR EL PIXMAP CADA VEZ QUE
         LLEGUE UN NUEVO MENSAJE, PERO DESDE FUERA NO SE PUEDE ACTUALIZAR
         NI TAMPOCO LLAMANDO A ESTA FUNCION (podría probarse haciendo .self de las variables de __init__)
@@ -122,7 +120,8 @@ class ChatWidget(QWidget):
         Y SE PUEDA ENLAZAR CON CIERTA LAYOUT HORIZONTAL QUE COMPONE CADA MENSAJE.
         RECORDAR QUE LUEGO DE CREARSE LA INSTANCIA DEBE ENLAZARSE  AL self.pixmaps_profiles_array del frame CHAT.
         '''
-        self.profile_image = QPixmap(image_path)
+        path_username = f'profiles/images/{username}.png'
+        self.profile_image = QPixmap(path_username)
         self.update()
         print('CHANGING PIXMAP AT ChatWidget.change_pixmap method!')
 

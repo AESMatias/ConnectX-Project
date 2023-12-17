@@ -68,7 +68,7 @@ class FrameLogin(QWidget):
         message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
         self.send_message_login.emit(message)
 
-    def jws_writter(self, jwt: str) -> None:
+    def jws_writter(self, jwt: str, username=None) -> None:
         self.jwt = jwt
         print("it's the actual token:", jwt)
 

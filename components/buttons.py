@@ -123,7 +123,7 @@ class Register_Button(QPushButton):
 
 class Login_Button(QPushButton):
     login_signal = pyqtSignal()
-    signal_jwt_login = pyqtSignal(str)
+    signal_jwt_login = pyqtSignal(str, str)
 
     def __init__(self, name: str, pos: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -149,8 +149,8 @@ class Login_Button(QPushButton):
         #     print('Login status:', self.login_status)
         if status_login[0] == True:
             print(f"soy un jwt {status_login[1]}")
-            self.signal_jwt_login.emit(status_login[1])
             self.username = form_username
+            self.signal_jwt_login.emit(status_login[1], self.username)
             self.login_status = True
             print('SELF.USERNAME ', self.username)
             self.login_signal.emit()
@@ -277,7 +277,7 @@ class Chat_Button(QPushButton):
             self.login_status = True
             self.jwt_emit.emit(jwt_token)
             print('Login status:', self.login_status)
-            self.retrieve_image_get(jwt_token)
+            # self.retrieve_image_get(jwt_token)
             print(self.username)
             print(self.username)
             print(self.username)

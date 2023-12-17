@@ -124,8 +124,8 @@ if __name__ == '__main__':
         # When the chat opens, we need to charging the .png image or set the default one
         login_window.chat_button.clicked.connect(
             edit_profile_window.get_username)
-        input_image = ImageViewer()
-        input_image.setStyleSheet(global_style)
+        # input_image = ImageViewer()
+        # input_image.setStyleSheet(global_style)
 
         # Volume label clicked
         window.volume_label.clicked_signal.connect(login_window.manage_music)
@@ -136,6 +136,8 @@ if __name__ == '__main__':
         # login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
         # todo this TODO arreglar esto JWT UNO SOLOOO
         window.login_button.signal_jwt_login.connect(chat_frame.jwt_receiver)
+        window.login_button.signal_jwt_login.connect(
+            edit_profile_window.jwt_receiver)
 
         # new message
         login_window.client_communicator.message_received.connect(
