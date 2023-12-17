@@ -71,8 +71,8 @@ class EditProfile(QWidget):
         self.image_viewer.jwt = jwt
         self.image_viewer.username = self.username
         self.image_viewer.retrieve_image_get(self.username, jwt)
-        self.page1_layout.update(self.image_viewer, image_viewer)
-        self.image_viewer.destroyLater()
+        self.page1_layout.update()
+        self.image_viewer.destroy()
 
     def charging_image(self):
         path_file = f'profiles/images/{self.username}.png'

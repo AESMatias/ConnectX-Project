@@ -206,10 +206,6 @@ class ChatFrame(QWidget):
         # username, message = message.split(':')
         username, message_text = message.split(':')
 
-        print('the message is ', message_text,
-              'and the username is ', username)
-        if message_text == 'MESSAGE_LOGIN':
-            return
         if username not in self.username_tuple:
             # self.username_tuple += (username,)
 
