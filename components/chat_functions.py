@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtWidgets import QHBoxLayout
 from PIL import Image
 import numpy as np
+from PyQt6.QtGui import QColor, QBrush, QPalette, QPainter
 
 
 class ProfileViewBackground(QWidget):
@@ -145,6 +146,7 @@ class ChatWidget(QWidget):
             self.timer_expand_animation.stop()
 
     def load_image(self, image_path):
+        # TODO We need to check if the image exists and retrieve it from the cache
         # if the image does not exist, we return a default image
         try:
             image = Image.open(image_path)
@@ -213,7 +215,7 @@ class QLabelProfilePicture(QLabel):
     def animate_size_start(self):
         self.current_step += 1
         if self.current_step <= self.animation_steps:
-            factor = 1.0 + self.current_step / self.animation_steps * 0.3
+            factor = 1.0 + self.current_step / self.animation_steps * 0.4
             scaled_width = int(self.original_size.width() * factor)
             scaled_height = int(self.original_size.height() * factor)
             # self.setFixedSize(scaled_width, scaled_height)
@@ -222,8 +224,17 @@ class QLabelProfilePicture(QLabel):
                 scaled_width, scaled_height), QtCore.Qt.AspectRatioMode.KeepAspectRatio)
             self.setPixmap(pixmap_scaled)
         else:
-            self.setPixmap(self.pixmap().scaledToWidth(
-                70, QtCore.Qt.TransformationMode.SmoothTransformation))
+
+            # Crea un nuevo QPixmap con las dimensiones modificadas
+            new_pixmap = QPixmap(34, 34)
+            new_pixmap.fill(QColor(200, 200, 200))
+
+            with QPainter(new_pixmap) as painter:
+                painter.drawPixmap(1, 1, self.original_pixmap)
+
+            self.setPixmap(new_pixmap.scaledToWidth(
+                40, QtCore.Qt.TransformationMode.SmoothTransformation))
+
             # print("Current size of the pixmap:", self.pixmap().size())
             self.current_step = 0
             self.timer_expand_animation.stop()

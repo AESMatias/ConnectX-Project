@@ -6,10 +6,7 @@ from PyQt6.QtWidgets import QApplication
 from styles.styles import global_style
 from Frames.frame1 import Frame1
 from Frames.frame_login import FrameLogin
-from components.input_user import ImageViewer
-from components.global_functions import center_window
-from Frames.edit_profile import EditProfile
-from Frames.chat import ChatFrame
+
 image_florence = 'florence.jpg'
 aristotle_1 = 'aristotle_1.jpg'
 
@@ -97,8 +94,8 @@ if __name__ == '__main__':
 
         window.timer.timeout.connect(change_style)
 
-        edit_profile_window = EditProfile()
-        chat_frame = ChatFrame()
+        # edit_profile_window = EditProfile()
+        # chat_frame = ChatFrame()
 
         # This two code lines below, trigger to open a login window and close the main
         window.login_button.login_signal.connect(login_window.launch)
@@ -118,12 +115,16 @@ if __name__ == '__main__':
         window.register_button.clicked.connect(
             window.show_register_status)
         # Opening the edit profile window
-        login_window.edit_account.clicked.connect(edit_profile_window.show)
-        login_window.chat_button.signal_pressed.connect(
-            edit_profile_window.get_username)
+        # login_window.edit_account.clicked.connect(edit_profile_window.show_profile)
+        # TODO TODO TODO
+        # login_window.chat_button.signal_pressed.connect(
+        #     edit_profile_window.get_username)
+        # TODO TODO TODO
         # When the chat opens, we need to charging the .png image or set the default one
-        login_window.chat_button.clicked.connect(
-            edit_profile_window.get_username)
+        # TODO TODO TODO
+        # login_window.chat_button.clicked.connect(
+        #     edit_profile_window.get_username)
+        # TODO TODO TODO
         # input_image = ImageViewer()
         # input_image.setStyleSheet(global_style)
 
@@ -131,41 +132,62 @@ if __name__ == '__main__':
         window.volume_label.clicked_signal.connect(login_window.manage_music)
         window.volume_label.clicked_signal.connect(
             window.volume_icon_change)
-        # Opening the chat
-        login_window.chat_button.clicked.connect(chat_frame.launch)
-        # login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
-        # todo this TODO arreglar esto JWT UNO SOLOOO
-        window.login_button.signal_jwt_login.connect(chat_frame.jwt_receiver)
-        window.login_button.signal_jwt_login.connect(
-            edit_profile_window.jwt_receiver)
-
+        # TODO AAAA TODO
         # new message
         login_window.client_communicator.message_received.connect(
-            chat_frame.new_message)
+            login_window.chat_frame.new_message)
+        # Opening the chat
+        login_window.chat_button.clicked.connect(
+            login_window.chat_frame.launch)
+        window.login_button.signal_jwt_login.connect(
+            login_window.chat_frame.jwt_receiver)
+
+        login_window.chat_frame.send_message_signal.connect(
+            login_window.client_communicator.send_message)
+        # TODO AAA TODO
+        # # Opening the chat
+        # login_window.chat_button.clicked.connect(chat_frame.launch)
+        # login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
+        # todo this TODO arreglar esto JWT UNO SOLOOO
+        # window.login_button.signal_jwt_login.connect(chat_frame.jwt_receiver)
+        # TODO TODO TODO
+        window.login_button.signal_jwt_login.connect(
+            login_window.edit_account_frame.jwt_receiver)
+        # TODO TODO TODO
+
+        # # new message
+        # login_window.client_communicator.message_received.connect(
+        #     chat_frame.new_message)
         # chat_frame.client_communicator.message_received.connect(
         #     chat_frame.new_message)
         # Here, we send the first message through the socket to the server with the token:
         # TODO
         login_window.send_message_login.connect(
             login_window.client_communicator.send_message)
-        chat_frame.send_message_signal.connect(
-            login_window.client_communicator.send_message)
+        # chat_frame.send_message_signal.connect(
+        #     login_window.client_communicator.send_message)
         # When the client is ready, send the first message
         # login_window.client_communicator.client_ready.connect(
         #     login_window.send_first_message)
+        # TODO TODO TODO
         # Changing the layout of the edit profile window
-        edit_profile_window.stack_button1.clicked.connect(
-            edit_profile_window.change_page)
-        edit_profile_window.stack_button1.clicked.connect(
-            edit_profile_window.change_page)
-        edit_profile_window.stack_button2.clicked.connect(
-            edit_profile_window.change_page)
-        edit_profile_window.stack_button3.clicked.connect(
-            edit_profile_window.change_page)
-        edit_profile_window.stack_button4.clicked.connect(
-            edit_profile_window.change_page)
-        edit_profile_window.stack_button5.clicked.connect(
-            edit_profile_window.change_page)
+        login_window.edit_account_frame.stack_button1.clicked.connect(
+            login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.stack_button1.clicked.connect(
+            login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.stack_button2.clicked.connect(
+            login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.stack_button3.clicked.connect(
+            login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.stack_button4.clicked.connect(
+            login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.stack_button5.clicked.connect(
+            login_window.edit_account_frame.change_page)
+        login_window.edit_account.clicked.connect(
+            login_window.edit_account_frame.show_profile)
+        # TODO TODO TODO
+        # login_window.edit_account.clicked.connect(
+        #     edit_profile_window.show_profile)
         # Profile picture chat clicked
         # timer = QTimer()
         # timer.timeout.connect(enviar_senal)

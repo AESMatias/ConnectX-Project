@@ -5,9 +5,12 @@ from PyQt6 import QtCore
 from PyQt6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout
 from PyQt6.QtGui import QGuiApplication, QPixmap, QCursor, QFont
 from components.buttons import Register_Button, Login_Button, InputField
-from styles.styles import quote_style, InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
+from styles.styles import InputFieldStyle, tag, button_style, login_label, login_label_wrong, login_label_ok
 from components.global_functions import center_window
 from components.qlabels import MusicButton, ConnectXLogo
+from PyQt6.QtCore import QTimer, QCoreApplication
+import random
+from PyQt6.QtGui import QColor
 
 
 class Frame1(QWidget):
@@ -92,9 +95,83 @@ class Frame1(QWidget):
             self.labels['registered_status'].repaint()  # To avoid bugs
             sender.register_status = False
 
+    # def change_border_color(self):
+    #     # Convertir el valor gray_counter a un valor RGB entre negro y blanco
+    #     color_value = 255 - self.gray_counter
+    #     border_color = QColor(color_value, color_value, color_value)
+    #     print(border_color.name)
+    #     border_style = f"2px solid {border_color.name()};"
+    #     self.labels['quote_label'].setStyleSheet(
+    #         f"border: {border_style} padding: 10px;")
+    #     self.gray_counter += 1
+    #     print(self.gray_counter)
+    #     # Detener el temporizador cuando alcanza el valor deseado
+    #     if self.gray_counter == 255:
+    #         self.timer_quote.stop()
+    #         self.gray_counter = 0
+    #         self.timer_quote.start(2000)
+
+    def cycle_opacity(self):
+        if self.counter_inf_cycle >= 0:
+            self.current_opacity -= 0.01
+            transparent_pixmap = self.change_pixmap_opacity(
+                self.pixmap, self.current_opacity)
+            self.setPixmap(transparent_pixmap)
+            self.counter_inf_cycle += 1
+            if self.counter_inf_cycle == 70:
+                self.counter_inf_cycle = -70
+        elif self.counter_inf_cycle <= 0:
+            self.current_opacity += 0.01
+            transparent_pixmap = self.change_pixmap_opacity(
+                self.pixmap, self.current_opacity)
+            self.setPixmap(transparent_pixmap)
+            self.counter_inf_cycle += 1
+            if self.counter_inf_cycle == 70:
+                self.counter_inf_cycle = 0
+
+        # Reiniciar el temporizador de animación cada vez que se completa el ciclo
+        self.timer.start(self.animation_duration // self.animation_steps)
+
+        # Actualizar la opacidad del pixmap directamente
+        transparent_pixmap = self.change_pixmap_opacity(
+            self.pixmap, self.current_opacity)
+        self.setPixmap(transparent_pixmap)
+
+    def change_border_color(self):
+        if self.counter_inf_cycle >= 0:
+            self.counter_colors -= 10
+            self.counter_inf_cycle += 1
+            self.counter_background_label += 1
+            if self.counter_inf_cycle == 70:
+                self.counter_inf_cycle = -70
+        elif self.counter_inf_cycle <= 0:
+            self.counter_colors += 10
+            self.counter_background_label -= 1
+            self.counter_inf_cycle += 1
+            if self.counter_inf_cycle == 70:
+                self.counter_inf_cycle = 0
+
+        color = f"rgb({self.color_r1+self.counter_colors},{self.color_g1+self.counter_colors}\
+            ,{self.color_b1+self.counter_colors})"
+        border_style = f"2px solid {color};"
+        self.labels['quote_label'].setStyleSheet(f"border: {border_style}; padding: 10px;"
+                                                 "background-color: rgba(0, 0, 0, 70);"
+                                                 f"border-radius: 5px; color: white;"
+                                                 f"background-color: rgba(0, 0, 0, {150-self.counter_background_label*1.2});")
+
     def init_gui(self) -> None:
         # Window Geometry
-        self.setGeometry(0, 0, 1280, 700)
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        # Monitor dimensions
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+        # Window dimensins
+        self.setGeometry(0, 0, int(screen_width * 0.7),
+                         int(screen_height*0.7))
+        self.move(int(screen_width)-int(self.width()*1.2),
+                  int(screen_height)-int(self.height()*1.3))
+
         self.setWindowTitle('ConectX Project')
         # Grid Layout
         self.grid = QGridLayout()
@@ -176,15 +253,19 @@ class Frame1(QWidget):
 
         # Quote Label
         self.labels['quote_label'] = QLabel(self)
-        self.labels['quote_label'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['quote_label'].setStyleSheet(quote_style)
-        self.labels['quote_label'].setText(
-            generate_quote()
-            + '\n - Aristotle'
-        )
+        self.labels['quote_label'].setText(generate_quote() + '\n - Aristotle')
         self.labels['quote_label'].setFont(QFont('Times', 20))
         self.labels['quote_label'].setWordWrap(True)
+        # Qtimer to change the border color infinitely
+        self.timer_quote = QTimer(self)
+        self.timer_quote.timeout.connect(self.change_border_color)
+        self.timer_quote.start(20)
+        self.color_r1 = 0
+        self.color_g1 = 0
+        self.color_b1 = 0
+        self.counter_colors = 240
+        self.counter_inf_cycle = 0
+        self.counter_background_label = 0
 
         # Horizontal Layout
         hbox1 = QHBoxLayout()
@@ -243,5 +324,4 @@ class Frame1(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         vbox.addStretch(5)
         self.setLayout(vbox)
-        center_window(self)
         self.show()

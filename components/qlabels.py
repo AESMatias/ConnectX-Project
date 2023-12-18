@@ -6,6 +6,7 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter
 from PyQt6.QtCore import QTimer
+import webbrowser
 
 
 class MusicButton(QLabel):
@@ -97,6 +98,14 @@ class ConnectXLogo(QLabel):
         # Iniciar el cambio de opacidad al instanciar el objeto
         self.timer.start(self.animation_duration // self.animation_steps)
         self.timer.stop()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.open_link()
+
+    def open_link(self):
+        link_to_open = "https://github.com/AESMatias/ConnectX-Project"
+        webbrowser.open(link_to_open)
 
     def change_pixmap_opacity(self, pixmap, opacity):
         result_pixmap = QPixmap(pixmap.size())

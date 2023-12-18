@@ -30,6 +30,7 @@ class EditProfileButton(QPushButton):
 
     def button_clicked(self):
         self.edit_stack_layout.emit(self.index)
+        print('signal edit_stack_layout emitted')
 
 
 class Button(QPushButton):

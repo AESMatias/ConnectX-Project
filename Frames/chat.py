@@ -15,6 +15,8 @@ import os
 from PyQt6.QtGui import QPalette, QBrush
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtCore import Qt
+from components.global_functions import center_window
+from PyQt6.QtGui import QGuiApplication
 
 
 class ChatFrame(QWidget):
@@ -22,7 +24,7 @@ class ChatFrame(QWidget):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.setFixedSize(1000, 750)
+        # self.setFixedSize(1000, 750)
         self.counter_messages = 0
         self.username = ''
         self.username_tuple = ()
@@ -34,6 +36,8 @@ class ChatFrame(QWidget):
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
+        self.hide()
+        self.raise_()
         # self.client_communicator = ClientCommunicator(
         #     self.host, self.port, self.username)
         self.intentos_restantes_jwt = 1
@@ -84,10 +88,8 @@ class ChatFrame(QWidget):
         if response.status_code == 200:
             with open(f"profiles/images/{username}.png", "wb") as f:
                 f.write(response.content)
-                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
-                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
-                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
-                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO')
+                print(' AAAAAAAAAAAAAA FUNCIONOOOOOOOOOOOOOOOOO',
+                      response.status_code)
                 return None
         elif response.status_code == 404:
             print('status_code 404: No existe la imagen de perfil')
@@ -117,7 +119,7 @@ class ChatFrame(QWidget):
 
     def jwt_receiver(self, jwt: str, username: str = None) -> None:
         self.jwt = jwt
-        print('JWT:', self.jwt)
+        print('JWT EN CHATTTTTTTTTTTTTTTTTTTT:', self.jwt)
 
     def launch(self) -> None:
         sender = self.sender()
@@ -130,8 +132,31 @@ class ChatFrame(QWidget):
             # self.labels['username_status'].setText('Credentials OK')
             # self.labels['username_status'].setStyleSheet(login_label_ok)
             # self.labels['username_status'].repaint()  # To avoid bug
-            center_window(self)
+
+            screen = QGuiApplication.primaryScreen()
+            screen_geometry = screen.geometry()
+
+            # Monitor dimensions
+            screen_width = screen_geometry.width()
+            screen_height = screen_geometry.height()
+
+            # # calculate the center of the screen
+            # x_position = (screen_width - frame_to_center.width()) // 2
+            # y_position = (screen_height - frame_to_center.height()) // 2
+
+            # # Stablish the frame position in the center of the screen
+            # frame_to_center.setGeometry(x_position, y_position, 1280, 720)
+
+            # self.setGeometry(0, 0, int(screen_width * 0.6),
+            #                  int(screen_height*0.6))
+            self.setFixedSize(int(screen_width * 0.6),
+                              int(screen_height*0.6))
+            self.move(0, 0)
+            # self.move(int(screen_width)-int(self.width()*1.3),
+            #           int(screen_height)-int(self.height()*1.5))
+
             self.show()
+            self.raise_()
             self.setFocus()
             # self.client_thread = Thread(
             #     target=self.client_communicator.run_client)
@@ -427,6 +452,23 @@ class ChatFrame(QWidget):
         # second
         hbox2 = QHBoxLayout()
         hbox2.addWidget(self.write_message)
+        qlabelpixamap = QLabel(self)
+        qlabelpixamap.setPixmap(QPixmap('images/logo32.png'))
+        # hacemos que cuando hagamos click en qlabelpixamap, se envie un evento
+        qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+
+        # Definimos una función para manejar el evento de clic del mouse
+
+        def handle_mouse_click(event):
+            if event.button() == Qt.MouseButton.LeftButton:
+                # Acciones a realizar cuando se hace clic izquierdo
+                self.hide()
+
+        # Conectamos la función al evento de clic del mouse
+        qlabelpixamap.mousePressEvent = handle_mouse_click
+
+        hbox2.addWidget(qlabelpixamap)
+        hbox2.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Create a scroll area and the container
         self.scroll_area = QScrollArea(self)

@@ -6,11 +6,14 @@ from components.buttons import Login_Button, Button, Chat_Button
 from styles.styles import welcome_user_style, button_style, login_label, login_label_wrong, login_label_ok
 from PyQt6.QtCore import QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from components.global_functions import center_window
+
 from threading import Thread
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtCore import pyqtSignal
 from time import sleep
+from Frames.edit_profile import EditProfile, ProfileViewBackground
+from Frames.chat import ChatFrame
+from PyQt6.QtGui import QGuiApplication
 
 
 class FrameLogin(QWidget):
@@ -23,17 +26,27 @@ class FrameLogin(QWidget):
         self.jwt = ''
         self.host = "127.0.0.1"
         self.port = 12345
+
         self.client_communicator = ClientCommunicator(
             self.host, self.port, self.username)
         self.client_thread = Thread(
             target=self.client_communicator.run_client)
+
+        self.chat_frame = ChatFrame(self)
+
         # Lounge looped music
         self.media_player = QMediaPlayer(self)
         self.media_player.setAudioOutput(QAudioOutput(self))
         file_url = QUrl.fromLocalFile(os.path.join('Music', 'music2.opus'))
         self.media_player.setSource(file_url)
         self.media_player.mediaStatusChanged.connect(self.handle_media_status)
+        self.screen = QGuiApplication.primaryScreen()
+        self.screen_geometry = self.screen.geometry()
+        # Monitor dimensions
+        self.screen_width = self.screen_geometry.width()
+        self.screen_height = self.screen_geometry.height()
         self.play_media()
+        self.edit_account_frame = EditProfile(self)
         self.init_gui()
 
         # Crear un QPalette personalizado con la imagen de fondo
@@ -120,6 +133,30 @@ class FrameLogin(QWidget):
     #         files = {'files': ('blob', BytesIO(image_bytes))}
     #         response = requests.post(url, files=files)
     #         print(f'Response from server: {response.json()}')
+    def center_window(self):
+        # self.setFixedSize(int(screen_width * 0.6),
+        #                       int(screen_height*0.6))
+        # self.move(0, 0)
+
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+
+        # Monitor dimensions
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
+
+        # # calculate the center of the screen
+        # x_position = (screen_width - frame_to_center.width()) // 2
+        # y_position = (screen_height - frame_to_center.height()) // 2
+
+        # # Stablish the frame position in the center of the screen
+        # frame_to_center.setGeometry(x_position, y_position, 1280, 720)
+        self.setFixedSize(int(screen_width * 0.6),
+                          int(screen_height*0.6))
+        # self.setGeometry(0, 0, int(screen_width * 0.6),
+        #                  int(screen_height*0.6))
+        self.move(int(screen_width)-int(self.width()*1.3),
+                  int(screen_height)-int(self.height()*1.5))
 
     def launch(self):
         sender = self.sender()
@@ -130,7 +167,12 @@ class FrameLogin(QWidget):
             self.labels['username_status'].setText('Credentials OK')
             self.labels['username_status'].setStyleSheet(login_label_ok)
             self.labels['username_status'].repaint()  # To avoid bugs
-            center_window(self)
+            self.center_window()
+
+            # self.setGeometry(0, 0, int(self.screen_width * 0.5),
+            #                  int(self.screen_height*0.5))
+            # self.move(int(self.screen_width)-int(self.width()*1.5),
+            #           int(self.screen_height)-int(self.height()*1.5))
             self.show()
             self.setFocus()
 
@@ -229,8 +271,12 @@ class FrameLogin(QWidget):
         # self.upload_image.clicked.connect(self.open_file)
 
         # Edtir profile
+
+        self.edit_account_shadow = ProfileViewBackground(self)
         self.edit_account = Button(
             'editAccount', (300, 250), 'My account', self)
+        # self.edit_account.clicked.connect(self.edit_account_frame.show_profile)
+        self.edit_account.clicked.connect(self.edit_account_shadow.show)
         self.edit_account.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.edit_account.setStyleSheet(

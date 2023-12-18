@@ -22,20 +22,21 @@ class ImageViewer(QMainWindow):
 
         self.load_button = QPushButton('Upload', self)
         self.load_button.setGeometry(10, 220, 120, 30)
-        self.load_button.clicked.connect(self.load_image)
+    #     self.load_button.clicked.connect(self.load_image)
 
-    def load_image(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, 'Set your new profile picture!', '', 'Images (*.png *.jpg *.jpeg)')
+    # def load_image(self):
+    #     file_path, _ = QFileDialog.getOpenFileName(
+    #         self, 'Set your new profile picture!', '', 'Images (*.png *.jpg *.jpeg)')
 
-        if file_path:
-            pixmap = QPixmap(file_path)
-            self.image_label.setPixmap(pixmap)
-            self.image_label.setScaledContents(True)
-            self.upload_image_post(self.username, self.jwt, file_path)
-            print('post con username: ', self.username, ' y jwt: ', self.jwt)
-            with open(f"profiles/images/{self.username}.png", "wb") as f:
-                f.write(open(file_path, 'rb').read())
+    #     if file_path:
+    #         pixmap = QPixmap(file_path)
+    #         self.image_label.setPixmap(pixmap)
+    #         self.image_label.setScaledContents(True)
+    #         print('ID of the EditProfile instance:', id(self))
+    #         self.upload_image_post(self.username, self.jwt, file_path)
+    #         print('post con username: ', self.username, ' y jwt: ', self.jwt)
+    #         with open(f"profiles/images/{self.username}.png", "wb") as f:
+    #             f.write(open(file_path, 'rb').read())
 
     def retrieve_image_get(self, user: str, jwt: str) -> Tuple[bool, str]:
         # status_login = login(user, password)
@@ -48,6 +49,7 @@ class ImageViewer(QMainWindow):
         }
         response = requests.get(url, headers=headers)
         print(response)
+        print('aquiiiiiiiiiii')
 
         # TODO> If the image exists, then we don't need to download it
         if response.status_code == 200:

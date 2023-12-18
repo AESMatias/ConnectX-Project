@@ -18,11 +18,17 @@ def center_window(frame_to_center) -> None:
         screen_width = screen_geometry.width()
         screen_height = screen_geometry.height()
 
-        # calculate the center of the screen
-        x_position = (screen_width - frame_to_center.width()) // 2
-        y_position = (screen_height - frame_to_center.height()) // 2
+        # # calculate the center of the screen
+        # x_position = (screen_width - frame_to_center.width()) // 2
+        # y_position = (screen_height - frame_to_center.height()) // 2
 
-        # Stablish the frame position in the center of the screen
-        frame_to_center.setGeometry(x_position, y_position, 1280, 720)
+        # # Stablish the frame position in the center of the screen
+        # frame_to_center.setGeometry(x_position, y_position, 1280, 720)
+
+        frame_to_center.setGeometry(0, 0, int(screen_width * 0.6),
+                                    int(screen_height*0.6))
+        frame_to_center.move(int(screen_width)-int(frame_to_center.width()*1.3),
+                             int(screen_height)-int(frame_to_center.height()*1.5))
+
     except Exception as e:
         print("Error centering window:", str(e))
