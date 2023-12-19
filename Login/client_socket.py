@@ -53,11 +53,6 @@ class ClientCommunicator(QObject):
         try:
             while True:
                 data = self.client_socket.recv(4096)
-                # if self.first_message == True:
-                #     self.first_message = False
-                #     print(' first message at Login button: ',
-                #           data.decode('utf-8'))
-                #     continue
                 if not data:
                     print('Connection closed without data')
                     self.client_socket.close()
@@ -73,14 +68,8 @@ class ClientCommunicator(QObject):
                     username, message = data.split(':')
                     print(f"Received: {message} from {username}")
                     if message.__contains__('MESSAGE_LOGIN'):
-                        print('MESSAGE_LOGIN received')
-                        print('MESSAGE_LOGIN received')
-                        print('MESSAGE_LOGIN received')
-                        print('MESSAGE_LOGIN received')
                         continue
                     else:
-                        print(
-                            'CONTINUAMOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
                         # Send the signal to the main thread
                         self.message_received.emit(data)
         except Exception as e:

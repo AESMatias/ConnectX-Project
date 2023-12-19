@@ -66,7 +66,6 @@ class MusicButton(QLabel):
             painter.setOpacity(opacity)
         elif self.music_status == True:
             painter.setOpacity(0.4 + self.current_step*1.3/100)
-        print(self.current_step)
 
         painter.drawPixmap(0, 0, pixmap)
         painter.end()

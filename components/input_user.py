@@ -1,9 +1,12 @@
-import sys
+
 from PyQt6.QtWidgets import QMainWindow, QPushButton, QLabel, QFileDialog
 from PyQt6.QtGui import QPixmap
 from typing import Tuple
+from PyQt6 import QtCore
+from PyQt6.QtCore import Qt
 import requests
-from Login.login import login
+
+from styles.styles import button_style
 
 
 class ImageViewer(QMainWindow):
@@ -14,14 +17,19 @@ class ImageViewer(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.setGeometry(100, 100, 400, 300)
-        self.setWindowTitle('Upload Image')
+        self.setGeometry(0, 0, 0, 0)
+        self.setFixedWidth(800)
+        self.setFixedHeight(300)
+        self.setWindowTitle('Change your profile picture!')
 
         self.image_label = QLabel(self)
-        self.image_label.setGeometry(10, 10, 380, 200)
+        self.image_label.setGeometry(0, 0, 400, 400)
 
-        self.load_button = QPushButton('Upload', self)
-        self.load_button.setGeometry(10, 220, 120, 30)
+        self.load_button = QPushButton('Upload a new pic!', self)
+        self.load_button.setGeometry(600, 200, 150, 100)
+        self.load_button.setStyleSheet(button_style)
+        # hacemos efecto pointer cursosr
+        self.load_button.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
     #     self.load_button.clicked.connect(self.load_image)
 
     # def load_image(self):
@@ -48,8 +56,6 @@ class ImageViewer(QMainWindow):
             'Authorization': f'Bearer {str(self.jwt)}'
         }
         response = requests.get(url, headers=headers)
-        print(response)
-        print('aquiiiiiiiiiii')
 
         # TODO> If the image exists, then we don't need to download it
         if response.status_code == 200:
@@ -58,6 +64,7 @@ class ImageViewer(QMainWindow):
                 pixmap = QPixmap('images/profile_image.png')
                 self.image_label.setPixmap(pixmap)
                 self.image_label.setScaledContents(True)
+
             return True, response.text
         elif response.status_code == 404:  # Which means, not found
             with open("images/profile_image.png", "wb") as f:
@@ -70,8 +77,6 @@ class ImageViewer(QMainWindow):
     def upload_image_post(self, user: str, jwt: str, image_path) -> Tuple[bool, str]:
         # status_login = login(user, password)
         # jwt_token = status_login[1]
-        print('jwt_token: ', self.jwt)
-        print(image_path)
         url = 'http://localhost:8000/user/profilePIC/upload'
         headers = {
             'accept': 'application/json',
@@ -82,5 +87,16 @@ class ImageViewer(QMainWindow):
         }
 
         response = requests.post(url, headers=headers, files=data)
+        if response.status_code == 200:
+            pixmap = QPixmap(image_path)
+            print('pixmap: ', pixmap, image_path)
+            self.image_label.setPixmap(pixmap)
+            self.image_label.setScaledContents(True)
+            print('pixmap size:', pixmap.size())
 
-        print(response)
+            # recargamos para que se vea
+            self.image_label.repaint()
+            self.image_label.show()
+        else:
+            print('Error uploading the image')
+            self.hide()

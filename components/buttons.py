@@ -30,7 +30,6 @@ class EditProfileButton(QPushButton):
 
     def button_clicked(self):
         self.edit_stack_layout.emit(self.index)
-        print('signal edit_stack_layout emitted')
 
 
 class Button(QPushButton):
@@ -99,7 +98,6 @@ class Register_Button(QPushButton):
             print('SELF.USERNAME ', self.username, 'has been registered')
             self.login_status = True
             # self.login_signal.emit()
-            print('Login status:', self.login_status)
             # Successfull sound
             self.media_player = QMediaPlayer(self)
             self.media_player.setAudioOutput(QAudioOutput(self))
@@ -141,7 +139,6 @@ class Login_Button(QPushButton):
     def button_clicked(self) -> None:
         sender = self.sender()
         status_login = login(form_username, password_not_visible)
-        print('RETORNAAA', status_login)
         # if status_login[0] == False:
         #     self.username = form_username
         #     print('SELF.USERNAME ', self.username)
@@ -149,13 +146,10 @@ class Login_Button(QPushButton):
         #     self.login_signal.emit()
         #     print('Login status:', self.login_status)
         if status_login[0] == True:
-            print(f"soy un jwt {status_login[1]}")
             self.username = form_username
             self.signal_jwt_login.emit(status_login[1], self.username)
             self.login_status = True
-            print('SELF.USERNAME ', self.username)
             self.login_signal.emit()
-            print('Login status:', self.login_status)\
 
         # Login successfull sound
             self.media_player = QMediaPlayer(self)
@@ -198,7 +192,6 @@ class InputField(QLineEdit):
         global password_not_visible
         if self.name == 'username_field':
             form_username = text_field
-            print('username', form_username)
         elif self.name == 'password_field':
             # Later, change the entire password field to * at [index] with a temporary variable
             # with a library.
@@ -252,14 +245,13 @@ class Chat_Button(QPushButton):
         self.register_status = False
 
     def retrieve_image_get(self, jwt_token: str) -> Tuple[bool, str]:
-        print('jwt_token: ', jwt_token)
         url = 'http://localhost:8000/user/profilePIC/'
         headers = {
             'accept': 'application/json',
             'Authorization': f'Bearer {str(jwt_token)}'
         }
         response = requests.get(url, headers=headers)
-        print(response)
+        print('response chatbutton retrieveimageget:', response)
         if response.status_code == 200:
             with open("images/profile_image.png", "wb") as f:
                 f.write(response.content)
@@ -271,25 +263,11 @@ class Chat_Button(QPushButton):
         status_login = True
         # status_login = login(form_username, password_not_visible)
         # jwt_token = status_login[1]
-        print('chatRETORNAAA', status_login)
         if status_login and self.name == 'chatButton':
             self.username = form_username
-            print('SELF.USERNAME ', self.username)
             self.login_status = True
             self.jwt_emit.emit(jwt_token)
-            print('Login status:', self.login_status)
             # self.retrieve_image_get(jwt_token)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
-            print(self.username)
             self.signal_pressed.emit(self.username)
 
         # elif status_login and self.name == 'chatButton':
@@ -308,10 +286,8 @@ class Chat_Button(QPushButton):
         #     self.media_player.play()
         elif status_login:
             self.username = form_username
-            print('SELF.USERNAME ', self.username)
             self.login_status = True
             self.login_signal.emit()
-            print('Login status:', self.login_status)
         else:
             # Login unsuccessfull sound
             self.media_player = QMediaPlayer(self)

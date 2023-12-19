@@ -14,8 +14,8 @@ if __name__ == '__main__':
     try:
         # Debug functionn
         def hook(type, value, traceback) -> None:
-            print(type)
-            print(traceback)
+            print('hook - type:', type)
+            print('hook - traceback:', traceback)
         sys.__excepthook__ = hook
         app = QApplication(sys.argv)
         app.setWindowIcon(QIcon(os.path.join('images', 'logo32.png')))

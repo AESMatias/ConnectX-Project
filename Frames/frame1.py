@@ -151,13 +151,21 @@ class Frame1(QWidget):
             if self.counter_inf_cycle == 70:
                 self.counter_inf_cycle = 0
 
-        color = f"rgb({self.color_r1+self.counter_colors},{self.color_g1+self.counter_colors}\
-            ,{self.color_b1+self.counter_colors})"
+        # Asegúrate de que los valores RGB estén en el rango válido (0-255)
+        self.color_r1 = max(0, min(255, self.color_r1 + self.counter_colors))
+        self.color_g1 = max(0, min(255, self.color_g1 + self.counter_colors))
+        self.color_b1 = max(0, min(255, self.color_b1 + self.counter_colors))
+
+        # Asegúrate de que los valores de background estén en el rango válido (0-255)
+        background_alpha = max(
+            0, min(255, 150 - self.counter_background_label * 1.2))
+
+        color = f"rgb({self.color_r1},{self.color_g1},{self.color_b1})"
         border_style = f"2px solid {color};"
-        self.labels['quote_label'].setStyleSheet(f"border: {border_style}; padding: 10px;"
-                                                 "background-color: rgba(0, 0, 0, 70);"
-                                                 f"border-radius: 5px; color: white;"
-                                                 f"background-color: rgba(0, 0, 0, {150-self.counter_background_label*1.2});")
+        self.labels['quote_label'].setStyleSheet(
+            f"border: {border_style}; padding: 10px;"
+            f"background-color: rgba(0, 0, 0, {background_alpha});"
+            "border-radius: 5px; color: white;")
 
     def init_gui(self) -> None:
         # Window Geometry
@@ -198,16 +206,17 @@ class Frame1(QWidget):
         self.password_field.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.password_field.setStyleSheet(InputFieldStyle)
 
-        # Pixmap background
-        background_image = QPixmap(os.path.join('images', '759324.png'))
-        self.background_label = QLabel()
-        self.background_label.setPixmap(background_image)
-        self.background_label.setGeometry(
-            0, 0, 800, 600)
+        # # Pixmap background
+        # background_image = QPixmap(os.path.join('images', '759324.png'))
+        # self.background_label = QLabel()
+        # self.background_label.setPixmap(background_image)
+        # self.background_label.setGeometry(
+        #     0, 0, 800, 600)
 
         # Register
         self.register_button = Register_Button(
             'registerButton', (300, 250), 'REGISTER', self)
+        # los hacemos no marcables cuando se hace click
         self.register_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.register_button.setStyleSheet(button_style)

@@ -21,10 +21,6 @@ class ProfileViewBackground(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.setGeometry(-500, -500, 8000, 8000)
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
-
-        # REPLACE THIS WITH ADD BUTTON ETC
-        # REPLACE THIS WITH ADD BUTTON ETC
-        # REPLACE THIS WITH ADD BUTTON ETC
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(""))
         self.setLayout(layout)
@@ -46,7 +42,6 @@ class ChatWidget(QWidget):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
         self.username = username
-        print('USERNAME ESSSSSSSSSSSSSSSSSSSSSSSSSSS', self.username)
         self.setWindowTitle("Chat Flotante")
         self.profile_image = QPixmap(f'profiles/images/{self.username}.png')
         # This is the average color of the image
@@ -57,14 +52,14 @@ class ChatWidget(QWidget):
         self.username_label = QLabel(self.username)
         self.username_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.username_label.setStyleSheet(
-            'color: white;text-align: center;font: 75 20pt "MS Shell Dlg 2";')
+            'color: white;text-align: center;font: 75 25pt "MS Shell Dlg 2";')
         self.add_friend = QPushButton("Friend Request")
         self.add_friend.setStyleSheet(f'QPushButton {{ \
             background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
             stop:0 rgba({average_color[0]-40}, {average_color[1]-40}, {average_color[2]-40}, 1), \
             stop:1 rgba({average_color[0]}, {average_color[1]}, {average_color[2]}, 1)); \
-            color: white; font: bold 10pt "MS Shell Dlg 2";}} \
-            QPushButton:pressed {{color: rgb(0, 0, 128); background-color: white;}}')
+            color: white; font: bold 12pt "MS Shell Dlg 2";border:1px solid black;border-radius:2px;}} \
+            QPushButton:pressed {{color: rgb(0, 0, 0); background-color: white;}}')
         # self.add_friend.setStyleSheet(
         #     'QPushButton {color: white; background-color: rgba(0, 0, 128, 1);\
         #         solid black; font: bold 10pt "MS Shell Dlg 2";} \
@@ -76,18 +71,19 @@ class ChatWidget(QWidget):
             background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
             stop:0 rgba({average_color[0]-40}, {average_color[1]-40}, {average_color[2]-40}, 1), \
             stop:1 rgba({average_color[0]}, {average_color[1]}, {average_color[2]}, 1)); \
-            color: white; font: bold 10pt "MS Shell Dlg 2";}} \
+            color: white; font: bold 12pt "MS Shell Dlg 2"; border:1px solid black;border-radius:2px;}} \
             QPushButton:pressed {{color: rgb(0, 0, 128); background-color: white;}}')
-
+        self.send_message.setFixedHeight(30)
+        self.add_friend.setFixedHeight(30)
         # Create a container widget for the layout
         container_widget = QWidget(self)
-        container_widget.setGeometry(0, 0, 256, 384)
+        container_widget.setGeometry(0, 0, 320, 400)
 
         container_widget.setStyleSheet(
             f'background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
                 stop:0 rgba({average_color[0]-40}, {average_color[1]-40}, {average_color[2]-40}, 1), \
                     stop:1 rgba({average_color[0]+20}, {average_color[1]+20}, {average_color[2]+20}, 1)); \
-    border: 1px solid black; border-radius: 2px;')
+    border: 1px solid white; border-radius: 2px;')
 
         # We make the layout
         layout = QVBoxLayout(container_widget)
@@ -106,11 +102,15 @@ class ChatWidget(QWidget):
         layout.addLayout(horizontal_box)
 
         self.setLayout(layout)
-        self.setGeometry(300, 80, 20, 120)
+        self.setGeometry(150, 100, 400, 320)
         self.animation_steps = 100
+        self.animation_steps_close = 100
         self.current_step = 0
+        self.current_step_close = 0
         self.timer_expand_animation = QtCore.QTimer(self)
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
+        self.timer_close_animation = QtCore.QTimer(self)
+        self.timer_close_animation.timeout.connect(self.animate_size_close)
 
     def change_pixmap(self, username: str):
         ''' TODO AQUI LA IDEA ES DE ALGUNA FORMA CAMBIAR EL PIXMAP CADA VEZ QUE
@@ -129,21 +129,44 @@ class ChatWidget(QWidget):
     def show_profile(self):
         self.show()
         self.raise_()
-        self.timer_expand_animation.start(2)
+        self.timer_expand_animation.start(1)
+
+    def hide_profile(self):
+        self.timer_close_animation.start(2)
 
     def animate_size_start(self):
         self.current_step += 1
         if self.current_step <= self.animation_steps:
             factor = 1.0 + self.current_step / self.animation_steps * 0.6
-            scaled_width = int(20 * factor*8)
-            scaled_height = int(120 * factor*2)
+            scaled_width = int(25 * factor*8)
+            scaled_height = int(125 * factor*2)
             # self.setFixedSize(scaled_width, scaled_height)
             # Expanding the pixmap as well
-            self.resize(scaled_width, scaled_height)
+            # self.setGeometry(self.current_step,
+            #                  self.current_step, scaled_width, scaled_height)
+            self.setGeometry(0+self.current_step, 0 +
+                             self.current_step, scaled_width, scaled_height)
             # self.setGeometry(400, 80, scaled_width, scaled_height)
         else:
             self.current_step = 0
+            print(self.height(), self.width())
             self.timer_expand_animation.stop()
+
+    def animate_size_close(self):
+        self.current_step_close += 1
+        if self.current_step_close <= self.animation_steps_close:
+            factor = 1.0 - self.current_step / self.animation_steps_close * 0.6
+            scaled_width = int(25 * factor*8)
+            scaled_height = int(125 * factor*2)
+            # self.setFixedSize(scaled_width, scaled_height)
+            # Expanding the pixmap as well
+            self.setGeometry(self.current_step_close*10,
+                             self.current_step_close*3, scaled_width+30, scaled_height+10)
+        else:
+            self.current_step_close = 0
+            print(self.height(), self.width())
+            self.timer_close_animation.stop()
+            self.hide()
 
     def load_image(self, image_path):
         # TODO We need to check if the image exists and retrieve it from the cache
@@ -186,7 +209,7 @@ class QLabelProfilePicture(QLabel):
             32, QtCore.Qt.TransformationMode.SmoothTransformation))
 
     def label_enter_event(self, event):
-        self.timer_expand_animation.start(2)
+        self.timer_expand_animation.start(1)
         event.accept()
 
     def label_leave_event(self, event):
@@ -225,17 +248,21 @@ class QLabelProfilePicture(QLabel):
             self.setPixmap(pixmap_scaled)
         else:
 
-            # Crea un nuevo QPixmap con las dimensiones modificadas
-            new_pixmap = QPixmap(34, 34)
-            new_pixmap.fill(QColor(200, 200, 200))
-
-            with QPainter(new_pixmap) as painter:
-                painter.drawPixmap(1, 1, self.original_pixmap)
-
-            self.setPixmap(new_pixmap.scaledToWidth(
-                40, QtCore.Qt.TransformationMode.SmoothTransformation))
+            self.setPixmap(self.pixmap().scaledToWidth(
+                65, QtCore.Qt.TransformationMode.SmoothTransformation))
 
             # print("Current size of the pixmap:", self.pixmap().size())
+            # TODO The following code works just only if the pixmap has square dimensions
+            # new_pixmap = QPixmap(34, 34)
+            # new_pixmap.fill(QColor(200, 200, 200))
+
+            # with QPainter(new_pixmap) as painter:
+            #     painter.drawPixmap(1, 1, self.original_pixmap)
+
+            # self.setPixmap(new_pixmap.scaledToWidth(
+            #     50, QtCore.Qt.TransformationMode.SmoothTransformation))
+
+            # # print("Current size of the pixmap:", self.pixmap().size())
             self.current_step = 0
             self.timer_expand_animation.stop()
 
@@ -251,7 +278,7 @@ class QLabelMessage(QLabel):
         self.leaveEvent = self.label_leave_event
         self.timer_expand_animation = QtCore.QTimer(self)
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
-        self.timer_expand_animation.start(1)
+        # self.timer_expand_animation.start(1)
         self.animation_steps = 100
         self.current_step = 0
         self.setStyleSheet(

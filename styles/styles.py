@@ -4,7 +4,7 @@ quote_style = """
 QLabel {
     color: white;
     background-color: rgba(0, 0, 0, 70);
-    border: 2px solid black;
+    border: 1px solid black;
     padding: 10px;
     border-radius: 5px;
 }
@@ -13,38 +13,66 @@ welcome_user_style = """
 QLabel {
     color: white;
     font-size: 40px;
-    background-color: rgba(0, 0, 0, 100);
-    border: 1px solid black;
+    background-color: rgba(140, 140, 140, 70);
+    border: 1px solid rgba(180, 180, 180, 180);
     padding: 10px;
-    border-radius: 2px;
+    border-radius: 3px;
     font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 """
 
 button_style = """
     QPushButton {
-        border: 1px solid white;
+        border: 1px solid rgba(170,170,255,1);
         border-radius: 1px;
         font-size: 40px;
         font-weight: 550;
         color: white;
         padding: 10px 10px;
         margin: 2px 2px;
-        background: qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 #0000FF, stop: 0.7 #0000AA, stop: 1 #000088);
+        background: rgba(15,15,150,0.8);
+    }
+    
+    QPushButton:hover {
+        margin: 1.5px 1.5px;
+        border: 1.2px solid white;
+        font-size: 38px;
+        font-weight: bold;
+        background: rgba(10,10,80,0.8);
+    }
+    QPushButton:pressed {
+        margin: 1.4px 1.4px;
+        border-radius: 1px;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        border: 2px solid white;
+}
+"""
+button_style_logged = """
+    QPushButton {
+        border: 1px solid rgba(100,100,100,1);
+        border-radius: 2px;
+        font-size: 30px;
+        font-weight: 550;
+        color: white;
+        padding: 10px 10px;
+        margin: 2px 2px;
+        background: rgba(30,30,30,0.7);
     }
     
     QPushButton:hover {
         margin: 1.4px 1.4px;
-        border: 1.5px solid white;
-        font-size: 38px;
+        border: 1px solid white;
+        font-size: 28px;
         font-weight: bold;
-        background: qradialgradient(cx: 0.5, cy: 0.5, fx: 0.5, fy: 0.5, radius: 1, stop: 0 #0000FF, stop: 1 #3333AA);
+        background: rgba(10,10,180,1);
     }
     QPushButton:pressed {
-        background: rgba(0,0,0,40);
         border-radius: 1px;
         color: white;
-        font-size: 30px;
+        font-size: 25px;
         font-weight: bold;
         border: 2px solid white;
 }
@@ -113,7 +141,7 @@ global_style = """
 # """
 login_label = """
     QLabel {
-        opacity: 0.5;
+        opacity: 0.6;
         font-size: 30px;
         background: rgba(0,0,0,0);
 
@@ -153,8 +181,8 @@ login_label_ok = """
     QLabel {
         color: green;
         opacity: 0;
-        font-size: 30px;
+        font-size: 23px;
         font-weight: bold;
-        background: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.8);
     }
 """

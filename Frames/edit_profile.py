@@ -3,8 +3,6 @@ import requests
 from PyQt6.QtWidgets import QFileDialog
 from PyQt6.QtGui import QPixmap
 from PyQt6 import QtCore
-from io import BytesIO
-from PyQt6 import QtCore
 from PyQt6.QtWidgets import QStackedLayout, QWidget, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import EditProfileButton
@@ -26,7 +24,6 @@ class ChatWidget(QWidget):
         self.username = username
         self.show()
         self.raise_()
-        print('USERNAME ESSSSSSSSSSSSSSSSSSSSSSSSSSS', self.username)
         self.setWindowTitle("Chat Flotante")
         self.profile_image = QPixmap(f'profiles/images/{self.username}.png')
         # This is the average color of the image
@@ -119,7 +116,6 @@ class ProfileViewBackground(QWidget):
     def show_profile(self):
         self.show()
         self.raise_()
-        print(' show profileeeee de elem: ', self.username, self)
 
     def mousePressEvent(self, event) -> None:
         self.signal_profile_close.emit()
@@ -134,12 +130,16 @@ class EditProfile(QWidget):
         self.parent = parent  # Store the reference to the main window
         self.username = ''
         self.jwt = ''
-        self.animation_steps = 100
+        self.animation_steps = 50
         self.current_step = 0
         self.timer_expand_animation = QtCore.QTimer(self)
         self.timer_expand_animation.timeout.connect(self.animate_size_start)
+        self.timer_expand_animation_close = QtCore.QTimer(self)
+        self.timer_expand_animation_close.timeout.connect(
+            self.animate_size_close)
         self.init_gui()
         self.hide()
+        # self.instance_optional = QPushButton('Optional instance')
 
         screen = QGuiApplication.primaryScreen()
         screen_geometry = screen.geometry()
@@ -147,32 +147,51 @@ class EditProfile(QWidget):
         # Monitor dimensions
         self.screen_width = screen_geometry.width()
         self.screen_height = screen_geometry.height()
-
-        self.setGeometry(0, 0, int(self.screen_width * 0.6),
-                         int(self.screen_height*0.6))
+        # The bellowing line isn't necessary, but it is for ensuring the geometry
+        self.setGeometry(0, 0, int(self.screen_width * 0.7),
+                         int(self.screen_height*0.7))
 
     def show_profile(self):
         self.show()
         self.raise_()
-        self.timer_expand_animation.start(2)
+        self.timer_expand_animation.start(1)
         self.setFocus()
 
-    def mousePressEvent(self, event) -> None:
-        self.hide()
+    def instance_optional(self, cchat_frame):
+        self.instance_optional = cchat_frame
+
+    def mousePressEvent(self, event=None) -> None:
+        self.instance_optional.hide()
+        self.timer_expand_animation_close.start(1)
 
     def animate_size_start(self):
         self.current_step += 1
         if self.current_step <= self.animation_steps:
-            factor = 1.0 - self.current_step / self.animation_steps * \
+            factor = 1.0 + self.current_step / self.animation_steps * \
                 0.4  # Ajuste para partir desde un tamaño más pequeño
-            scaled_width = int(self.screen_width * factor * 0.6)
-            scaled_height = int(self.screen_height * factor * 0.6)
-            # self.setGeometry(0, 0, scaled_width, scaled_height)
+            scaled_width = int(self.screen_width * factor * 0.5)
+            scaled_height = int(self.screen_height * factor * 0.5)
+            self.setGeometry(0, 0, scaled_width, scaled_height)
         else:
             self.current_step = 0
             self.timer_expand_animation.stop()
-            self.setGeometry(0, 0, int(self.screen_width * 0.6),
-                             int(self.screen_height * 0.6))
+            self.setGeometry(0, 0, int(self.screen_width * 0.7),
+                             int(self.screen_height * 0.7))
+
+    def animate_size_close(self):
+        self.current_step += 1
+        if self.current_step <= self.animation_steps:
+            factor = 1.0 - self.current_step / self.animation_steps * \
+                0.4  # Ajuste para partir desde un tamaño más pequeño
+            scaled_width = int(self.screen_width * factor * 0.35)
+            scaled_height = int(self.screen_height * factor * 0.35)
+            self.setGeometry(0, 0, scaled_width, scaled_height)
+        else:
+            self.current_step = 0
+            self.timer_expand_animation_close.stop()
+            self.setGeometry(0, 0, int(self.screen_width * 0.7),
+                             int(self.screen_height * 0.7))
+            self.hide()
 
     def get_username(self, username):
         pass
@@ -194,30 +213,28 @@ class EditProfile(QWidget):
         # TODO delete the following instance
         self.image_viewer = ImageViewer(username=self.username, jwt=self.jwt)
         self.image_viewer.load_button.clicked.connect(self.load_image)
-        print('AHOAR SE CREO CON ', self.username, ' y ', self.jwt)
-        print('ID of the EditProfile instance:', id(self))
+
         self.image_viewer.retrieve_image_get(self.username, self.jwt)
         self.page1_layout.update()
 
     def load_image(self):
         self.image_viewer.username = self.username
         self.image_viewer.jwt = self.jwt
-        print('CCCCCCCCCCCCC', self.image_viewer.username, self.image_viewer.jwt)
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, 'Set your new profile picture!', '', 'Images (*.png *.jpg *.jpeg)')
-        print('selfffff', self.username, self.jwt)
 
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, 'ConnectX - Set your new profile picture!', '', 'Images (*.png *.jpg *.jpeg)')
         if file_path:
             pixmap = QPixmap(file_path)
             self.image_viewer.image_label.setPixmap(pixmap)
             self.image_viewer.image_label.setScaledContents(True)
-            print('ID of the EditProfile instance:', id(self))
+
             self.image_viewer.upload_image_post(
                 self.username, self.jwt, file_path)
             self.image_viewer.update()
-            print('post con username: ', self.username, ' y jwt: ', self.jwt)
+
             with open(f"profiles/images/{self.username}.png", "wb") as f:
                 f.write(open(file_path, 'rb').read())
+
         # self.image_viewer.destroy()
 
     # def charging_image(self):
@@ -236,13 +253,6 @@ class EditProfile(QWidget):
 
     def init_gui(self) -> None:
         self.labels = {}
-
-        # # calculate the center of the screen
-        # x_position = (screen_width - frame_to_center.width()) // 2
-        # y_position = (screen_height - frame_to_center.height()) // 2
-
-        # # Stablish the frame position in the center of the screen
-        # frame_to_center.setGeometry(x_position, y_position, 1280, 720)
 
         # QLabel image assignation
         window_size = self.size()
@@ -438,12 +448,7 @@ class EditProfile(QWidget):
         main_layout.addLayout(self.buttons_grouped)
         main_layout.addLayout(self.stacked_layout)
         self.setLayout(main_layout)
-        self.setStyleSheet(f"""
-            QWidget {{
-                background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
-                                            stop: 0 1, stop: 1 #000DFF);
-            }}
-            """)
+        self.setStyleSheet("background-color: rgba(70, 70, 70, 245);")
 
     def change_page(self):
         sender = self.sender()
@@ -470,292 +475,3 @@ class EditProfile(QWidget):
         #     self.change_page)
         # self.stack_button5.clicked.connect(self.change_page)
         self.update()
-
-# class EditProfile(QWidget):
-
-#     def __init__(self, *args, **kwargs) -> None:
-#         super().__init__(*args, **kwargs)
-#         self.username = ''
-#         self.jwt = ''
-#         self.init_gui()
-
-#     def get_username(self, username):
-#         self.username = username
-#         self.setWindowTitle(f'ConectX Project - {self.username}')
-#         self.charging_image()
-
-#     # def open_file(self) -> None:
-#     #     initial_dir = QStandardPaths.writableLocation(
-#     #         QStandardPaths.StandardLocation.DocumentsLocation)
-#     #     self.upload_qfile = QFileDialog.getOpenFileName(
-#     #         self, 'Upload image', initial_dir, 'All files (*)')
-#     #     if self.upload_qfile:
-#     #         print(f'Selected file: {self.upload_qfile}')
-#     #         dir_image = self.upload_qfile[0]
-#     #         self.image_pixmap = QPixmap(dir_image)
-
-#     #         self.labels['label_image'].setPixmap(self.image_pixmap)
-#     #         self.labels['label_image'].setScaledContents(True)
-#     #         self.labels['label_image'].setGeometry(200, 200, 300, 300)
-#     #         self.labels['label_image'].setAlignment(
-#     #             QtCore.Qt.AlignmentFlag.AlignCenter)
-#     #         self.labels['label_image'].show()
-#     #         image = self.image_pixmap.toImage()
-#     #         buffer = QtCore.QBuffer()
-#     #         buffer.open(QtCore.QIODevice.OpenModeFlag.ReadWrite)
-#     #         image.save(buffer, "PNG")
-#     #         image_bytes = buffer.data()
-#     #         url = 'http://localhost:8000/uploadimagen/'
-#     #         files = {'files': ('blob', BytesIO(image_bytes))}
-#     #         response = requests.post(url, files=files)
-#     #         print(f'Response from server: {response.json()}')
-
-#     def change_profile_pic(self) -> None:
-#         change_avatar_frame = ChangeAvatar(self)
-#         change_avatar_frame.show()
-
-#     def jwt_receiver(self, jwt: str, username: str) -> None:
-#         self.jwt = jwt
-#         self.username = username
-#         print('USERNAME DE SIGNAL A A A A A A A', username)
-
-#         # The following lines are for set the profile image
-#         # Upload profile image
-#         image_viewer = ImageViewer(username=self.username, jwt=self.jwt)
-#         print('AHOAR SE CREO CON ', self.username, ' y ', self.jwt)
-#         self.image_viewer.jwt = jwt
-#         self.image_viewer.username = self.username
-#         self.image_viewer.retrieve_image_get(self.username, jwt)
-#         self.page1_layout.update()
-#         self.image_viewer.destroy()
-
-#     def charging_image(self):
-#         path_file = f'profiles/images/{self.username}.png'
-#         if os.path.exists(path_file):
-#             print(
-#                 f'El archivo {path_file} existe, ergo no la creamos')
-#         else:
-#             print(f'El archivo {path_file} NO existe.')
-#             create_new_os_image = open(path_file, 'wb')
-#             # Ahora creamos la imagen a partir de Anonoymous.png
-#             create_new_os_image.write(
-#                 open('profiles/images/Anonymous.png', 'rb').read())
-#             create_new_os_image.close()
-#             self.image_pixmap = QPixmap(path_file)
-
-#     def init_gui(self) -> None:
-#         window_size = self.size()
-#         self.labels = {}
-#         self.setGeometry(100, 200, 500, 600)
-#         self.setWindowTitle(f'ConectX Project - {self.username}')
-
-#         # QLabel image assignation
-#         window_size = self.size()
-#         self.labels['label_image'] = QLabel(self)
-#         self.labels['label_image'].hide()
-#         # TODO
-#         # TODO Empezamos con la imagen de perfil por defecto, luego hay que
-#         # pedirla cada vez que se inicie la aplicación, pero revisando
-#         # antes si esta descargada en la ubicacion de self.username TODO
-#         # self.labels['label_image'].setPixmap(self.image_pixmap)
-#         self.labels['label_image'].setScaledContents(True)
-#         self.labels['label_image'].setGeometry(200, 200, 300, 300)
-#         self.labels['label_image'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         self.labels['label_image'].show()
-#         # TODO
-#         self.labels['label_image'].setMaximumSize(window_size)
-#         self.labels['label_image'].setGeometry(0, 0, 0, 0)
-#         self.labels['label_image'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-
-#         # Upload profile image
-#         self.image_viewer = ImageViewer(username=self.username, jwt=self.jwt)
-#         # self.upload_image = Upload_file(
-#         #     'uploadButton', (300, 250), 'Change profile picture', self)
-#         # self.upload_image.setCursor(
-#         #     QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-#         # self.upload_image.setStyleSheet(
-#         #     button_style)
-#         # self.upload_image.clicked.connect(self.open_file)
-#         # self.upload_image.clicked.connect(self.change_profile_pic)
-
-#         # 1 Button
-#         self.stack_button1 = EditProfileButton(
-#             'logoutnButton', 0, 'Profile', self)
-#         self.stack_button1.setCursor(
-#             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-#         self.stack_button1.setStyleSheet(
-#             edit_profile_button)
-#         self.stack_button1.setStyleSheet(edit_profile_button_clicked)
-#         # 1 Layout
-#         # QLabel image assignation
-#         self.labels['label_image1'] = QLabel(self)
-#         self.labels['label_image1'].setMaximumSize(window_size)
-#         self.labels['label_image1'].setGeometry(50, 50, 300, 300)
-#         self.labels['label_image1'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         dir_image = image_florence
-#         image_pixmap = QPixmap(dir_image)
-#         self.labels['label_image1'].setPixmap(image_pixmap)
-#         self.labels['label_image1'].setMaximumSize(window_size)
-#         self.labels['label_image1'].setScaledContents(True)
-#         self.labels['label_image1'].setGeometry(200, 200, 300, 300)
-#         self.labels['label_image1'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         self.labels['label_image1'].show()
-#         # 2 Button
-#         self.stack_button2 = EditProfileButton(
-#             'logoutnButton', 1, 'Contacts', self)
-#         self.stack_button2.setCursor(
-#             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-#         self.stack_button2.setStyleSheet(
-#             edit_profile_button)
-#         # 2 Layout
-#         # QLabel image assignation
-#         self.labels['label_image2'] = QLabel(self)
-#         self.labels['label_image2'].setMaximumSize(window_size)
-#         self.labels['label_image2'].setGeometry(50, 50, 300, 300)
-#         self.labels['label_image2'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         dir_image2 = aristotle_1
-#         image_pixmap = QPixmap(dir_image2)
-#         self.labels['label_image2'].setPixmap(image_pixmap)
-#         self.labels['label_image2'].setScaledContents(True)
-#         self.labels['label_image2'].setGeometry(200, 200, 300, 300)
-#         self.labels['label_image2'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         self.labels['label_image2'].show()
-#         # 3 Button
-#         self.stack_button3 = EditProfileButton(
-#             'logoutnButton', 2, 'Messages', self)
-#         self.stack_button3.setCursor(
-#             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-#         self.stack_button3.setStyleSheet(
-#             edit_profile_button)
-#         # 3 Layout
-#         # QLabel image assignation
-#         self.labels['label_image3'] = QLabel(self)
-#         self.labels['label_image3'].setMaximumSize(window_size)
-#         self.labels['label_image3'].setGeometry(50, 50, 300, 300)
-#         self.labels['label_image3'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         dir_image = image_florence
-#         image_pixmap = QPixmap(dir_image)
-#         self.labels['label_image3'].setPixmap(image_pixmap)
-#         self.labels['label_image3'].setScaledContents(True)
-#         self.labels['label_image3'].setGeometry(200, 200, 300, 300)
-#         self.labels['label_image3'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         self.labels['label_image3'].show()
-#         # 4 Button
-#         self.stack_button4 = EditProfileButton(
-#             'logoutnButton', 3, 'Advanced', self)
-#         self.stack_button4.setCursor(
-#             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-#         self.stack_button4.setStyleSheet(
-#             edit_profile_button)
-#         # 4 Layout
-#         # QLabel image assignation
-#         self.labels['label_image4'] = QLabel(self)
-#         self.labels['label_image4'].setMaximumSize(window_size)
-#         self.labels['label_image4'].setGeometry(50, 50, 300, 300)
-#         self.labels['label_image4'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         dir_image2 = aristotle_1
-#         image_pixmap = QPixmap(dir_image2)
-#         self.labels['label_image4'].setPixmap(image_pixmap)
-#         self.labels['label_image4'].setScaledContents(True)
-#         self.labels['label_image4'].setGeometry(200, 200, 300, 300)
-#         self.labels['label_image4'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         self.labels['label_image4'].show()
-#         # 5 Button
-#         self.stack_button5 = EditProfileButton(
-#             'logoutnButton', 4, 'Security', self)
-#         self.stack_button5.setCursor(
-#             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-#         self.stack_button5.setStyleSheet(
-#             edit_profile_button)
-#         # 5 Layout
-#         # QLabel image assignation
-#         self.labels['label_image5'] = QLabel(self)
-#         self.labels['label_image5'].setMaximumSize(window_size)
-#         self.labels['label_image5'].setGeometry(50, 50, 300, 300)
-#         self.labels['label_image5'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         dir_image = image_florence
-#         image_pixmap = QPixmap(dir_image)
-#         self.labels['label_image5'].setPixmap(image_pixmap)
-#         self.labels['label_image5'].setScaledContents(True)
-#         self.labels['label_image5'].setGeometry(200, 200, 300, 300)
-#         self.labels['label_image5'].setAlignment(
-#             QtCore.Qt.AlignmentFlag.AlignCenter)
-#         self.labels['label_image5'].show()
-
-#         # Buttons Grouped
-#         self.buttons_grouped = QHBoxLayout()
-#         self.buttons_grouped.addWidget(self.stack_button1)
-#         self.buttons_grouped.addWidget(self.stack_button2)
-#         self.buttons_grouped.addWidget(self.stack_button3)
-#         self.buttons_grouped.addWidget(self.stack_button4)
-#         self.buttons_grouped.addWidget(self.stack_button5)
-
-#         self.page1_layout = QHBoxLayout()
-#         self.page1_layout.addWidget(self.labels['label_image1'])
-#         self.page1_layout.addWidget(self.image_viewer)
-#         # page1_layout.addWidget(self.upload_image)
-#         self.labels['label_image']
-#         self.page1_layout.addWidget(self.labels['label_image'])
-#         container1 = QWidget()
-#         container1.setLayout(self.page1_layout)
-
-#         page2_layout = QVBoxLayout()
-#         page2_layout.addWidget(self.labels['label_image2'])
-#         container2 = QWidget()
-#         container2.setLayout(page2_layout)
-
-#         page3_layout = QVBoxLayout()
-#         page3_layout.addWidget(self.labels['label_image3'])
-#         container3 = QWidget()
-#         container3.setLayout(page3_layout)
-
-#         page4_layout = QVBoxLayout()
-#         page4_layout.addWidget(self.labels['label_image4'])
-#         container4 = QWidget()
-#         container4.setLayout(page4_layout)
-
-#         page5_layout = QVBoxLayout()
-#         page5_layout.addWidget(self.labels['label_image5'])
-#         container5 = QWidget()
-#         container5.setLayout(page5_layout)
-
-#         self.stacked_layout = QStackedLayout()
-#         self.stacked_layout.addWidget(container1)
-#         self.stacked_layout.addWidget(container2)
-#         self.stacked_layout.addWidget(container3)
-#         self.stacked_layout.addWidget(container4)
-#         self.stacked_layout.addWidget(container5)
-
-#         main_layout = QVBoxLayout()
-#         main_layout.addLayout(self.buttons_grouped)
-#         main_layout.addLayout(self.stacked_layout)
-#         self.setLayout(main_layout)
-#         self.setStyleSheet(f"""
-#             QWidget {{
-#                 background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
-#                                             stop: 0 1, stop: 1 #000DFF);
-#             }}
-#             """)
-
-#     def change_page(self):
-#         sender = self.sender()
-#         self.stacked_layout.setCurrentIndex(sender.index)
-#         self.stack_button1.setStyleSheet(edit_profile_button)
-#         self.stack_button2.setStyleSheet(edit_profile_button)
-#         self.stack_button3.setStyleSheet(edit_profile_button)
-#         self.stack_button4.setStyleSheet(edit_profile_button)
-#         self.stack_button5.setStyleSheet(edit_profile_button)
-#         for i in range(5):
-#             if i == sender.index:
-#                 sender.setStyleSheet(edit_profile_button_clicked)
