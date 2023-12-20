@@ -216,15 +216,13 @@ class FrameLogin(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Edtir profile
-        self.edit_account_shadow = ProfileViewBackground(self)
         self.edit_account = Button(
-            'editAccount', (300, 250), 'Settings', self)
+            'editAccount', (300, 250), ' Menu ', self)
+        self.edit_account_shadow = ProfileViewBackground(self)
         # self.edit_account.clicked.connect(self.edit_account_frame.show_profile)
         self.edit_account.clicked.connect(self.edit_account_shadow.show)
-
         self.edit_account_frame.instance_optional(self.edit_account_shadow)
         self.edit_account_frame.mousePressEvent()
-
         self.edit_account.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.edit_account.setStyleSheet(
@@ -233,7 +231,7 @@ class FrameLogin(QWidget):
 
         # Logout
         self.logout_button = Login_Button(
-            'logoutnButton', (300, 250), 'Close session', self)
+            'logoutnButton', (300, 250), ' Close session ', self)
         self.logout_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.logout_button.setStyleSheet(
@@ -242,7 +240,7 @@ class FrameLogin(QWidget):
 
         # CHAT
         self.chat_button = Chat_Button(
-            'chatButton', (300, 250), 'Chat', self)
+            'chatButton', (300, 250), ' Chat ', self)
         self.chat_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.chat_button.setStyleSheet(

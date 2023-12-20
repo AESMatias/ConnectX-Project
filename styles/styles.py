@@ -22,6 +22,33 @@ QLabel {
 }
 """
 
+button_style_upload = """
+    QPushButton {
+        border: 1px solid rgba(170,170,255,1);
+        border-radius: 1px;
+        font-size: 20px;
+        font-weight: 550;
+        color: white;
+        padding: 10px 10px;
+        margin: 2px 2px;
+        background: rgba(15,15,150,0.8);
+    }
+    
+    QPushButton:hover {
+        font-size: 19px;
+        font-weight: bold;
+        background: rgba(10,10,80,0.8);
+    }
+    QPushButton:pressed {
+        margin: 1.4px 1.4px;
+        border-radius: 1px;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: 2px solid white;
+}
+"""
+
 button_style = """
     QPushButton {
         border: 1px solid rgba(170,170,255,1);
@@ -79,10 +106,10 @@ button_style_logged = """
 """
 edit_profile_button = """
     QPushButton {
-        border: 1px solid white;
-        border-radius: 0px;
-        font-size: 30px;
-        font-weight: 450;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 1px;
+        font-size: 20px;
+        font-weight: 600;
         color: white;
         padding: 10px 10px;
         margin: 2px 2px;
@@ -93,39 +120,32 @@ edit_profile_button = """
         
     }
     QPushButton:pressed {
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.6);
         color: white;
-        font-size: 20px;
+        font-size: 18px;
         border: 1px solid white;
-        border-radius: 1.5px;
+        border-radius: 0px;
+        margin: 2px 2px;
 }
 """
 
 edit_profile_button_clicked = """
     QPushButton {
-        padding: 10px;
-        border: 1px solid black;
-        font-size: 25px;
-        font-weight: bold;
+        border: 1px solid rgba(255,255,255,0);
+        border-radius: 2px;
+        font-size: 18px;
+        font-weight: 700;
         color: white;
         padding: 10px 10px;
         margin: 2px 2px;
-        border-radius: 2px;
-        background-color: rgba(0, 0, 0, 150);
+        background-color: rgba(255, 255, 255, 0.1);
     }
     
     QPushButton:hover {
         
     }
 
-    QPushButton:pressed {
-        background-color: rgba(255, 255, 255, 0.3);
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-        border: 1px solid white;
-        border-radius: 1.5px;
-}
+    
 """
 global_style = """
     QWidget {

@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtWidgets import QHBoxLayout
 from PIL import Image
 import numpy as np
-from PyQt6.QtGui import QColor, QBrush, QPalette, QPainter
+from PyQt6.QtGui import QPainter, QColor
 
 
 class ProfileViewBackground(QWidget):
@@ -201,6 +201,8 @@ class QLabelProfilePicture(QLabel):
         pixmap = QPixmap(f'profiles/images/{username}.png')
         self.original_pixmap = pixmap.scaledToWidth(
             32, QtCore.Qt.TransformationMode.SmoothTransformation)
+        self.original_pixmap = pixmap.scaledToWidth(32, QtCore.Qt.TransformationMode.SmoothTransformation)\
+            .scaledToHeight(32, QtCore.Qt.TransformationMode.SmoothTransformation)
         self.scaled_pixmap = None
         self.setPixmap(self.original_pixmap)
 
@@ -219,8 +221,8 @@ class QLabelProfilePicture(QLabel):
         else:
             # pixmap_scaled = self.original_pixmap.scaled(QtCore.QSize(
             #     32, 32), QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-            self.setPixmap(self.original_pixmap.scaledToWidth(
-                32, QtCore.Qt.TransformationMode.SmoothTransformation))
+            self.setPixmap(self.original_pixmap.scaledToWidth(65, QtCore.Qt.TransformationMode.SmoothTransformation)
+                           .scaledToHeight(32, QtCore.Qt.TransformationMode.SmoothTransformation))
             # self.setPixmap(pixmap_scaled)
             event.accept()
 
@@ -244,15 +246,17 @@ class QLabelProfilePicture(QLabel):
             # self.setFixedSize(scaled_width, scaled_height)
             # Expanding the pixmap as well
             pixmap_scaled = self.original_pixmap.scaled(QtCore.QSize(
-                scaled_width, scaled_height), QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+                scaled_width, scaled_height), QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                QtCore.Qt.TransformationMode.SmoothTransformation)
+
             self.setPixmap(pixmap_scaled)
         else:
 
-            self.setPixmap(self.pixmap().scaledToWidth(
-                65, QtCore.Qt.TransformationMode.SmoothTransformation))
+            self.setPixmap(self.pixmap().scaledToWidth(65, QtCore.Qt.TransformationMode.SmoothTransformation)
+                           .scaledToHeight(65, QtCore.Qt.TransformationMode.SmoothTransformation))
 
             # print("Current size of the pixmap:", self.pixmap().size())
-            # TODO The following code works just only if the pixmap has square dimensions
+            # # TODO The following code works just only if the pixmap has square dimensions
             # new_pixmap = QPixmap(34, 34)
             # new_pixmap.fill(QColor(200, 200, 200))
 
@@ -276,11 +280,11 @@ class QLabelMessage(QLabel):
         self.original_size = self.sizeHint()
         self.enterEvent = self.label_enter_event
         self.leaveEvent = self.label_leave_event
-        self.timer_expand_animation = QtCore.QTimer(self)
-        self.timer_expand_animation.timeout.connect(self.animate_size_start)
+        # self.timer_expand_animation = QtCore.QTimer(self)
+        # self.timer_expand_animation.timeout.connect(self.animate_size_start)
         # self.timer_expand_animation.start(1)
-        self.animation_steps = 100
-        self.current_step = 0
+        # self.animation_steps = 100
+        # self.current_step = 0
         self.setStyleSheet(
             "QLabel {font: bold 0pt 'MS Shell Dlg 2'; background-color: rgba(0, 0, 0, 0);}")
 
@@ -308,19 +312,19 @@ class QLabelMessage(QLabel):
         #     print("Soltar clic izquierdo en el QLabel")
         pass
 
-    def animate_size_start(self):
-        self.current_step += 1
-        if self.current_step <= self.animation_steps:
-            factor = 1.0 + self.current_step / self.animation_steps * 0.3
-            scaled_width = int(self.original_size.width() * factor)
-            scaled_height = int(self.original_size.height() * factor)
-            style_sheet = (
-                "QLabel {"
-                f"font: bold {4*factor*2}pt 'MS Shell Dlg 2';"
-                "background-color: rgba(0, 0, 0, 0);"
-                "}"
-            )
-            self.setStyleSheet(style_sheet)
-        else:
-            self.current_step = 0
-            self.timer_expand_animation.stop()
+    # def animate_size_start(self):
+    #     self.current_step += 1
+    #     if self.current_step <= self.animation_steps:
+    #         factor = 1.0 + self.current_step / self.animation_steps * 0.3
+    #         scaled_width = int(self.original_size.width() * factor)
+    #         scaled_height = int(self.original_size.height() * factor)
+    #         style_sheet = (
+    #             "QLabel {"
+    #             f"font: bold {4*factor*2}pt 'MS Shell Dlg 2';"
+    #             "background-color: rgba(0, 0, 0, 0);"
+    #             "}"
+    #         )
+    #         self.setStyleSheet(style_sheet)
+    #     else:
+    #         self.current_step = 0
+    #         self.timer_expand_animation.stop()

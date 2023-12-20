@@ -142,6 +142,11 @@ if __name__ == '__main__':
         window.login_button.signal_jwt_login.connect(
             login_window.chat_frame.jwt_receiver)
 
+        # TODO if the user close the session, then terminate the whole application,
+        # but we need to fix this and just close the sockets, not the whole application,
+        # this imply that we need to change the way we are closing the sockets and maybe more.
+        login_window.logout_button.clicked.connect(window.close)
+
         login_window.chat_frame.send_message_signal.connect(
             login_window.client_communicator.send_message)
         # TODO AAA TODO

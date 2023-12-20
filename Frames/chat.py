@@ -109,7 +109,6 @@ class ChatFrame(QWidget):
             scaled_height = int(self.screen_height * factor * 0.4)
             self.setGeometry(0+self.current_step*12, 0 +
                              self.current_step*6, scaled_width, scaled_height)
-            print('self.current_step: ', self.current_step)
         else:
             self.current_step = 0
             self.timer_animate_close.stop()

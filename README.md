@@ -1,12 +1,16 @@
 # ConnectX Project 🚀
-**ConnectX it's an chat application, the project it's made in PyQt6 framework**
-**The code it's open source and free to use under the license attached in this repository** 
+ConnectX it's an chat application, the project it's made in PyQt6 framework.
+
+*The code is open source and free to use under the license attached in this repository* 
 
 Tags:
 - fastapi 🚄
 - uvicorn 🐍
-- python 🐉
+- PyQt6 🐉
+- Qt
+- Python 🐉
 - sqlalchemy 🗃️
+- Chat Application
 
 ## How to Get Started 🌟
 1. Clone this repository to your local machine.
@@ -18,15 +22,26 @@ Tags:
 - The features are listed here.
 ## Authors✨
 @AESMatias & @emonkey0
-### Next things to do
-- Improve the memory optimization.
-- Modularize and solve the problem of coupling and cohesion.
-- Responsive design
-- Security: message inputs, endpoints, etc...
+# Next things to do 🚀
 
+### Improve the memory optimization:
+
+### Modularize the code and solve the problem of hight cohesion and low coupling:
+
+### Design:
+- We need to add the option that allows maximise or just shrink the windows dimensions.
+
+### Security: message inputs, endpoints, etc...
+- We need to ensure that the two sockets (to send and recibe messages) for each user connected were absolute closed through de server (maybe using a periodic func), because if this isn't done, we're having a big vulnerability breach that allows the users collapse the RAM used by the server, blowing up the entire server.
+
+### Chat:
+- When a new message income, we need to refresh the two instances> the pixmap and the animated label with the new picture that has been changed from our own account session.
+- If the user scrolls up, then we need to calculate the current height
+dinamically obtained through a function, thus allowing them to scrolls up the
+chat history, because currently there's a func that scrolls the whole chat down
+every 15 seconds.
 
 # Attributions and acknowledgments:
-
 Settings icon: <a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
 
 Volume icon: <a href="https://www.flaticon.com/free-icons/speaker" title="speaker icons">Speaker icons created by Pixel perfect - Flaticon</a>
