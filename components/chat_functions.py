@@ -280,6 +280,7 @@ class QLabelMessage(QLabel):
         self.original_size = self.sizeHint()
         self.enterEvent = self.label_enter_event
         self.leaveEvent = self.label_leave_event
+        self.setFixedHeight(40)
         # self.timer_expand_animation = QtCore.QTimer(self)
         # self.timer_expand_animation.timeout.connect(self.animate_size_start)
         # self.timer_expand_animation.start(1)
@@ -328,3 +329,102 @@ class QLabelMessage(QLabel):
     #     else:
     #         self.current_step = 0
     #         self.timer_expand_animation.stop()
+
+
+class QLabelMessageMail(QLabel):
+    signal_profile_picture_clicked = QtCore.pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        # Right Alignment
+        self.setMinimumWidth(600)
+        # self.setGeometry(220, 220, 600, 600)
+        self.original_size = self.sizeHint()
+        self._width = self.original_size.width()
+        self._height = self.original_size.height()
+        self.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.setWordWrap(True)
+        self.enterEvent = self.label_enter_event
+        self.leaveEvent = self.label_leave_event
+        self.counter_enter = 0
+        self.setStyleSheet(
+            "QLabel {border: 0px rgba(255,255,255,0.4);font: bold 0pt 'MS Shell Dlg 2';\
+                background-color: rgba(40, 40, 0, 0);}")
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.animation_steps = 100
+        self.animation_steps_close = 100
+        self.current_step = 0
+        self.current_step_close = 0
+        # self.timer_expand_animation = QtCore.QTimer(self)
+        # self.timer_expand_animation.timeout.connect(self.animate_size_start)
+        # self.timer_close_animation = QtCore.QTimer(self)
+        # self.timer_close_animation.timeout.connect(self.animate_size_close)
+        # obtenemos las posicione sdel qlabel
+        self.pos_x = self.pos().x()
+        self.pos_y = self.pos().y()
+
+    def label_enter_event(self, event):
+        # self.timer_expand_animation.start(2)
+        event.accept()
+
+    def label_leave_event(self, event):
+        pass
+        # self.timer_expand_animation.stop()
+        # if self.scaled_pixmap is not None:
+        #     self.setPixmap(self.scaled_pixmap)
+        # else:
+        #     self.setPixmap(self.original_pixmap.scaledToWidth(
+        #         32, QtCore.Qt.TransformationMode.SmoothTransformation))
+        #     event.accept()
+
+    def mousePressEvent(self, event) -> None:
+        print("Text copied! -We need to add this funcionality-")
+        # if self.counter_enter % 2 == 0:
+
+        #     if event.button() == Qt.MouseButton.LeftButton:
+        #         print("1Text copied! -We need to add this funcionality- ")
+        #         self.show_profile()
+        # elif self.counter_enter % 2 != 0:
+        #     if event.button() == Qt.MouseButton.LeftButton:
+        #         print("2Text copied! -We need to add this funcionality- ")
+        #         self.hide_profile()
+        # self.counter_enter += 1
+
+    # def show_profile(self):
+    #     self.show()
+    #     self.raise_()
+    #     self.timer_expand_animation.start(1)
+
+    # def hide_profile(self):
+    #     self.timer_close_animation.start(2)
+
+    # TODO Fix these animations and rethink the logic of the open/close message
+    # def animate_size_start(self):
+    #     print(self.pos_x, self.pos_y, 'iniail1')
+    #     self.current_step += 1
+    #     if self.current_step <= self.animation_steps:
+    #         self.setGeometry(self.pos_x, self.pos_y, self._width + self.animation_steps,
+    #                          self._height + self.animation_steps)
+    #     else:
+    #         self.current_step = 0
+    #         # self.setGeometry(0, 0, 800, 40)
+    #         self.timer_expand_animation.stop()
+
+    # def animate_size_close(self):
+    #     self.current_step += 1
+    #     if self.current_step <= self.animation_steps:
+    #         factor = 1.0 + self.current_step / self.animation_steps * 0.6
+    #         scaled_width = int(25 * factor*25)
+    #         scaled_height = int(125 * factor*3)
+    #         # self.setFixedSize(scaled_width, scaled_height)
+    #         # Expanding the pixmap as well
+    #         # self.setGeometry(self.current_step,
+    #         #                  self.current_step, scaled_width, scaled_height)
+    #         self.setGeometry(0, 0, scaled_width, scaled_height)
+    #         # self.setGeometry(400, 80, scaled_width, scaled_height)
+    #         # self.setStyleSheet('background-color: rgba(0, 0, 0, 1);')
+    #     else:
+    #         self.current_step = 0
+    #         # self.setGeometry(0, 0, 800, 40)
+    #         self.timer_close_animation.stop()

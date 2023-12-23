@@ -79,7 +79,7 @@ class ImageViewer(QMainWindow):
             with open("images/profile_image.png", "wb") as f:
                 f.write(open('profiles/images/Anonymous.png', 'rb').read())
                 pixmap = QPixmap('profiles/images/Anonymous.png').scaled(
-                    350, 350, Qt.AspectRatioMode.KeepAspectRatio)
+                    400, 400, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
                 self.image_label.setPixmap(pixmap)
                 self.image_label.repaint()
                 self.image_label.show()
@@ -101,7 +101,7 @@ class ImageViewer(QMainWindow):
         response = requests.post(url, headers=headers, files=data)
         if response.status_code == 200:
             pixmap = QPixmap(image_path).scaled(
-                350, 350, Qt.AspectRatioMode.KeepAspectRatio)
+                400, 400, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
             self.image_label.setPixmap(pixmap)
             self.image_label.setScaledContents(True)
             # recargamos para que se vea

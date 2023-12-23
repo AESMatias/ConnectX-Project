@@ -4,22 +4,23 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QHBoxLayout, QVBoxLayout, QGridLayout, QLineEdit, QScrollArea, QSizePolicy)
 from PyQt6.QtGui import QPixmap
 from styles.styles import InputFieldStyle, login_label_ok
-from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground, QLabelMessage
+from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileViewBackground, QLabelMessageMail
+from components.messages_functions import MessagesBoxWidget
 from typing import Tuple, List
-import requests
-import os
-import json
-from PyQt6.QtGui import QPalette, QBrush
-from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QGuiApplication
-from PyQt6.QtWidgets import QScrollBar
+from PyQt6.QtWidgets import QPushButton
+import numpy as np
+from PIL import Image
+from PyQt6 import QtGui
+import os
 from components.global_functions import QLabel_Exit
+from PyQt6.QtCore import QCoreApplication
+from PyQt6.QtGui import QPalette, QBrush, QGuiApplication
+import requests
+import json
 
 
-class ChatFrame(QWidget):
-    send_message_signal = pyqtSignal(str)
-
+class MessagesWidget(QWidget):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.counter_chat_enter = 0
@@ -27,25 +28,22 @@ class ChatFrame(QWidget):
         self.username = ''
         self.username_tuple = ()
         self.active_users_chat = (0, '')
-        qlabelpixamap = QLabel(self)
-        qlabelpixamap.setPixmap(QPixmap('images/logo32.png'))
+        qlabelpixamap = QLabel()
+        qlabelpixamap.setPixmap(QPixmap('profiles/images/Anonymous.png'))
         self.image_pixmap_1 = qlabelpixamap
         self.image_pixmap_1.setVisible(False)
         self.profile_pixmap = QPixmap('images/profile_image.png')
         self.init_gui()
         self.host = "127.0.0.1"
         self.port = 12345
-        self.hide()
+        self.show()
         self.raise_()
-        self.timer_active_users = QtCore.QTimer()
-        self.timer_active_users.timeout.connect(self.active_users)
-        self.timer_active_users.start(15000)
-        self.timer_scroll_to_bottom = QtCore.QTimer()
-        self.timer_scroll_to_bottom.timeout.connect(self.scroll_to_bottom)
-        self.timer_scroll_to_bottom.start(250)
+        # self.timer_active_users = QtCore.QTimer()
+        # self.timer_active_users.timeout.connect(self.active_users)
+        # self.timer_active_users.start(15000)
         self.intentos_restantes_jwt = 1
         # Profile View
-        self.chat_widget = ChatWidget()
+        self.chat_widget = MessagesBoxWidget()
         self.chat_widget.hide()
         # Profile View Background
         self.background_widget = ProfileViewBackground(self, self.username)
@@ -86,6 +84,9 @@ class ChatFrame(QWidget):
                 background-color: rgba(0, 0, 0, 128);
             }}
         """)
+        for _ in range(15):
+            self.new_message(
+                'user_name : MENSAJE DE PRUEBA REPETIDO')
 
     def animate_size_start(self):
         self.current_step += 1
@@ -133,55 +134,9 @@ class ChatFrame(QWidget):
 
     def closeEvent(self, event):
         print("Closing the window")
-        # Then, before closing the window, we need to close the sockets and threads
-        # self.client_communicator.client_socket.close()
-        # self.client_communicator.send_message_socket.close()
-
-        # We need to close the thread too, fix this!!!!!!!!! TO-DO:
-        # self.client_thread.join()
-        # self.client_communicator._stop_threads = True
-        # cerramos los hilos todos y los sockets abiedrtos tambien
-        # self.client_communicator.client_socket.close()
-        # self.client_communicator.send_message_socket.close()
-    # def close_all(self):
-    #     print(f"Closing the window{self}")
-    #     self.client_communicator.client_socket.close()
-    #     self.client_communicator.send_message_socket.close()
-    #     self.client_thread.join()
-
-    def scroll_to_bottom(self):
-        # Después de inicializar el QScrollArea
-        scroll_bar = self.scroll_area.verticalScrollBar()
-        # Set the scrollbar value directly to the maximum
-        scroll_bar.setValue(scroll_bar.maximum()+56)
-        QCoreApplication.processEvents()
-
-    def keyPressEvent(self, event) -> None:
-        if event.key() == QtCore.Qt.Key.Key_Return or event.key() == 16777220:
-            self.send_message()
 
     def jwt_receiver(self, jwt: str) -> List[str]:
         self.jwt = jwt
-
-    def active_users(self) -> Tuple[bool, str]:
-        print('active_users function in chat.py every 15 seconds')
-        url = 'http://localhost:8000/active/'
-        headers = {'accept': 'application/json'}
-        response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            active_users_decoded = response.content.decode('utf-8')
-            list_of_active_users = json.loads(active_users_decoded)
-            self.active_users_chat = len(
-                list_of_active_users), list_of_active_users
-            self.labels['username'].setText(
-                f'{self.active_users_chat[0]} Users online')
-            self.labels['users_active'].setText('Active users: \n \n{}'.format(
-                '\n'.join(self.active_users_chat[1])))
-            return len(list_of_active_users), list_of_active_users
-
-        elif response.status_code == 404:
-            print('status_code 404 active users')
 
     def launch(self) -> None:
         sender = self.sender()
@@ -189,10 +144,10 @@ class ChatFrame(QWidget):
             self.active_users_chat = self.active_users()
             self.counter_chat_enter += 1
             self.username = sender.username
-            self.labels['username'].setText(
-                f'{self.active_users_chat[0]} Users online')
-            self.labels['users_active'].setText('Active users: \n\n{}'.format(
-                '\n'.join(self.active_users_chat[1])))
+            # self.labels['username'].setText(
+            #     f'{self.active_users_chat[0]} Users online')
+            # self.labels['users_active'].setText('Active users: \n\n{}'.format(
+            #     '\n'.join(self.active_users_chat[1])))
 
             self.move(0, 0)
             self.show()
@@ -232,178 +187,174 @@ class ChatFrame(QWidget):
             # self.labels['username'].repaint()  # To avoid bugs
             # self.client_communicator.username = username
             pass
+# al apretar enter,llamamos a new message
 
-    def get_pic_by_name(self, username: str, optional_object=None) -> QPixmap:
-        if username == 'Anonymous':
-            # If the username does not have a profile picture, we return the default one
-            return QPixmap('profiles/images/Anonymous.png')
-        else:
-            with open(f"profiles/images/{username}.png", "rb") as f:
-                # f.write(response.content)
-                if optional_object and username:
-                    print('OPTIONAL OBJECT WIDGETTT AT GETPICNBYNAME CHAT.PY')
-                    optional_object.change_pixmap(username)
-                else:
-                    print('ELSEEEEEEE AT GETPICBYNAME IN CHAT DOT PY')
-                    return QPixmap(f"profiles/images/{username}.png")
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Return:
+            self.new_message('user_name : MENSAJE DE PRUEBA REPETIDO aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+                            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+                                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaBBBB')
 
     def new_message(self, message):
         # TODO Change the username tuple
         # username, message = message.split(':')
         username, message_text = message.split(':')
 
-        if username not in self.username_tuple:
-            # self.username_tuple += (username,)
-
-            # abrimos /profiles/images/username.png y miramos si existe tal archivo
-            # si existe, lo cargamos, si no, lo descargamos
-            path_file = f'profiles/images/{username}.png'
-
-            # Verificar si el archivo existe
-            if os.path.exists(path_file):
-                print(
-                    f'The file {path_file} exists, ergo we do not download it again.')
-            else:
-                pass  # mientras
-                # print(f'El archivo {ruta_archivo} NO existe.')
-                # image_retrieved = self.retrieve_image_get(username)
-                # if image_retrieved is not None:
-                #     print(' not NONEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE A A A A A')
-                #     self.pixmap_username = image_retrieved
-                # else:
-                #     self.pixmap_username = self.get_pic_by_name(username)
-                #     print('Obteniendo pixmap del usuario ', username)
-
         # NO SE USA ESTO TODO
-        self.qlabelpixamap = QLabelProfilePicture(username)
+        pixmap_delete64 = QPixmap('images/delete64.png').scaled(
+            40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.qlabelpixamap = QLabel()
+        self.qlabelpixamap.setPixmap(pixmap_delete64)
+        # self.qlabelpixamap.setStyleSheet(
+        #     "QLabel {background-color: red; border: 1px solid rgba(255,255,255,0)}")
+        self.qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.qlabelpixamap.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.qlabelpixamap.setFixedHeight(40)
+        self.qlabelpixamap.setFixedWidth(200)
+        self.qlabelpixamap.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.qlabelpixamap.setStyleSheet(
+            "QLabel {background-color: rgba(0,0,0,0); border: 0px solid rgba(0,0,0,0)}")
+        # abajo enviamos un evento al qlabelpixamap
+
         # qlabelpixamap.setPixmap(self.pixmap_username.scaledToWidth(
         #     32, QtCore.Qt.TransformationMode.SmoothTransformation))
-        self.qlabelpixamap.setContentsMargins(100, 100, 100, 100)
-        self.qlabelpixamap.setStyleSheet(
-            "QLabel { padding: 50px; background-color: rgba(0,0,0,0); border-radius:10px;}")
-        self.qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+        # self.qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
         # abajo enviamos un evento al qlabelpixamap
-        self.qlabelpixamap.label_enter_event_first()
+        # self.qlabelpixamap.label_enter_event_first()
+
+        # TODO BORRAR TODO
+        self.a_222222222222 = QLabel()
+        pixmap_reply64 = QPixmap('images/reply64.png').scaled(
+            40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+        self.a_222222222222.setPixmap(pixmap_reply64)
+
+        self.a_222222222222.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.a_222222222222.setFixedHeight(40)
+        self.a_222222222222.setFixedWidth(200)
+        self.a_222222222222.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.a_222222222222.setStyleSheet(
+            "QLabel {background-color: rgba(0,0,0,0); border: 0px solid rgba(0,0,0,0)}")
+        # abajo enviamos un evento al qlabelpixamap
+        # TODO BORRAR TODO
+
         # This is the last message
         self.pixmaps_profiles_array.append(self.qlabelpixamap)
         # repintamos la imagen
-        self.qlabelpixamap.repaint()
+        # self.qlabelpixamap.repaint()
         # self.chat_widget.profile_image = self.pixmap_username #does not exist  pixmapusername before
         self.chat_widget.__init__(self)
         if message:
             self.counter_messages += 1
 
-            if len(self.all_messages2) < 25:
+            if len(self.all_messages2) < 50:
                 # self.all_messages.append([self.image_pixmap_1, message])
                 # self.all_messages2.append(message)
-                self.qlabel_message = QLabelMessage()
-                self.qlabel_message.setWordWrap(True)
+                self.qlabel_message = QLabelMessageMail()
                 self.qlabel_message.setText(message)
-                self.qlabel_message.setTextInteractionFlags(
-                    Qt.TextInteractionFlag.TextSelectableByMouse)
+                # self.qlabel_message.setStyleSheet(
+                #     'background-color: rgba(50,50,50,0.2); border: 1px solid rgba(255,255,255,1) padding: 0px;\
+                #     margin: 0px";')
                 # Allow vertical expansion
                 size_policy = QSizePolicy(
                     QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
                 self.qlabel_message.setSizePolicy(size_policy)
 
                 horizontal_layout = QHBoxLayout()
-
                 horizontal_layout.addWidget(self.qlabelpixamap)
                 horizontal_layout.addWidget(self.qlabel_message)
-                horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
+                horizontal_layout.addWidget(self.a_222222222222)
+                # horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
 
+                # TODO SI QUEREMOS DESCOMENTAR ESTO, RECORDAR QUE FALTA AGREGAR LOS PIXMAP NUEVOS
+                # QUE NO ESTAN EN EL CHAT, LOS DE BORRAR EL MENSAJE Y RESPONDER A ESTE.
                 self.hor_layouts_to_delete.append(horizontal_layout)
                 self.container_layout.addLayout(horizontal_layout)
                 self.all_messages2.append(message_text)
-            elif len(self.all_messages2) >= 25:
-                print('HAN LLEGADO 150 MENSAJES POR LO QUE SE BORRAN TODOS MUAJAJAJA')
-                # self.all_messages.pop(0)
-                # self.all_messages.append([self.image_pixmap_1, message])
-                self.all_messages2.clear()
-                for _ in range(10):
-                    for elem in self.container_widget.children():
-                        if type(elem) == QLabelMessage or type(elem) == QLabelProfilePicture or type(elem) == QLabel:
-                            print('borrando elem', elem)
-                            elem.deleteLater()
+            # elif len(self.all_messages2) >= 25:
+            #     print('HAN LLEGADO 150 MENSAJES POR LO QUE SE BORRAN TODOS MUAJAJAJA')
+            #     # self.all_messages.pop(0)
+            #     # self.all_messages.append([self.image_pixmap_1, message])
+            #     self.all_messages2.clear()
+            #     for _ in range(10):
+            #         for elem in self.container_widget.children():
+            #             if type(elem) == QLabelMessage or type(elem) == QLabelProfilePicture or type(elem) == QLabel:
+            #                 print('borrando elem', elem)
+            #                 elem.deleteLater()
 
-                for elem in self.pixmaps_profiles_array:
-                    elem.deleteLater()
-                for elem in self.background_widgets_list:
-                    elem.deleteLater()
-                for elem in self.chat_widgets_list:
-                    elem.deleteLater()
-                self.pixmaps_profiles_array.clear()
-                self.background_widgets_list.clear()
-                self.chat_widgets_list.clear()
-                self.hor_layouts_to_delete.clear()
-                # Then, we add the new message
+            #     for elem in self.pixmaps_profiles_array:
+            #         elem.deleteLater()
+            #     for elem in self.background_widgets_list:
+            #         elem.deleteLater()
+            #     for elem in self.chat_widgets_list:
+            #         elem.deleteLater()
+            #     self.pixmaps_profiles_array.clear()
+            #     self.background_widgets_list.clear()
+            #     self.chat_widgets_list.clear()
+            #     self.hor_layouts_to_delete.clear()
+            #     # Then, we add the new message
 
-                # NO SE USA ESTO TODO
-                self.qlabelpixamap = QLabelProfilePicture(username)
-                # qlabelpixamap.setPixmap(self.pixmap_username.scaledToWidth(
-                #     32, QtCore.Qt.TransformationMode.SmoothTransformation))
-                self.qlabelpixamap.setContentsMargins(100, 100, 100, 100)
-                self.qlabelpixamap.setStyleSheet(
-                    "QLabel { padding: 50px; background-color: rgba(0,0,0,0); border-radius:10px;}")
-                self.qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
-                # abajo enviamos un evento al qlabelpixamap
-                self.qlabelpixamap.label_enter_event_first()
-                # This is the last message
-                self.pixmaps_profiles_array.append(self.qlabelpixamap)
-                # repintamos la imagen
-                self.qlabelpixamap.repaint()
-                # self.chat_widget.profile_image = self.pixmap_username #does not exist  pixmapusername before
-                self.chat_widget.__init__(self)
+            #     # NO SE USA ESTO TODO
+            #     self.qlabelpixamap = QLabelProfilePicture(username)
+            #     # qlabelpixamap.setPixmap(self.pixmap_username.scaledToWidth(
+            #     #     32, QtCore.Qt.TransformationMode.SmoothTransformation))
+            #     self.qlabelpixamap.setContentsMargins(100, 100, 100, 100)
+            #     self.qlabelpixamap.setStyleSheet(
+            #         "QLabel { padding: 50px; background-color: rgba(0,0,0,0); border-radius:10px;}")
+            #     self.qlabelpixamap.setCursor(Qt.CursorShape.PointingHandCursor)
+            #     # abajo enviamos un evento al qlabelpixamap
+            #     self.qlabelpixamap.label_enter_event_first()
+            #     # This is the last message
+            #     self.pixmaps_profiles_array.append(self.qlabelpixamap)
+            #     # repintamos la imagen
+            #     self.qlabelpixamap.repaint()
+            #     # self.chat_widget.profile_image = self.pixmap_username #does not exist  pixmapusername before
+            #     self.chat_widget.__init__(self)
 
-                self.qlabel_message = QLabelMessage()
-                self.qlabel_message.setWordWrap(True)
-                self.qlabel_message.setText(message)
-                self.qlabel_message.setTextInteractionFlags(
-                    Qt.TextInteractionFlag.TextSelectableByMouse)
-                # Allow vertical expansion
-                size_policy = QSizePolicy(
-                    QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-                self.qlabel_message.setSizePolicy(size_policy)
+            #     self.qlabel_message = QLabelMessage()
+            #     self.qlabel_message.setWordWrap(True)
+            #     self.qlabel_message.setText(message)
+            #     self.qlabel_message.setTextInteractionFlags(
+            #         Qt.TextInteractionFlag.TextSelectableByMouse)
+            #     # Allow vertical expansion
+            #     size_policy = QSizePolicy(
+            #         QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            #     self.qlabel_message.setSizePolicy(size_policy)
 
-                horizontal_layout = QHBoxLayout()
+            #     horizontal_layout = QHBoxLayout()
 
-                horizontal_layout.addWidget(self.qlabelpixamap)
-                horizontal_layout.addWidget(self.qlabel_message)
-                horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
+            #     horizontal_layout.addWidget(self.qlabelpixamap)
+            #     horizontal_layout.addWidget(self.qlabel_message)
+            #     horizontal_layout.setGeometry(QtCore.QRect(10, 10, 550, 60))
 
-                self.hor_layouts_to_delete.append(horizontal_layout)
-                self.container_layout.addLayout(horizontal_layout)
-                self.all_messages2.append(message_text)
+            #     self.hor_layouts_to_delete.append(horizontal_layout)
+            #     self.container_layout.addLayout(horizontal_layout)
+            #     self.all_messages2.append(message_text)
             # Profile View Background
             background_widget = ProfileViewBackground(self, username)
             background_widget.hide()
             # Profile View
             chat_widget = ChatWidget(self, username)
             chat_widget.hide()
-
-            self.get_pic_by_name(
-                username, chat_widget)
-            try:
-                self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
-                    background_widget.show_profile)
-            except IndexError:
-                print('IndexError at chat.py 1')
-            try:
-                self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
-                    chat_widget.show_profile)
-            except IndexError:
-                print('IndexError at chat.py 2')
-            try:
-                background_widget.signal_profile_close.connect(
-                    chat_widget.hide_profile)
-            except IndexError:
-                print('IndexError at chat.py 3')
+            # try:
+            #     self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
+            #         background_widget.show_profile)
+            # except IndexError:
+            #     print('IndexError at chat.py 1')
+            # try:
+            #     self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
+            #         chat_widget.show_profile)
+            # except IndexError:
+            #     print('IndexError at chat.py 2')
+            # try:
+            #     background_widget.signal_profile_close.connect(
+            #         chat_widget.hide_profile)
+            # except IndexError:
+            #     print('IndexError at chat.py 3')
             self.background_widgets_list.append(background_widget)
             self.chat_widgets_list.append(chat_widget)
-
-            print('----------LENNNNNNNNN aprox of the messages:',
-                  len(self.pixmaps_profiles_array), len(
-                      self.background_widgets_list), len(self.chat_widgets_list))
 
     def init_gui(self) -> None:
 
@@ -411,34 +362,24 @@ class ChatFrame(QWidget):
         self.grid = QGridLayout()
         # Labels
         self.labels = {}
-        self.labels['username'] = QLabel(f'Welcome {self.username}', self)
+        self.labels['username'] = QLabel(f'My private messages', self)
         self.labels['username'].setStyleSheet(login_label_ok)
-        self.labels['username'].setFixedSize(300, 50)
+        self.labels['username'].setFixedSize(500, 30)
+        self.move(0, 0)
         self.labels['username'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username'].repaint()
 
-        # QLabel users active
-        self.labels['users_active'] = QLabel(self)
-        self.labels['users_active'].setFixedHeight(700)
-        self.labels['users_active'].setFixedWidth(270)
-        self.labels['users_active'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['users_active'].setText('')
-        self.labels['users_active'].setStyleSheet(
-            "QLabel { background-color: rgba(80,80,80,0.5); border-radius:10px;\
-                text-align: center; font: bold 12pt 'MS Shell Dlg 2';color: white;}")
-
-        self.write_message = QLineEdit(self)
-        self.write_message.setStyleSheet(InputFieldStyle)
-        self.write_message.setFixedSize(550, 60)
-        self.write_message.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.write_message.setPlaceholderText('Write a message...')
-        self.write_message.setStyleSheet(
-            "QLineEdit { background-color: rgba(255,255,255,0.25); border-radius:1px;padding:\
-            0px; margin: 0px; font: bold 15pt 'MS Shell Dlg 2';color: white;}")
-        self.write_message.repaint()
+        # self.write_message = QLineEdit(self)
+        # self.write_message.setStyleSheet(InputFieldStyle)
+        # self.write_message.setFixedSize(550, 60)
+        # self.write_message.setAlignment(
+        #     QtCore.Qt.AlignmentFlag.AlignCenter)
+        # self.write_message.setPlaceholderText('Write a message...')
+        # self.write_message.setStyleSheet(
+        #     "QLineEdit { background-color: rgba(255,255,255,0.25); border-radius:1px;padding:\
+        #     0px; margin: 0px; font: bold 15pt 'MS Shell Dlg 2';color: white;}")
+        # self.write_message.repaint()
         self.all_messages = []
         self.all_messages2 = []
 
@@ -463,7 +404,7 @@ class ChatFrame(QWidget):
         self.labels['username'].setScaledContents(True)
 
         # second
-        hbox2 = QHBoxLayout()
+        # hbox2 = QHBoxLayout()
         # qlabel to back
         self.go_back_pixmap = QLabel_Exit()
         # go_back_pixmap.setPixmap(QPixmap('images/undo64.png'))
@@ -483,20 +424,20 @@ class ChatFrame(QWidget):
         # # Conectamos la función al evento de clic del mouse
         # go_back_pixmap.mousePressEvent = handle_mouse_click
 
-        send_pixmap = QLabel(self)
-        send_pixmap.setPixmap(QPixmap('images/send64.png'))
-        send_pixmap.setCursor(Qt.CursorShape.PointingHandCursor)
-        send_pixmap.setFixedHeight(64)
-        send_pixmap.setFixedWidth(64)
-        send_pixmap.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-        send_pixmap.mousePressEvent = self.send_message
+        # send_pixmap = QLabel(self)
+        # send_pixmap.setPixmap(QPixmap('images/send64.png'))
+        # send_pixmap.setCursor(Qt.CursorShape.PointingHandCursor)
+        # send_pixmap.setFixedHeight(64)
+        # send_pixmap.setFixedWidth(64)
+        # send_pixmap.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        # send_pixmap.mousePressEvent = self.send_message
 
-        hbox2.addWidget(self.write_message)
-        hbox2.addWidget(send_pixmap)
-        hbox2.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        hbox_2_and_3 = QHBoxLayout()
-        hbox_2_and_3.addLayout(hbox2)
-        hbox_2_and_3.addWidget(self.go_back_pixmap)
+        # hbox2.addWidget(self.write_message)
+        # hbox2.addWidget(send_pixmap)
+        # hbox2.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        # hbox_2_and_3 = QHBoxLayout()
+        # hbox_2_and_3.addLayout(hbox2)
+        # hbox_2_and_3.addWidget(self.go_back_pixmap)
         # hbox3 = QHBoxLayout()
         # hbox3.addWidget(qlabelpixamap)
         # hbox3.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
@@ -514,10 +455,8 @@ class ChatFrame(QWidget):
         # Set the container widget as the scroll area's widget
         self.scroll_area.setWidget(self.container_widget)
         self.scroll_area.setWidgetResizable(True)
-        self.container_widget.setMinimumHeight(500)
-        self.scroll_area.setMinimumHeight(500)
-        self.scroll_area.setMaximumHeight(500)
-        self.scroll_area.setMaximumHeight(500)
+        self.container_widget.setMinimumHeight(600)
+        self.scroll_area.setFixedHeight(600)
         self.scroll_area.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.container_widget.setSizePolicy(
@@ -536,7 +475,7 @@ class ChatFrame(QWidget):
         vbox.addLayout(hbox1)
         vbox.addWidget(self.scroll_area)
         vbox.addStretch(1)
-        vbox.addLayout(hbox_2_and_3)
+        # vbox.addLayout(hbox_2_and_3)
         # vbox.addWidget(self.container_widget)
         vbox.addStretch(2)
         # vbox.addWidget(self.labels['username_status'])
@@ -548,5 +487,5 @@ class ChatFrame(QWidget):
         vbox.addStretch(5)
         hbox_final = QHBoxLayout()
         hbox_final.addLayout(vbox)
-        hbox_final.addWidget(self.labels['users_active'])
+        # hbox_final.addWidget(self.labels['users_active'])
         self.setLayout(hbox_final)

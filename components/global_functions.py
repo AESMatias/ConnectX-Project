@@ -1,4 +1,35 @@
 from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtWidgets import QLabel
+from PyQt6 import QtCore, QtGui
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
+from PyQt6.QtWidgets import QHBoxLayout
+from PIL import Image
+import numpy as np
+from PyQt6.QtGui import QPainter, QColor
+
+
+class QLabel_Exit(QLabel):
+    signal_profile_close = QtCore.pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+        self.setPixmap(QPixmap('images/undo64.png'))
+        # hacemos que cuando hagamos click en qlabelpixamap, se envie un evento
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setFixedHeight(64)
+        self.setFixedWidth(64)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.setStyleSheet(
+            'background-color: rgba(0,0,0,0); border: 0px solid rgba(0,0,0,0)')
+        # Definimos una función para manejar el evento de clic del mouse
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            # Acciones a realizar cuando se hace clic izquierdo
+            self.signal_profile_close.emit()
 
 
 def center_window(frame_to_center) -> None:

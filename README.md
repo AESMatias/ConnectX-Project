@@ -23,7 +23,7 @@ Tags:
 ## Authors✨
 @AESMatias & @emonkey0
 # Next things to do 🚀
-
+- Fix the quality issue that occurs when we upload an image.
 ### Improve the memory optimization:
 
 ### Modularize the code and solve the problem of hight cohesion and low coupling:
@@ -51,6 +51,14 @@ Volume icon muted: <a href="https://www.flaticon.com/free-icons/mute" title="mut
 Send message icon: <a href="https://www.flaticon.com/free-icons/send" title="send icons">Send icons created by kmg design - Flaticon</a>
 
 Undo (back) icon: <a href="https://www.flaticon.com/free-icons/back-button" title="back button icons">Back button icons created by icon_small - Flaticon</a>
+
+Reply icon: <a href="https://www.flaticon.com/free-icons/reply" title="reply icons">Reply icons created by Andrean Prabowo - Flaticon</a>
+
+Delete icon: <a href="https://www.flaticon.com/free-icons/recycle-bin" title="recycle bin icons">Recycle bin icons created by Uniconlabs - Flaticon</a>
+
+Close Window icon: <a href="https://www.flaticon.com/free-icons/close" title="close icons">Close icons created by Vectors Market - Flaticon</a>
+
+Keys Icon: <a href="https://www.flaticon.com/free-icons/smart-key" title="smart key icons">Smart key icons created by Infinite Dendrogram - Flaticon</a> https://www.flaticon.com/free-icon/key_11131969
 
 Wallpaper at Edit Profile Frame: Photo by <a href="https://unsplash.com/@the_real_napster?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Dominik Lange</a> on <a href="https://unsplash.com/photos/blue-parrot-standing-on-brown-tree-branch-Lej_oqHljbk?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
 

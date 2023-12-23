@@ -178,6 +178,9 @@ if __name__ == '__main__':
         # Changing the layout of the edit profile window
         login_window.edit_account_frame.stack_button1.clicked.connect(
             login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
+            login_window.edit_account_frame.close_and_det_first_page)
+
         login_window.edit_account_frame.stack_button1.clicked.connect(
             login_window.edit_account_frame.change_page)
         login_window.edit_account_frame.stack_button2.clicked.connect(
@@ -188,8 +191,26 @@ if __name__ == '__main__':
             login_window.edit_account_frame.change_page)
         login_window.edit_account_frame.stack_button5.clicked.connect(
             login_window.edit_account_frame.change_page)
+        # Conec
         login_window.edit_account.clicked.connect(
             login_window.edit_account_frame.show_profile)
+        # Conectamos la de;al de presional el QLabel con cerrar el chat
+        login_window.chat_frame.go_back_pixmap.signal_profile_close.connect(
+            login_window.chat_frame.timer_animate_close.start)
+        # Conectamos la de;al de presionar el Qlabel con cerrar el menu
+        login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
+            login_window.edit_account_frame.timer_expand_animation_close.start)
+        # TODO lo mismo de arriba, pero ahora si el usuario aprieta escape
+        # login_window.edit_account_frame.signal_escape.connect(
+        #     login_window.chat_frame.timer_animate_close.start)
+        # Conectamos la de;al de presional el Qlabel con la shadow que aparece
+        # login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
+        #     login_window.edit_account_frame.close_menu_shadow)
+
+        # Conectamos la senal de presionar enviar mensaje privado offline con la ventana que lo abre
+        login_window.edit_account_frame.signal_send_message_offline.connect(
+            login_window.edit_account_frame.private_message_frame.show_profile)
+
         # TODO TODO TODO
         # login_window.edit_account.clicked.connect(
         #     edit_profile_window.show_profile)

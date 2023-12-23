@@ -7,12 +7,19 @@ from PyQt6.QtWidgets import QStackedLayout, QWidget, QLabel, QHBoxLayout, QVBoxL
 from PyQt6.QtGui import QPixmap, QCursor
 from components.buttons import EditProfileButton
 from Frames.change_profile_pic import ChangeAvatar
-from styles.styles import edit_profile_button, edit_profile_button_clicked
+from styles.styles import edit_profile_button, edit_profile_button_clicked, messages_buttons
 from components.input_user import ImageViewer
 from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QGuiApplication
+from components.global_functions import QLabel_Exit
+from PyQt6.QtWidgets import QFrame
+from components.messages import MessagesWidget
+from Frames.private_message import PrivateMessageFrame
+from Frames.page_5_layout import PageFiveLayout
+from Frames.page_4_security import PageSecurityLayout
+from Frames.page_3_contacts import PageContactsLayout
 
 
 class ChatWidget(QWidget):
@@ -102,25 +109,43 @@ class ProfileViewBackground(QWidget):
         self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         self.hide()
 
-        # REPLACE THIS WITH ADD BUTTON ETC
-        # REPLACE THIS WITH ADD BUTTON ETC
-        # REPLACE THIS WITH ADD BUTTON ETC
+        self.animation_steps = 100
+        self.current_step = 0
+        self.timer_expand_animation = QtCore.QTimer(self)
+        self.timer_expand_animation.timeout.connect(self.animate_size_close)
+
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(""))
         self.setLayout(layout)
-
         self.setStyleSheet('background-color: rgba(0, 0, 0, 0.8);')
 
     def show_profile(self):
+        print('profile showww background')
         self.show()
         self.raise_()
 
-    def mousePressEvent(self, event) -> None:
-        self.signal_profile_close.emit()
-        self.hide()
+    # def mousePressEvent(self, event) -> None:
+    #     self.signal_profile_close.emit()
+    #     self.hide()
+
+    def animate_size_close(self):
+        self.current_step += 1
+        if self.current_step <= self.animation_steps:
+            factor = 1.0 - self.current_step / self.animation_steps * \
+                0.4  # Ajuste para partir desde un tamaño más pequeño
+            scaled_width = int(self.screen_width * factor * 0.35)
+            scaled_height = int(self.screen_height * factor * 0.35)
+            self.setGeometry(0, 0, scaled_width, scaled_height)
+        else:
+            self.current_step = 0
+            self.timer_expand_animation_close.stop()
+            self.setGeometry(0, 0, int(self.screen_width * 0.7),
+                             int(self.screen_height * 0.7))
+            self.hide()
 
 
 class EditProfile(QWidget):
+    signal_send_message_offline = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None, username=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
@@ -137,6 +162,7 @@ class EditProfile(QWidget):
             self.animate_size_close)
         self.init_gui()
         self.hide()
+
         # self.instance_optional = QPushButton('Optional instance')
 
         screen = QGuiApplication.primaryScreen()
@@ -148,6 +174,12 @@ class EditProfile(QWidget):
         # The bellowing line isn't necessary, but it is for ensuring the geometry
         self.setGeometry(0, 0, int(self.screen_width * 0.7),
                          int(self.screen_height*0.7))
+        self.setStyleSheet('background-color: rgba(30, 30, 30, 1);')
+
+    def close_and_det_first_page(self):
+        print(' aaaaaaaaaaaaaaaaaaaa REVISAR ESTO AYUDA')
+        self.change_page(optional_number=1)
+        self.hide()
 
     def show_profile(self):
         self.show()
@@ -155,14 +187,17 @@ class EditProfile(QWidget):
         self.timer_expand_animation.start(1)
         self.setFocus()
 
-    def instance_optional(self, cchat_frame):
-        self.instance_optional = cchat_frame
+    # def instance_optional_close(self, cchat_frame):
+    #     self.instance_optional = cchat_frame
 
-    def mousePressEvent(self, event=None) -> None:
-        self.instance_optional.hide()
-        self.timer_expand_animation_close.start(1)
+    # def close_shadow(self, event=None) -> None:
+    #     print('instanceee', self.instance_optional)
+    #     self.instance_optional.hide()
+    #     self.timer_expand_animation_close.start(1)
 
     def animate_size_start(self):
+        if self.current_step < 3:
+            print('backkk')
         self.current_step += 1
         if self.current_step <= self.animation_steps:
             factor = 1.0 + self.current_step / self.animation_steps * \
@@ -224,7 +259,8 @@ class EditProfile(QWidget):
         file_path, _ = QFileDialog.getOpenFileName(
             self, 'ConnectX - Set your new profile picture!', '', 'Images (*.png *.jpg *.jpeg)')
         if file_path:
-            pixmap = QPixmap(file_path)
+            pixmap = QPixmap(file_path).scaled(
+                400, 400, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
             self.image_viewer.image_label.setPixmap(pixmap)
             self.image_viewer.image_label.setScaledContents(True)
 
@@ -250,6 +286,8 @@ class EditProfile(QWidget):
     #             open('profiles/images/Anonymous.png', 'rb').read())
     #         create_new_os_image.close()
     #         self.image_pixmap = QPixmap(path_file)
+    def emit_signal_send_message_offline(self):
+        self.signal_send_message_offline.emit(self.username)
 
     def init_gui(self) -> None:
         self.labels = {}
@@ -273,15 +311,6 @@ class EditProfile(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['label_image'].show()
 
-        # self.upload_image = Upload_file(
-        #     'uploadButton', (300, 250), 'Change profile picture', self)
-        # self.upload_image.setCursor(
-        #     QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        # self.upload_image.setStyleSheet(
-        #     button_style)
-        # self.upload_image.clicked.connect(self.open_file)
-        # self.upload_image.clicked.connect(self.change_profile_pic)
-
         # 1 Button
         self.stack_button1 = EditProfileButton(
             'logoutnButton', 0, 'Account', self)
@@ -295,21 +324,6 @@ class EditProfile(QWidget):
         aristotle_1 = 'images/aristotle_1.jpg'
 
         # 1 Layout
-        # QLabel image assignation
-        self.labels['label_image1'] = QLabel(self)
-        self.labels['label_image1'].setMaximumSize(window_size)
-        self.labels['label_image1'].setGeometry(50, 50, 300, 300)
-        self.labels['label_image1'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        dir_image = image_florence
-        image_pixmap = QPixmap(dir_image)
-        self.labels['label_image1'].setPixmap(image_pixmap)
-        self.labels['label_image1'].setMaximumSize(window_size)
-        self.labels['label_image1'].setScaledContents(True)
-        self.labels['label_image1'].setGeometry(200, 200, 300, 300)
-        self.labels['label_image1'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['label_image1'].show()
         # 2 Button
         self.stack_button2 = EditProfileButton(
             'logoutnButton', 1, 'Messages', self)
@@ -317,21 +331,7 @@ class EditProfile(QWidget):
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button2.setStyleSheet(
             edit_profile_button)
-        # 2 Layout
-        # QLabel image assignation
-        self.labels['label_image2'] = QLabel(self)
-        self.labels['label_image2'].setMaximumSize(window_size)
-        self.labels['label_image2'].setGeometry(50, 50, 300, 300)
-        self.labels['label_image2'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        dir_image2 = aristotle_1
-        image_pixmap = QPixmap(dir_image2)
-        self.labels['label_image2'].setPixmap(image_pixmap)
-        self.labels['label_image2'].setScaledContents(True)
-        self.labels['label_image2'].setGeometry(200, 200, 300, 300)
-        self.labels['label_image2'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['label_image2'].show()
+
         # 3 Button
         self.stack_button3 = EditProfileButton(
             'logoutnButton', 2, 'Contacts', self)
@@ -339,21 +339,6 @@ class EditProfile(QWidget):
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button3.setStyleSheet(
             edit_profile_button)
-        # 3 Layout
-        # QLabel image assignation
-        self.labels['label_image3'] = QLabel(self)
-        self.labels['label_image3'].setMaximumSize(window_size)
-        self.labels['label_image3'].setGeometry(50, 50, 300, 300)
-        self.labels['label_image3'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        dir_image = image_florence
-        image_pixmap = QPixmap(dir_image)
-        self.labels['label_image3'].setPixmap(image_pixmap)
-        self.labels['label_image3'].setScaledContents(True)
-        self.labels['label_image3'].setGeometry(200, 200, 300, 300)
-        self.labels['label_image3'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['label_image3'].show()
         # 4 Button
         self.stack_button4 = EditProfileButton(
             'logoutnButton', 3, 'Security', self)
@@ -361,35 +346,18 @@ class EditProfile(QWidget):
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button4.setStyleSheet(
             edit_profile_button)
-        # 4 Layout
-        # QLabel image assignation
-        self.labels['label_image4'] = QLabel(self)
-        self.labels['label_image4'].setMaximumSize(window_size)
-        self.labels['label_image4'].setGeometry(50, 50, 300, 300)
-        self.labels['label_image4'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        dir_image2 = aristotle_1
-        image_pixmap = QPixmap(dir_image2)
-        self.labels['label_image4'].setPixmap(image_pixmap)
-        self.labels['label_image4'].setScaledContents(True)
-        self.labels['label_image4'].setGeometry(200, 200, 300, 300)
-        self.labels['label_image4'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.labels['label_image4'].show()
         # 5 Button
         self.stack_button5 = EditProfileButton(
-            'logoutnButton', 4, 'Advanced', self)
+            'logoutnButton', 4, 'Settings', self)
         self.stack_button5.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button5.setStyleSheet(
             edit_profile_button)
         # 6 Button
-        self.stack_button6 = EditProfileButton(
-            'logoutnButton', 4, 'XX', self)
-        self.stack_button6.setCursor(
+        self.go_back_pixmap = QLabel_Exit()
+        self.go_back_pixmap.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        self.stack_button6.setStyleSheet(
-            edit_profile_button)
+
         # 5 Layout
         # QLabel image assignation
         self.labels['label_image5'] = QLabel(self)
@@ -419,7 +387,8 @@ class EditProfile(QWidget):
 
         self.buttons_grouped.addWidget(self.stack_button5)
         self.buttons_grouped.addStretch(1)
-        self.buttons_grouped.addWidget(self.stack_button6)
+        self.buttons_grouped.addWidget(self.go_back_pixmap)
+        # le ponemos stilo al hqboxlayour buttons
 
         self.page1_layout = QHBoxLayout()
         # self.page1_layout.addWidget(self.labels['label_image1'])
@@ -430,25 +399,52 @@ class EditProfile(QWidget):
         container1 = QWidget()
         container1.setLayout(self.page1_layout)
 
-        page2_layout = QVBoxLayout()
-        page2_layout.addWidget(self.labels['label_image2'])
+        # page2_layout.addWidget(self.labels['label_image2'])
+        # Compose a new message Button
+        page2_layout_buttons = QVBoxLayout()
+        compose_button = QPushButton('Compose Message')
+        compose_button.clicked.connect(self.emit_signal_send_message_offline)
+        compose_button.setStyleSheet(messages_buttons)
+        compose_button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        page2_layout_buttons.addWidget(compose_button)
+        self.private_message_frame = PrivateMessageFrame()
+
+        # Received messages Button
+        received_button = QPushButton('Received')
+        received_button.setStyleSheet(messages_buttons)
+        received_button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        page2_layout_buttons.addWidget(received_button)
+        # Sended messages Button
+        sended_button = QPushButton('Sended')
+        sended_button.setStyleSheet(messages_buttons)
+        sended_button.setCursor(
+            QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
+        page2_layout_buttons.addWidget(sended_button)
+
+        #
+        page_layout_messages = QVBoxLayout()
+        self.messages_widget = MessagesWidget()
+        page_layout_messages.addWidget(self.messages_widget)
         container2 = QWidget()
-        container2.setLayout(page2_layout)
 
-        page3_layout = QVBoxLayout()
-        page3_layout.addWidget(self.labels['label_image3'])
+        page2_layout_general = QHBoxLayout()
+        page2_layout_general.addLayout(page_layout_messages)
+        page2_layout_general.addLayout(page2_layout_buttons)
+        container2.setLayout(page2_layout_general)
+
+        self.page3_layout = PageContactsLayout()
         container3 = QWidget()
-        container3.setLayout(page3_layout)
+        container3.setLayout(self.page3_layout)
 
-        page4_layout = QVBoxLayout()
-        page4_layout.addWidget(self.labels['label_image4'])
+        self.page4_layout = PageSecurityLayout()
         container4 = QWidget()
-        container4.setLayout(page4_layout)
+        container4.setLayout(self.page4_layout)
 
-        page5_layout = QVBoxLayout()
-        page5_layout.addWidget(self.labels['label_image5'])
+        self.page5_layout = PageFiveLayout()
         container5 = QWidget()
-        container5.setLayout(page5_layout)
+        container5.setLayout(self.page5_layout)
 
         self.stacked_layout = QStackedLayout()
         self.stacked_layout.addWidget(container1)
@@ -463,28 +459,27 @@ class EditProfile(QWidget):
         self.setLayout(main_layout)
         self.setStyleSheet("background-color: rgba(70, 70, 70, 245);")
 
-    def change_page(self):
+    def change_page(self, optional_number=None):
         sender = self.sender()
-        self.stacked_layout.setCurrentIndex(sender.index)
-        self.stack_button1.setStyleSheet(edit_profile_button)
-        self.stack_button2.setStyleSheet(edit_profile_button)
-        self.stack_button3.setStyleSheet(edit_profile_button)
-        self.stack_button4.setStyleSheet(edit_profile_button)
-        self.stack_button5.setStyleSheet(edit_profile_button)
-        for i in range(6):
-            if i == sender.index:
-                sender.setStyleSheet(edit_profile_button_clicked)
-
-        # # Changing the layout of the edit profile window
-        # self.stack_button1.clicked.connect(
-        #     self.change_page)
-        # self.stack_button1.clicked.connect(
-        #     self.change_page)
-        # self.stack_button2.clicked.connect(
-        #     self.change_page)
-        # self.stack_button3.clicked.connect(
-        #     self.change_page)
-        # self.stack_button4.clicked.connect(
-        #     self.change_page)
-        # self.stack_button5.clicked.connect(self.change_page)
-        self.update()
+        if optional_number == 1:  # Si salimos del menu, de vuelve al indice 0.
+            self.stacked_layout.setCurrentIndex(0)
+            self.stack_button1.setStyleSheet(edit_profile_button)
+            self.stack_button1.setStyleSheet(edit_profile_button_clicked)
+            # eliminamos el efecto de clickeado de todos los botones
+            # TODO no eficiente recorrerlos, mejor filtrar por id luego
+            self.stack_button2.setStyleSheet(edit_profile_button)
+            self.stack_button3.setStyleSheet(edit_profile_button)
+            self.stack_button4.setStyleSheet(edit_profile_button)
+            self.stack_button5.setStyleSheet(edit_profile_button)
+            self.update()
+        else:
+            self.stacked_layout.setCurrentIndex(sender.index)
+            self.stack_button1.setStyleSheet(edit_profile_button)
+            self.stack_button2.setStyleSheet(edit_profile_button)
+            self.stack_button3.setStyleSheet(edit_profile_button)
+            self.stack_button4.setStyleSheet(edit_profile_button)
+            self.stack_button5.setStyleSheet(edit_profile_button)
+            for i in range(6):
+                if i == sender.index:
+                    sender.setStyleSheet(edit_profile_button_clicked)
+            self.update()
