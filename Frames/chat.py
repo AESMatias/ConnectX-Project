@@ -163,6 +163,12 @@ class ChatFrame(QWidget):
     def keyPressEvent(self, event) -> None:
         if event.key() == QtCore.Qt.Key.Key_Return or event.key() == 16777220:
             self.send_message()
+        elif event.key() == QtCore.Qt.Key.Key_Escape:
+            self.timer_animate_close.start(1)
+        else:
+            # Set the focus to the QLineEdit but first, we set the text of the key pressed
+            self.write_message.setText(self.write_message.text()+event.text())
+            self.write_message.setFocus()
 
     def jwt_receiver(self, jwt: str) -> List[str]:
         self.jwt = jwt

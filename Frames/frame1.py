@@ -46,6 +46,10 @@ class Frame1(QWidget):
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Return or event.key() == 16777220:
             self.login_button.click()
+        else:
+            # Set the focus to the QLineEdit but first, we set the text of the key pressed
+            self.username_field.setFocus()
+            self.username_field.setText(event.text())
 
     def remove_registered_label(self):
         sender = self.sender()

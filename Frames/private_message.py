@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QLabel
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QKeyEvent, QPixmap
 from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtWidgets import QHBoxLayout
 from PIL import Image
@@ -15,6 +15,9 @@ from PyQt6.QtWidgets import QLineEdit, QTextEdit
 
 
 class PrivateMessageFrame(QWidget):
+    signal_send_message_offline = QtCore.pyqtSignal()
+    signal_message_content = QtCore.pyqtSignal(str, str, str)
+
     def __init__(self, parent=None, username=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
@@ -89,22 +92,41 @@ class PrivateMessageFrame(QWidget):
         self.setTabOrder(self.qlabel_to_write, self.username_label)
         self.setTabOrder(self.username_label, self.send_message)
 
-    def send_message_func(from_username=None, message_text=None, to_username=None):
-        "TODO we need to validate the token when we send a message"
-        url = "http://localhost:8000/messages/p2p/message"
-        username1 = str('nuevoo')
-        username2 = str('nuevoo')
-        message_text = str('message')
-        params = {
-            'username': username1,
-            'message_text': message_text,
-            'username2': username2
-        }
+    def keyPressEvent(self, event: QKeyEvent | None) -> None:
+        if event.key() == Qt.Key.Key_Escape:
+            # TODO: Make an animation to hide and open the window
+            self.hide()
 
+    def emit_signal_send_message_offline(self):
+        self.signal_send_message_offline.emit()
+
+    def send_message_func(self, from_username=None, message_text=None, to_username=None):
+        to_username = self.qlabel_to_write.text().strip()
+        message_text = self.username_label.toPlainText().strip()
+        # if the username contains a space, we take only the first word
+        if to_username.__contains__(' '):
+            to_username = to_username.split(' ')
+            to_username = to_username[0]
+
+        from_username = str(self.username)
+        "TODO: we need to validate the token when we send a message"
+        url = "http://localhost:8000/messages/p2p/message"
+        params = {
+            'username': from_username,
+            'message_text': message_text,
+            'username2': to_username
+        }
         try:
             response = requests.post(url, params=params)
             if response.status_code == 200:
                 print("Mensaje enviado con éxito")
+                print('Mensaje del usuario', from_username)
+                print('Mensaje para el usuario', to_username)
+                print('Mensaje:', message_text)
+                self.qlabel_to_write.setText('')
+                self.username_label.setText('')
+                self.hide()
+                # TODO put a qlabel message that indicates that the message was sent or not
             else:
                 print(
                     f"Error al enviar el mensaje. Código de estado: {response.status_code}")
@@ -113,10 +135,9 @@ class PrivateMessageFrame(QWidget):
             print(f"Error de conexión: {e}")
 
     def hide_by_button_pressed(self, event):
-        # self.hide()
         self.close()
 
-    def show_profile(self):
+    def show_function(self):
         print(self.username, self.profile_image)
         self.setGeometry(0, 0, 500, 600)
         self.move(int(self.screen_width)-int(self.width()*2.5),
@@ -124,8 +145,3 @@ class PrivateMessageFrame(QWidget):
         self.show()
         self.raise_()
         self.setFocus()
-    # si la ventana pierde el foco, se hace hide
-
-    # def focusOutEvent(self, event):
-    #     self.hide()
-    #     print('focusOutEvent')

@@ -14,6 +14,7 @@ from time import sleep
 from Frames.edit_profile import EditProfile, ProfileViewBackground
 from Frames.chat import ChatFrame
 from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtCore import Qt
 
 
 class FrameLogin(QWidget):
@@ -48,6 +49,17 @@ class FrameLogin(QWidget):
         self.play_media()
         self.edit_account_frame = EditProfile(self)
         self.init_gui()
+
+    def keyPressEvent(self, event) -> None:
+        if event.key() == Qt.Key.Key_Return or event.key() == 16777220:
+            self.login_button.click()
+        if event.key() == Qt.Key.Key_1:
+            self.chat_button.click()
+        elif event.key() == Qt.Key.Key_2:
+            self.edit_account.click()
+        elif event.key() == Qt.Key.Key_Escape:
+            # TODO: set a counter with QTimer to avoid closing the app by mistake
+            pass
 
     def send_first_message(self):
         # Método para enviar el primer mensaje después de que el cliente esté listo

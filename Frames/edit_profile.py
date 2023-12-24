@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QStandardPaths
 import requests
 from PyQt6.QtWidgets import QFileDialog
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QKeyEvent, QPixmap
 from PyQt6 import QtCore
 from PyQt6.QtWidgets import QStackedLayout, QWidget, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QPixmap, QCursor
@@ -145,7 +145,6 @@ class ProfileViewBackground(QWidget):
 
 
 class EditProfile(QWidget):
-    signal_send_message_offline = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None, username=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
@@ -226,6 +225,24 @@ class EditProfile(QWidget):
                              int(self.screen_height * 0.7))
             self.hide()
 
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        if event.key() == Qt.Key.Key_1:
+            self.stack_button1.click()
+        elif event.key() == Qt.Key.Key_2:
+            self.stack_button2.click()
+        elif event.key() == Qt.Key.Key_3:
+            self.stack_button3.click()
+        elif event.key() == Qt.Key.Key_4:
+            self.stack_button4.click()
+        elif event.key() == Qt.Key.Key_5:
+            self.stack_button5.click()
+        elif event.key() == Qt.Key.Key_C:
+            self.compose_button.click()
+        elif event.key() == Qt.Key.Key_R:
+            self.received_button.click()
+        elif event.key() == Qt.Key.Key_Escape:
+            self.go_back_pixmap.signal_profile_close.emit()
+
     def get_username(self, username):
         pass
         # self.username = username
@@ -286,8 +303,13 @@ class EditProfile(QWidget):
     #             open('profiles/images/Anonymous.png', 'rb').read())
     #         create_new_os_image.close()
     #         self.image_pixmap = QPixmap(path_file)
-    def emit_signal_send_message_offline(self):
-        self.signal_send_message_offline.emit(self.username)
+    # def emit_signal_send_message_offline(self):
+    #     message = self.private_message_frame.qlabel_to_write.text()
+    #     to_username = self.private_message_frame.username_label.toPlainText()
+    #     self.signal_send_message_offline.emit(
+    #         self.username, to_username, message)
+    #     print('emit_signal_send_message_offline', self.username,
+    #           to_username, message)
 
     def init_gui(self) -> None:
         self.labels = {}
@@ -313,7 +335,7 @@ class EditProfile(QWidget):
 
         # 1 Button
         self.stack_button1 = EditProfileButton(
-            'logoutnButton', 0, 'Account', self)
+            'logoutnButton', 0, 'Account [1]', self)
         self.stack_button1.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button1.setStyleSheet(
@@ -326,7 +348,7 @@ class EditProfile(QWidget):
         # 1 Layout
         # 2 Button
         self.stack_button2 = EditProfileButton(
-            'logoutnButton', 1, 'Messages', self)
+            'logoutnButton', 1, 'Messages [2]', self)
         self.stack_button2.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button2.setStyleSheet(
@@ -334,21 +356,21 @@ class EditProfile(QWidget):
 
         # 3 Button
         self.stack_button3 = EditProfileButton(
-            'logoutnButton', 2, 'Contacts', self)
+            'logoutnButton', 2, 'Contacts [3]', self)
         self.stack_button3.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button3.setStyleSheet(
             edit_profile_button)
         # 4 Button
         self.stack_button4 = EditProfileButton(
-            'logoutnButton', 3, 'Security', self)
+            'logoutnButton', 3, 'Security [4]', self)
         self.stack_button4.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button4.setStyleSheet(
             edit_profile_button)
         # 5 Button
         self.stack_button5 = EditProfileButton(
-            'logoutnButton', 4, 'Settings', self)
+            'logoutnButton', 4, 'Settings [5]', self)
         self.stack_button5.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button5.setStyleSheet(
@@ -402,20 +424,22 @@ class EditProfile(QWidget):
         # page2_layout.addWidget(self.labels['label_image2'])
         # Compose a new message Button
         page2_layout_buttons = QVBoxLayout()
-        compose_button = QPushButton('Compose Message')
-        compose_button.clicked.connect(self.emit_signal_send_message_offline)
-        compose_button.setStyleSheet(messages_buttons)
-        compose_button.setCursor(
+        self.compose_button = QPushButton('Compose Message [C]')
+        self.compose_button.setStyleSheet(messages_buttons)
+        self.compose_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        page2_layout_buttons.addWidget(compose_button)
+        page2_layout_buttons.addWidget(self.compose_button)
         self.private_message_frame = PrivateMessageFrame()
-
+        self.compose_button.clicked.connect(
+            self.private_message_frame.emit_signal_send_message_offline)
         # Received messages Button
-        received_button = QPushButton('Received')
-        received_button.setStyleSheet(messages_buttons)
-        received_button.setCursor(
+        self.received_button = QPushButton('Received [R]')
+        self.received_button.setStyleSheet(messages_buttons)
+        self.received_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
-        page2_layout_buttons.addWidget(received_button)
+        # TODO: TODO: TODO: TODO:
+        # self.received_button.clicked.connect(self.retrieve_private_messages)
+        page2_layout_buttons.addWidget(self.received_button)
         # Sended messages Button
         sended_button = QPushButton('Sended')
         sended_button.setStyleSheet(messages_buttons)

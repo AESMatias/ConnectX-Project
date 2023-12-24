@@ -84,9 +84,9 @@ class MessagesWidget(QWidget):
                 background-color: rgba(0, 0, 0, 128);
             }}
         """)
-        for _ in range(15):
-            self.new_message(
-                'user_name : MENSAJE DE PRUEBA REPETIDO')
+        # for _ in range(15):
+        #     self.new_message(
+        #         'user_name : MENSAJE DE PRUEBA REPETIDO')
 
     def animate_size_start(self):
         self.current_step += 1
@@ -192,11 +192,12 @@ class MessagesWidget(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Return:
             self.new_message('user_name : MENSAJE DE PRUEBA REPETIDO aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-                            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-                                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaBBBB')
+                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
+    def set_first_messages(self) -> None:
+        for _ in range(5):
+            self.new_message(
+                'user_name : MENSAJE DE PRUEBA REPETIDO 5 veces')
 
     def new_message(self, message):
         # TODO Change the username tuple
@@ -225,7 +226,7 @@ class MessagesWidget(QWidget):
         # abajo enviamos un evento al qlabelpixamap
         # self.qlabelpixamap.label_enter_event_first()
 
-        # TODO BORRAR TODO
+        # TODO: BORRAR TODO
         self.a_222222222222 = QLabel()
         pixmap_reply64 = QPixmap('images/reply64.png').scaled(
             40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -238,7 +239,7 @@ class MessagesWidget(QWidget):
         self.a_222222222222.setStyleSheet(
             "QLabel {background-color: rgba(0,0,0,0); border: 0px solid rgba(0,0,0,0)}")
         # abajo enviamos un evento al qlabelpixamap
-        # TODO BORRAR TODO
+        # TODO: BORRAR TODO
 
         # This is the last message
         self.pixmaps_profiles_array.append(self.qlabelpixamap)

@@ -35,6 +35,8 @@ Tags:
 - We need to ensure that the two sockets (to send and recibe messages) for each user connected were absolute closed through de server (maybe using a periodic func), because if this isn't done, we're having a big vulnerability breach that allows the users collapse the RAM used by the server, blowing up the entire server.
 
 ### Chat:
+- When someone send a message than contains ":" and more, the app does not work anymore
+because of the split method, it's very easy to fix though.
 - When a new message income, we need to refresh the two instances> the pixmap and the animated label with the new picture that has been changed from our own account session.
 - If the user scrolls up, then we need to calculate the current height
 dinamically obtained through a function, thus allowing them to scrolls up the

@@ -185,6 +185,9 @@ if __name__ == '__main__':
             login_window.edit_account_frame.change_page)
         login_window.edit_account_frame.stack_button2.clicked.connect(
             login_window.edit_account_frame.change_page)
+        login_window.edit_account_frame.stack_button2.clicked.connect(
+            login_window.edit_account_frame.messages_widget.set_first_messages)
+
         login_window.edit_account_frame.stack_button3.clicked.connect(
             login_window.edit_account_frame.change_page)
         login_window.edit_account_frame.stack_button4.clicked.connect(
@@ -208,8 +211,8 @@ if __name__ == '__main__':
         #     login_window.edit_account_frame.close_menu_shadow)
 
         # Conectamos la senal de presionar enviar mensaje privado offline con la ventana que lo abre
-        login_window.edit_account_frame.signal_send_message_offline.connect(
-            login_window.edit_account_frame.private_message_frame.show_profile)
+        login_window.edit_account_frame.private_message_frame.signal_send_message_offline.connect(
+            login_window.edit_account_frame.private_message_frame.show_function)
 
         # TODO TODO TODO
         # login_window.edit_account.clicked.connect(
