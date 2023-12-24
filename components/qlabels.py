@@ -7,6 +7,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPainter
 from PyQt6.QtCore import QTimer
 import webbrowser
+from PyQt6.QtGui import QColor
 
 
 class MusicButton(QLabel):
@@ -29,7 +30,8 @@ class MusicButton(QLabel):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+        # If the event comes from pressing the M key:
+        if event == Qt.MouseButton.LeftButton:
             self.clicked_signal.emit('musicButton')
 
             if self.music_status == True:
@@ -45,6 +47,45 @@ class MusicButton(QLabel):
 
             self.current_step = 0
             self.timer.start(self.animation_duration // self.animation_steps)
+        # If the event comes from pressing the button from the normal way:
+        elif event.button() == Qt.MouseButton.LeftButton:
+            self.clicked_signal.emit('musicButton')
+
+            if self.music_status == True:
+                # Si la música está activada, desactivarla y aplicar la animación de opacidad
+                self.music_status = False
+                self.setPixmap(self.pixmap_muted)
+                self.current_opacity = 1.0
+            elif self.music_status == False:
+                # Si la música está desactivada, activarla y aplicar la animación de opacidad
+                self.music_status = True
+                self.setPixmap(self.pixmap)
+                self.current_opacity = 0.4
+
+            self.current_step = 0
+            self.timer.start(self.animation_duration // self.animation_steps)
+
+    def change_color(self):
+        '''This function changes the color from original_color pixels
+        to new_color pixels in the pixmap only for the pixels that are match 
+        in the original_color.
+        '''
+        # We need to convert the pixmap to QImage to be able to iterate over each pixel
+        self.image_qimage = self.pixmap.toImage()
+        width = self.image_qimage.width()
+        height = self.image_qimage.height()
+        # The color of the pixmap will be changed from original_color to new_color
+        original_color = QColor(0, 0, 0)
+        new_color = QColor(255, 255, 255)
+        # Iterate over each pixel and change the color if it matches the original color
+        for x in range(width):
+            for y in range(height):
+                print(self.image_qimage.pixelColor(x, y), original_color)
+                if self.image_qimage.pixelColor(x, y) == original_color:
+                    self.image_qimage.setPixelColor(x, y, new_color)
+        # Create a new QPixmap from the modified QImage
+        modified_image = QPixmap.fromImage(self.image_qimage)
+        self.pixmap = modified_image
 
     def icon_pressed_animation(self):
         if self.current_step <= self.animation_steps:

@@ -132,6 +132,11 @@ if __name__ == '__main__':
         window.volume_label.clicked_signal.connect(login_window.manage_music)
         window.volume_label.clicked_signal.connect(
             window.volume_icon_change)
+        login_window.volume_label.clicked_signal.connect(
+            login_window.manage_music)
+        # login_window.volume_label.clicked_signal.connect(
+        #     login_window.volume_icon_change)
+
         # TODO AAAA TODO
         # new message
         login_window.client_communicator.message_received.connect(

@@ -187,12 +187,10 @@ class MessagesWidget(QWidget):
             # self.labels['username'].repaint()  # To avoid bugs
             # self.client_communicator.username = username
             pass
-# al apretar enter,llamamos a new message
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Return:
-            self.new_message('user_name : MENSAJE DE PRUEBA REPETIDO aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-                aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+            self.new_message('USER_NAME : you have pressed the return key')
 
     def set_first_messages(self) -> None:
         for _ in range(5):

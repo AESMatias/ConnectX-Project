@@ -15,6 +15,8 @@ from Frames.edit_profile import EditProfile, ProfileViewBackground
 from Frames.chat import ChatFrame
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtCore import Qt
+from components.qlabels import MusicButton
+from PyQt6.QtGui import QPixmap, QImage, QColor
 
 
 class FrameLogin(QWidget):
@@ -48,6 +50,7 @@ class FrameLogin(QWidget):
         self.screen_height = self.screen_geometry.height()
         self.play_media()
         self.edit_account_frame = EditProfile(self)
+        self.music_status = True
         self.init_gui()
 
     def keyPressEvent(self, event) -> None:
@@ -57,6 +60,12 @@ class FrameLogin(QWidget):
             self.chat_button.click()
         elif event.key() == Qt.Key.Key_2:
             self.edit_account.click()
+        elif event.key() == Qt.Key.Key_M:
+            self.volume_label.clicked_signal.emit('musicButton')
+            event_clicked = Qt.MouseButton.LeftButton
+            self.volume_label.mousePressEvent(event_clicked)
+
+            self.music_function(self.music_status)
         elif event.key() == Qt.Key.Key_Escape:
             # TODO: set a counter with QTimer to avoid closing the app by mistake
             pass
@@ -77,7 +86,17 @@ class FrameLogin(QWidget):
     def jws_writter(self, jwt: str, username=None) -> None:
         self.jwt = jwt
 
-    def manage_music(self):
+    def music_function(self, music_status: bool) -> None:
+        if music_status == False:
+            print('Musica iniciada')
+            self.music_status = True
+            self.media_player.play()
+        elif music_status == True:
+            print('Musica pausada')
+            self.music_status = False
+            self.media_player.pause()
+
+    def manage_music(self, music_status: bool) -> None:
         sender = self.sender()
         if sender.name == 'musicButton':
             if sender.music_status == True:
@@ -206,6 +225,17 @@ class FrameLogin(QWidget):
             # self.send_first_message()
             # TODO
 
+    def volume_icon_change(self):
+        sender = self.sender()
+        if sender.music_status == True:
+            print(sender.music_status, 'music status')
+            self.volume_label.setPixmap(self.volume_label.pixmap_muted)
+            self.repaint()
+        elif sender.music_status == False:
+            print(sender.music_status, 'music status')
+            self.volume_label.setPixmap(self.volume_label.pixmap)
+            self.repaint()
+
     def init_gui(self) -> None:
         # Grid Layout
         self.grid = QGridLayout()
@@ -218,14 +248,14 @@ class FrameLogin(QWidget):
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username'].repaint()
 
-        # QLabel image assignation
-        window_size = self.size()
-        self.labels['label_image'] = QLabel(self)
-        self.labels['label_image'].hide()
-        self.labels['label_image'].setMaximumSize(window_size)
-        self.labels['label_image'].setGeometry(0, 0, 0, 0)
-        self.labels['label_image'].setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignCenter)
+        # # QLabel image assignation
+        # window_size = self.size()
+        # self.labels['label_image'] = QLabel(self)
+        # self.labels['label_image'].hide()
+        # self.labels['label_image'].setMaximumSize(window_size)
+        # self.labels['label_image'].setGeometry(0, 0, 0, 0)
+        # self.labels['label_image'].setAlignment(
+        #     QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Edtir profile
         self.edit_account = Button(
@@ -264,7 +294,23 @@ class FrameLogin(QWidget):
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)
         self.labels['username_status'].repaint()
+        # Volume image qlabel
+        # Volume label
+        self.volume_label = MusicButton(self)
+        self.volume_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.volume_label.setGeometry(1260-64, 780-64, 64, 64)
+        self.volume_label.setStyleSheet(
+            'background:none')
+        self.volume_label.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.volume_label.change_color()
 
+        volume_pixmap = self.volume_label.pixmap
+        self.volume_label.pixmap = volume_pixmap.scaled(
+            64, 64, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        self.volume_label.setPixmap(volume_pixmap)
+        self.volume_label.show()
         # Horizontal Layout
         hbox1 = QHBoxLayout()
         hbox1.addWidget(self.labels['username'])
@@ -284,14 +330,18 @@ class FrameLogin(QWidget):
         hbox5.addStretch(1)
         hbox5.addWidget(self.logout_button)
         hbox5.addStretch(1)
-        # Hbox6
-        hbox6 = QHBoxLayout()
-        hbox6.addStretch(1)
-        hbox6.addWidget(self.labels['label_image'])
-        hbox6.addStretch(1)
+        # # Hbox6
+        # hbox6 = QHBoxLayout()
+        # hbox6.addStretch(1)
+        # hbox6.addWidget(self.labels['label_image'])
+        # hbox6.addStretch(1)
         # Vertical
         vbox = QVBoxLayout()
         vbox.addStretch(2)
+        # hbox final layout
+        self.hbox_final_layout = QHBoxLayout()
+        self.hbox_final_layout.addStretch(1)
+        self.hbox_final_layout.addWidget(self.volume_label)
 
         # # Crear un QPalette personalizado con la imagen de fondo
         # palette = QPalette()
@@ -310,18 +360,20 @@ class FrameLogin(QWidget):
         # self.background_label.setStyleSheet(
         #     'background-image: url(images/759324.jpg);')
         # self.background_label.setScaledContents(True)
-
+        vbox.addStretch(2)
         vbox.addLayout(hbox1)
 
-        vbox.addStretch(1)
+        vbox.addStretch(2)
         vbox.addLayout(hbox3)
         vbox.addLayout(hbox4)
         vbox.addLayout(hbox5)
         vbox.addStretch(2)
 
-        vbox.addLayout(hbox6)
-        vbox.addStretch(1)
+        # vbox.addLayout(hbox6)
+        vbox.addStretch(2)
         vbox.addWidget(self.labels['username_status'])
+        vbox.addStretch(3)
+        vbox.addLayout(self.hbox_final_layout)
         self.labels['username_status'].setScaledContents(True)
         self.labels['username_status'].setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter)

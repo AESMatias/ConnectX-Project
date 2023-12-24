@@ -198,6 +198,7 @@ class ChatFrame(QWidget):
             first_n_messages_obtained = last_n_messages(self, 8)
             first_n_messages_obtained.reverse()
             self.push_the_first_n_messages(first_n_messages_obtained)
+            self.write_message.setFocus()
 
     def send_message(self, event=None):
         text = self.write_message.text()
