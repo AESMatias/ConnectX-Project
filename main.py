@@ -128,7 +128,9 @@ if __name__ == '__main__':
         # input_image = ImageViewer()
         # input_image.setStyleSheet(global_style)
 
-        # Volume label clicked
+        # TODO: Add a new friend
+        login_window.chat_frame.signal_send_request_friend.connect(
+            login_window.add_friend_func)
         window.volume_label.clicked_signal.connect(login_window.manage_music)
         window.volume_label.clicked_signal.connect(
             window.volume_icon_change)

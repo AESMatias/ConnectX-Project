@@ -70,6 +70,9 @@ class FrameLogin(QWidget):
             # TODO: set a counter with QTimer to avoid closing the app by mistake
             pass
 
+    def add_friend_func(self, friend_username: str) -> None:
+        print('Aqui se envia la solicitud POST hacia: ', friend_username)
+
     def send_first_message(self):
         # Método para enviar el primer mensaje después de que el cliente esté listo
         # self.first_message = f"general|{self.jwt}|general|MESSAGE_LOGIN"

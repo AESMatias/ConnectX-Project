@@ -16,10 +16,12 @@ from PyQt6.QtWidgets import QScrollBar
 from components.global_functions import QLabel_Exit
 from components.endpoints import active_users, last_n_messages
 from datetime import datetime
+from Frames.private_message import PrivateMessageFrameSecond
 
 
 class ChatFrame(QWidget):
     send_message_signal = pyqtSignal(str)
+    signal_send_request_friend = pyqtSignal(str)
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -46,7 +48,8 @@ class ChatFrame(QWidget):
         self.timer_scroll_to_bottom.start(250)
         self.intentos_restantes_jwt = 1
         # Profile View
-        self.chat_widget = ChatWidget()
+        self.chat_widget = ChatWidget(
+            self, username=self.username, app_username=self.username)
         self.chat_widget.hide()
         # Profile View Background
         self.background_widget = ProfileViewBackground(self, self.username)
@@ -195,7 +198,7 @@ class ChatFrame(QWidget):
 
             self.timer_animate_start.start(1)
             # Obtain the last 20 messages and push them
-            first_n_messages_obtained = last_n_messages(self, 8)
+            first_n_messages_obtained = last_n_messages(self, 10)
             first_n_messages_obtained.reverse()
             self.push_the_first_n_messages(first_n_messages_obtained)
             self.write_message.setFocus()
@@ -246,6 +249,35 @@ class ChatFrame(QWidget):
     def push_the_first_n_messages(self, first_messages: list) -> None:
         for message in first_messages:
             self.new_message(message)
+
+    def send_message_func(self, to_username):
+        # cerramos el widget activo clickeando el fondo
+        print(' send to', to_username)
+        self.chat_widget.hide_profile()
+        for widget in self.chat_widgets_list:
+            if widget.username == to_username:
+                widget.hide_profile()
+                break
+            # cerramos el background
+        for widget in self.background_widgets_list:
+            if widget.username == to_username:
+                print(' cerrado back')
+                widget.signal_profile_close.emit()
+                widget.hide()
+                break
+        self.private_message_frame.username = self.username
+        self.private_message_frame.qlabel_to_write.setText(to_username)
+        self.private_message_frame.setWindowTitle(
+            f"Send a message to {to_username}")
+        # la movemos al centro
+        self.private_message_frame.move(
+            int(self.screen_width*0.4), int(self.screen_height*0.2))
+        self.private_message_frame.show()
+        self.private_message_frame.raise_()
+        self.private_message_frame.setFocus()
+
+    def add_friend_func(self, username: str):
+        self.signal_send_request_friend.emit(username)
 
     def new_message(self, message: str):
         if message.__contains__(' - '):
@@ -381,7 +413,8 @@ class ChatFrame(QWidget):
             background_widget = ProfileViewBackground(self, username)
             background_widget.hide()
             # Profile View
-            chat_widget = ChatWidget(self, username)
+            chat_widget = ChatWidget(
+                self, username=username, app_username=self.username)
             chat_widget.hide()
 
             self.get_pic_by_name(
@@ -407,6 +440,10 @@ class ChatFrame(QWidget):
             print('----------LENNNNNNNNN aprox of the messages:',
                   len(self.pixmaps_profiles_array), len(
                       self.background_widgets_list), len(self.chat_widgets_list))
+        # We connect the signal for all the widgets in chat_widgets_list
+        for widget in self.chat_widgets_list:
+            widget.signal_add_friend.connect(self.add_friend_func)
+            widget.signal_send_message.connect(self.send_message_func)
 
     def init_gui(self) -> None:
 
@@ -553,3 +590,4 @@ class ChatFrame(QWidget):
         hbox_final.addLayout(vbox)
         hbox_final.addWidget(self.labels['users_active'])
         self.setLayout(hbox_final)
+        self.private_message_frame = PrivateMessageFrameSecond(self)

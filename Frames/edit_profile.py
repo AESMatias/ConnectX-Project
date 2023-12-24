@@ -209,6 +209,7 @@ class EditProfile(QWidget):
             self.timer_expand_animation.stop()
             self.setGeometry(0, 0, int(self.screen_width * 0.7),
                              int(self.screen_height * 0.7))
+        self.private_message_frame.username = self.username
 
     def animate_size_close(self):
         self.current_step += 1

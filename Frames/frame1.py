@@ -46,6 +46,11 @@ class Frame1(QWidget):
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Return or event.key() == 16777220:
             self.login_button.click()
+        # We check if the user press tab, ctrl, shift, alt, capslock, esc, backspace, delete, enter, return, home, end, left, up, right, down, pageup, pagedown, or any other key
+        elif event.key() == Qt.Key.Key_Tab or event.key() == Qt.Key.Key_Control or \
+            event.key() == Qt.Key.Key_Shift or event.key() == Qt.Key.Key_Alt or\
+                event.key() == Qt.Key.Key_CapsLock:
+            pass
         else:
             # Set the focus to the QLineEdit but first, we set the text of the key pressed
             self.username_field.setFocus()

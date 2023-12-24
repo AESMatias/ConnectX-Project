@@ -30,7 +30,6 @@ class ProfileViewBackground(QWidget):
     def show_profile(self):
         self.show()
         self.raise_()
-        print(' show profileeeee de elem: ', self.username, self)
 
     def mousePressEvent(self, event) -> None:
         self.signal_profile_close.emit()
@@ -38,10 +37,14 @@ class ProfileViewBackground(QWidget):
 
 
 class ChatWidget(QWidget):
-    def __init__(self, parent=None, username=None):
+    signal_add_friend = QtCore.pyqtSignal(str)
+    signal_send_message = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent=None, username=None, app_username=None):
         super().__init__(parent, flags=Qt.WindowType.WindowStaysOnTopHint |
                          Qt.WindowType.FramelessWindowHint)
         self.username = username
+        self.app_username = app_username
         self.setWindowTitle("Chat Flotante")
         self.profile_image = QPixmap(f'profiles/images/{self.username}.png')
         # This is the average color of the image
@@ -66,6 +69,7 @@ class ChatWidget(QWidget):
         #     QPushButton:pressed {color: rgb(0, 0, 128); background-color: white;}')
         self.add_friend.setCursor(Qt.CursorShape.PointingHandCursor)
         self.send_message = QPushButton("Send Message")
+        self.send_message.clicked.connect(self.send_message_to)
         self.send_message.setCursor(Qt.CursorShape.PointingHandCursor)
         self.send_message.setStyleSheet(f'QPushButton {{ \
             background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, \
@@ -126,10 +130,17 @@ class ChatWidget(QWidget):
         self.update()
         print('CHANGING PIXMAP AT ChatWidget.change_pixmap method!')
 
+    def send_signal_add_friend(self):
+        self.signal_add_friend.emit(self.username)
+
+    def send_message_to(self):
+        self.signal_send_message.emit(self.username)
+
     def show_profile(self):
         self.show()
         self.raise_()
         self.timer_expand_animation.start(1)
+        self.add_friend.clicked.connect(self.send_signal_add_friend)
 
     def hide_profile(self):
         self.timer_close_animation.start(2)
