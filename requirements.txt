@@ -7,3 +7,4 @@ PyQt6
 Pillow
 matplotlib
 scikit-learn
+aiohttp

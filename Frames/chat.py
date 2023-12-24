@@ -8,13 +8,14 @@ from components.chat_functions import QLabelProfilePicture, ChatWidget, ProfileV
 from typing import Tuple, List
 import requests
 import os
-import json
 from PyQt6.QtGui import QPalette, QBrush
 from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtWidgets import QScrollBar
 from components.global_functions import QLabel_Exit
+from components.endpoints import active_users, last_n_messages
+from datetime import datetime
 
 
 class ChatFrame(QWidget):
@@ -38,7 +39,7 @@ class ChatFrame(QWidget):
         self.hide()
         self.raise_()
         self.timer_active_users = QtCore.QTimer()
-        self.timer_active_users.timeout.connect(self.active_users)
+        self.timer_active_users.timeout.connect(self.active_users_func)
         self.timer_active_users.start(15000)
         self.timer_scroll_to_bottom = QtCore.QTimer()
         self.timer_scroll_to_bottom.timeout.connect(self.scroll_to_bottom)
@@ -86,6 +87,9 @@ class ChatFrame(QWidget):
                 background-color: rgba(0, 0, 0, 128);
             }}
         """)
+
+    def active_users_func(self):
+        return active_users(self)
 
     def animate_size_start(self):
         self.current_step += 1
@@ -163,30 +167,10 @@ class ChatFrame(QWidget):
     def jwt_receiver(self, jwt: str) -> List[str]:
         self.jwt = jwt
 
-    def active_users(self) -> Tuple[bool, str]:
-        print('active_users function in chat.py every 15 seconds')
-        url = 'http://localhost:8000/active/'
-        headers = {'accept': 'application/json'}
-        response = requests.get(url, headers=headers)
-
-        if response.status_code == 200:
-            active_users_decoded = response.content.decode('utf-8')
-            list_of_active_users = json.loads(active_users_decoded)
-            self.active_users_chat = len(
-                list_of_active_users), list_of_active_users
-            self.labels['username'].setText(
-                f'{self.active_users_chat[0]} Users online')
-            self.labels['users_active'].setText('Active users: \n \n{}'.format(
-                '\n'.join(self.active_users_chat[1])))
-            return len(list_of_active_users), list_of_active_users
-
-        elif response.status_code == 404:
-            print('status_code 404 active users')
-
     def launch(self) -> None:
         sender = self.sender()
         if sender.login_status == True:
-            self.active_users_chat = self.active_users()
+            self.active_users_chat = self.active_users_func()
             self.counter_chat_enter += 1
             self.username = sender.username
             self.labels['username'].setText(
@@ -204,6 +188,10 @@ class ChatFrame(QWidget):
             self.change_username_status()  # TODO VER ESTO, NO SE USA
 
             self.timer_animate_start.start(1)
+            # Obtain the last 20 messages and push them
+            first_n_messages_obtained = last_n_messages(self, 8)
+            first_n_messages_obtained.reverse()
+            self.push_the_first_n_messages(first_n_messages_obtained)
 
     def send_message(self, event=None):
         text = self.write_message.text()
@@ -211,6 +199,7 @@ class ChatFrame(QWidget):
         self.send_message_signal.emit(message)
         self.write_message.setText('')
         if text.endswith('/close') or text.endswith('/exit'):
+            print('do you want to exit D:')
             pass
             # print('closing threads and sockets by send_message func')
             # # self.client_communicator.client_socket.close()
@@ -247,11 +236,18 @@ class ChatFrame(QWidget):
                     print('ELSEEEEEEE AT GETPICBYNAME IN CHAT DOT PY')
                     return QPixmap(f"profiles/images/{username}.png")
 
-    def new_message(self, message):
-        # TODO Change the username tuple
-        # username, message = message.split(':')
-        username, message_text = message.split(':')
+    def push_the_first_n_messages(self, first_messages: list) -> None:
+        for message in first_messages:
+            self.new_message(message)
 
+    def new_message(self, message: str):
+        if message.__contains__(' - '):
+            time_message, user_and_message = message.split(' - ')
+            username, message_text = user_and_message.split(': ')
+        elif not message.__contains__(' - '):
+            username, message_text = message.split(':')
+            current_time = datetime.now().strftime("%H:%M")
+            message = f"{current_time} - {username}: {message_text}"
         if username not in self.username_tuple:
             # self.username_tuple += (username,)
 
