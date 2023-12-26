@@ -271,6 +271,10 @@ class EditProfile(QWidget):
 
         self.page1_layout.addWidget(self.image_viewer)
         self.page1_layout.update()
+        self.messages_widget.jwt = self.jwt
+        self.messages_widget.username = self.username
+        # TODO: fix the line below
+        self.messages_widget.retrieve_messages()
 
     def load_image(self):
         self.image_viewer.username = self.username
@@ -453,6 +457,9 @@ class EditProfile(QWidget):
         #
         page_layout_messages = QVBoxLayout()
         self.messages_widget = MessagesWidget()
+        # Connecting the button that retrieves the messages
+        self.received_button.clicked.connect(
+            self.messages_widget.retrieve_messages)
         page_layout_messages.addWidget(self.messages_widget)
         container2 = QWidget()
 

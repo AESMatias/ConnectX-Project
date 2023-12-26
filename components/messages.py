@@ -43,21 +43,21 @@ class MessagesWidget(QWidget):
         # self.timer_active_users.start(15000)
         self.intentos_restantes_jwt = 1
         # Profile View
-        self.chat_widget = MessagesBoxWidget()
-        self.chat_widget.hide()
+        # self.chat_widget = MessagesBoxWidget()
+        # self.chat_widget.hide()
         # Profile View Background
-        self.background_widget = ProfileViewBackground(self, self.username)
-        self.background_widget.hide()
+        # self.background_widget = ProfileViewBackground(self, self.username)
+        # self.background_widget.hide()
         self.pixmaps_profiles_array = []
         self.background_widgets_list = []
         self.chat_widgets_list = []
         self.hor_layouts_to_delete = []
         self.animation_steps = 50
         self.current_step = 0
-        self.timer_animate_start = QtCore.QTimer()
-        self.timer_animate_start.timeout.connect(self.animate_size_start)
-        self.timer_animate_close = QtCore.QTimer()
-        self.timer_animate_close.timeout.connect(self.animate_size_close)
+        # self.timer_animate_start = QtCore.QTimer()
+        # self.timer_animate_start.timeout.connect(self.animate_size_start)
+        # self.timer_animate_close = QtCore.QTimer()
+        # self.timer_animate_close.timeout.connect(self.animate_size_close)
         screen = QGuiApplication.primaryScreen()
         screen_geometry = screen.geometry()
 
@@ -190,17 +190,72 @@ class MessagesWidget(QWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Return:
-            self.new_message('USER_NAME : you have pressed the return key')
+            self.retrieve_messages()
 
     def set_first_messages(self) -> None:
-        for _ in range(5):
-            self.new_message(
-                'user_name : MENSAJE DE PRUEBA REPETIDO 5 veces')
+        # for _ in range(5):
+        #     self.new_message(
+        #         'user_name - MENSAJE DE PRUEBA REPETIDO 5 veces')
+        pass
+
+    def clean_the_messages(self):
+        for elem in self.container_widget.children():
+            if type(elem) == QLabelMessageMail or type(elem) == QLabelProfilePicture or type(elem) == QLabel:
+                print('borrando elem', elem)
+                elem.deleteLater()
+
+        for elem in self.pixmaps_profiles_array:
+            elem.deleteLater()
+        for elem in self.background_widgets_list:
+            elem.deleteLater()
+        # for elem in self.chat_widgets_list:
+        #     elem.deleteLater()
+        self.pixmaps_profiles_array.clear()
+        self.background_widgets_list.clear()
+        # self.chat_widgets_list.clear()
+        self.hor_layouts_to_delete.clear()
+        self.all_messages2.clear()
+        self.all_messages2 = []
+        # for _ in range(5):
+        #     self.all_messages2.append('')
+        self.counter_messages = 0
+        self.counter_chat_enter = 0
+
+    def retrieve_messages(self) -> None:
+        print(' MI NOMBRE SDE USUARIO ES ', self.username)
+        print(' y mi token', self.jwt)
+        url = 'http://localhost:8000/messages/p2p'
+        headers = {'accept': 'application/json',
+                   'Authorization': f'Bearer {str(self.jwt)}'}
+        params = {
+            'username': str(self.username),
+            'username2': str('admin')
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+        if response.status_code == 200:
+            data_decoded = response.content.decode('utf-8')
+            data_loaded = json.loads(data_decoded)
+            data_loaded.reverse()
+            self.clean_the_messages()
+            for message_object in data_loaded:
+                message_time = message_object['datatime'][11:16]
+                message = message_object['mensaje']
+                username = message_object['username']
+                formatted_message = f"{message_time} - {username} : {message}"
+                self.background_widgets_list.clear
+                # self.chat_widgets_list.clear
+                self.new_message(formatted_message)
+
+        elif response.status_code == 404:
+            print('status_code 404 active users')
+            return ['No messages found: 404']
 
     def new_message(self, message):
         # TODO Change the username tuple
         # username, message = message.split(':')
-        username, message_text = message.split(':')
+        print(message)
+        username, message_text = message.split('-')
 
         # NO SE USA ESTO TODO
         pixmap_delete64 = QPixmap('images/delete64.png').scaled(
@@ -244,7 +299,7 @@ class MessagesWidget(QWidget):
         # repintamos la imagen
         # self.qlabelpixamap.repaint()
         # self.chat_widget.profile_image = self.pixmap_username #does not exist  pixmapusername before
-        self.chat_widget.__init__(self)
+        # self.chat_widget.__init__(self)
         if message:
             self.counter_messages += 1
 
@@ -331,12 +386,12 @@ class MessagesWidget(QWidget):
             #     self.hor_layouts_to_delete.append(horizontal_layout)
             #     self.container_layout.addLayout(horizontal_layout)
             #     self.all_messages2.append(message_text)
-            # Profile View Background
-            background_widget = ProfileViewBackground(self, username)
-            background_widget.hide()
-            # Profile View
-            chat_widget = ChatWidget(self, username)
-            chat_widget.hide()
+            # # Profile View Background
+            # background_widget = ProfileViewBackground(self, username)
+            # background_widget.hide()
+            # # Profile View
+            # chat_widget = ChatWidget(self, username)
+            # chat_widget.hide()
             # try:
             #     self.pixmaps_profiles_array[-1].signal_profile_picture_clicked.connect(
             #         background_widget.show_profile)
@@ -352,8 +407,8 @@ class MessagesWidget(QWidget):
             #         chat_widget.hide_profile)
             # except IndexError:
             #     print('IndexError at chat.py 3')
-            self.background_widgets_list.append(background_widget)
-            self.chat_widgets_list.append(chat_widget)
+            # self.background_widgets_list.append(background_widget)
+            # self.chat_widgets_list.append(chat_widget)
 
     def init_gui(self) -> None:
 
