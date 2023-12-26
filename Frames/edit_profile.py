@@ -258,6 +258,8 @@ class EditProfile(QWidget):
     def jwt_receiver(self, jwt: str, username: str) -> None:
         self.jwt = jwt
         self.username = username
+        # If we have the jwt, we can start the GUI of the PageContactsLayout
+        self.page3_layout.get_token(self.jwt)
 
         # The following lines are for set the profile image
         # Upload profile image
@@ -459,7 +461,7 @@ class EditProfile(QWidget):
         page2_layout_general.addLayout(page2_layout_buttons)
         container2.setLayout(page2_layout_general)
 
-        self.page3_layout = PageContactsLayout()
+        self.page3_layout = PageContactsLayout(token=self.jwt)
         container3 = QWidget()
         container3.setLayout(self.page3_layout)
 

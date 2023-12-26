@@ -17,6 +17,7 @@ from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtCore import Qt
 from components.qlabels import MusicButton
 from PyQt6.QtGui import QPixmap, QImage, QColor
+from components.friends_endpoints import send_request
 
 
 class FrameLogin(QWidget):
@@ -71,7 +72,9 @@ class FrameLogin(QWidget):
             pass
 
     def add_friend_func(self, friend_username: str) -> None:
+        print(self.jwt, ' AAAAAAAAAAAA')
         print('Aqui se envia la solicitud POST hacia: ', friend_username)
+        send_request(self, self.jwt, friend_username)
 
     def send_first_message(self):
         # Método para enviar el primer mensaje después de que el cliente esté listo

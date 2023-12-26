@@ -24,5 +24,6 @@ def login(user: str, password: str) -> Tuple[bool, str]:
 
     if response.status_code == 200:
         access_token = response.json()["access_token"]
+        print('EL TOKEN INICIAL ES ', access_token)
         return True, access_token
     return False, response.text

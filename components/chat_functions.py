@@ -95,7 +95,7 @@ class ChatWidget(QWidget):
         # Quality: (0 means no compression, 100 is the best quality)
         scaled_image = self.profile_image.scaledToWidth(
             300, QtCore.Qt.TransformationMode.SmoothTransformation)
-        image_profile.setPixmap(QtGui.QPixmap(scaled_image))
+        image_profile.setPixmap(scaled_image)
         image_profile.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(image_profile)
         layout.addWidget(self.username_label)

@@ -175,6 +175,7 @@ class ChatFrame(QWidget):
 
     def jwt_receiver(self, jwt: str) -> List[str]:
         self.jwt = jwt
+        print(' el token recibido al login es', jwt)
 
     def launch(self) -> None:
         sender = self.sender()
@@ -434,6 +435,7 @@ class ChatFrame(QWidget):
                     chat_widget.hide_profile)
             except IndexError:
                 print('IndexError at chat.py 3')
+
             self.background_widgets_list.append(background_widget)
             self.chat_widgets_list.append(chat_widget)
 
@@ -441,9 +443,12 @@ class ChatFrame(QWidget):
                   len(self.pixmaps_profiles_array), len(
                       self.background_widgets_list), len(self.chat_widgets_list))
         # We connect the signal for all the widgets in chat_widgets_list
-        for widget in self.chat_widgets_list:
-            widget.signal_add_friend.connect(self.add_friend_func)
-            widget.signal_send_message.connect(self.send_message_func)
+        chat_widget.signal_add_friend.connect(self.add_friend_func)
+        chat_widget.signal_send_message.connect(self.send_message_func)
+        # for widget in self.chat_widgets_list:
+        #     widget.signal_add_friend.connect(self.add_friend_func)
+        #     widget.signal_send_message.connect(self.send_message_func)
+        #     print(' LONGITUD DE ', len(self.chat_widgets_list))
 
     def init_gui(self) -> None:
 
