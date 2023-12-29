@@ -12,11 +12,12 @@ from PyQt6.QtWidgets import QFrame
 from PyQt6.QtWidgets import QGridLayout
 import requests
 from PyQt6.QtWidgets import QLineEdit, QTextEdit
-from styles.styles import login_label_ok, button_style_contacts
+from styles.styles import login_label_ok, button_style_contacts, button_style_contacts_selected
 from components.friends_endpoints import get_pendient_friends, get_friend_list
 from components.req_friend_label import PendientFriend, MyFriend
 from components.scrolled_friends import ScolledFriends
 from PyQt6.QtWidgets import QStackedLayout
+from components.sounds.click import button_clicked
 
 
 class StackContacts(QVBoxLayout):
@@ -33,10 +34,14 @@ class StackContacts(QVBoxLayout):
         self.btn_my_friends = QPushButton("My friends")
         self.btn_my_friends.clicked.connect(
             lambda: self.change_page(optional_number=0))
-        self.btn_my_friends.setStyleSheet(button_style_contacts)
+        self.btn_my_friends.setStyleSheet(button_style_contacts_selected)
+        self.btn_my_friends.setCursor(QtGui.QCursor(
+            QtCore.Qt.CursorShape.PointingHandCursor))
         self.btn_my_friends.setFixedHeight(50)
         self.btn_my_friends.setFixedWidth(200)
         self.btn_pendient = QPushButton("Pendient requests")
+        self.btn_pendient.setCursor(QtGui.QCursor(
+            QtCore.Qt.CursorShape.PointingHandCursor))
         self.btn_pendient.clicked.connect(
             lambda: self.change_page(optional_number=1))
         self.btn_pendient.setStyleSheet(button_style_contacts)
@@ -76,9 +81,15 @@ class StackContacts(QVBoxLayout):
         # self.populate_gui()
 
     def change_page(self, optional_number=None):
+        if optional_number == 0:
+            self.btn_my_friends.setStyleSheet(button_style_contacts_selected)
+            self.btn_pendient.setStyleSheet(button_style_contacts)
+        elif optional_number == 1:
+            self.btn_my_friends.setStyleSheet(button_style_contacts)
+            self.btn_pendient.setStyleSheet(button_style_contacts_selected)
         self.stacked_layout.setCurrentIndex(optional_number)
-        print(optional_number, 'optional number')
         self.update()
+        button_clicked(self)
 
 
 class PagePendientsLayout(QVBoxLayout):
@@ -211,13 +222,25 @@ class PageFriendsLayout(QVBoxLayout):
         self.retrieve_data()
         self.populate_gui()
 
-    def refresh_page(self):
-        # self.scrolled_friends.deleteLater()
-        # self.init_scrolled_area()
-        # self.retrieve_data()
-        # self.populate_gui()
-        print('refresh page')
+    def reorganize_grid(self):
+        '''Refresh the grid according to the new data but it's not'''
+        '''working because some times makes the whole app crash'''
+        print('reorganizing')
         pass
+        # # Delete all the null elements from the layout
+        # for i in reversed(range(self.friends_grid_layout.count())):
+        #     item = self.friends_grid_layout.itemAt(i)
+        #     widget = item.widget()
+        #     if item is None or item.widget() is None:
+        #         self.friends_grid_layout.takeAt(i)
+
+        # # Reorganize the indexes
+        # for i in range(self.friends_grid_layout.count()):
+        #     row, col, _, _ = self.friends_grid_layout.getItemPosition(i)
+        #     print('aladiendo a ', i)
+        #     self.friends_grid_layout.addItem(
+        #         self.friends_grid_layout.takeAt(i), row, col)
+        # self.friends_grid_layout.update()
 
     def init_scrolled_area(self):
         self.scrolled_friends: QWidget = ScolledFriends()
@@ -225,7 +248,7 @@ class PageFriendsLayout(QVBoxLayout):
 
     def populate_friends(self, friends_list: list[str]):
         print('friends list', friends_list)
-        friends_grid_layout = QGridLayout()
+        self.friends_grid_layout = QGridLayout()
         num_columns = 4
 
         # Add items to the grid layout dynamically
@@ -234,9 +257,12 @@ class PageFriendsLayout(QVBoxLayout):
             row = index // num_columns
             col = index % num_columns
             friend_req_label = MyFriend(username=req_username, token=self.jwt)
-            friends_grid_layout.addWidget(friend_req_label, row, col)
+            self.friends_grid_layout.addWidget(friend_req_label, row, col)
             print('nuevo qlabel em', row, col)
             self.scrolled_friends.new_label(friend_req_label, row, col)
+
+            friend_req_label.signal_remove_friend.connect(
+                self.reorganize_grid)
 
         # layout.addLayout(friends_grid_layout)
         # self.scrolled_friends.new_label(layout)

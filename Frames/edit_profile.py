@@ -20,6 +20,10 @@ from Frames.private_message import PrivateMessageFrame
 from Frames.page_5_layout import PageFiveLayout
 from Frames.page_4_security import PageSecurityLayout
 from Frames.page_3_contacts import PageFriendsLayout, StackContacts
+from components.sounds.click import button_clicked
+import os
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PyQt6.QtCore import QUrl
 
 
 class ChatWidget(QWidget):
@@ -317,6 +321,13 @@ class EditProfile(QWidget):
     #         self.username, to_username, message)
     #     print('emit_signal_send_message_offline', self.username,
     #           to_username, message)
+    def sound_effect_clicked(self):
+        self.media_player = QMediaPlayer(self)
+        self.media_player.setAudioOutput(QAudioOutput(self))
+        file_url = QUrl.fromLocalFile(os.path.join(
+            'Music', 'mixkit-modern-technology-select-3124.wav'))
+        self.media_player.setSource(file_url)
+        self.media_player.play()
 
     def init_gui(self) -> None:
         self.labels = {}
@@ -343,6 +354,7 @@ class EditProfile(QWidget):
         # 1 Button
         self.stack_button1 = EditProfileButton(
             'logoutnButton', 0, 'Account [1]', self)
+
         self.stack_button1.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.stack_button1.setStyleSheet(
@@ -453,6 +465,7 @@ class EditProfile(QWidget):
         sended_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         page2_layout_buttons.addWidget(sended_button)
+        # TODO Sound effect to this button too
 
         #
         page_layout_messages = QVBoxLayout()
@@ -518,3 +531,4 @@ class EditProfile(QWidget):
                 if i == sender.index:
                     sender.setStyleSheet(edit_profile_button_clicked)
             self.update()
+        button_clicked(self)

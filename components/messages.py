@@ -18,6 +18,8 @@ from PyQt6.QtCore import QCoreApplication
 from PyQt6.QtGui import QPalette, QBrush, QGuiApplication
 import requests
 import json
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PyQt6.QtCore import QUrl
 
 
 class MessagesWidget(QWidget):
@@ -250,6 +252,13 @@ class MessagesWidget(QWidget):
         elif response.status_code == 404:
             print('status_code 404 active users')
             return ['No messages found: 404']
+        # clicked sound
+        self.media_player = QMediaPlayer(self)
+        self.media_player.setAudioOutput(QAudioOutput(self))
+        file_url = QUrl.fromLocalFile(os.path.join(
+            'Music', 'mixkit-modern-technology-select-3124.wav'))
+        self.media_player.setSource(file_url)
+        self.media_player.play()
 
     def new_message(self, message):
         # TODO Change the username tuple

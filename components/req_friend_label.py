@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import QHBoxLayout
 from PIL import Image
 import numpy as np
 from PyQt6.QtGui import QPainter, QColor
-from components.friends_endpoints import accept_friend_request, reject_friend_request
+from components.friends_endpoints import accept_friend_request, reject_friend_request, remove_friend_post
 
 
 class PendientFriend(QWidget):
@@ -169,6 +169,7 @@ class PendientFriend(QWidget):
 class MyFriend(QWidget):
     signal_add_friend = QtCore.pyqtSignal(str)
     signal_send_message = QtCore.pyqtSignal(str)
+    signal_remove_friend = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None, username=None, app_username=None, is_pendient=None,
                  is_accepted=None, is_rejected=None, token=None):
@@ -204,7 +205,7 @@ class MyFriend(QWidget):
         #     QPushButton:pressed {color: rgb(0, 0, 128); background-color: white;}')
         self.accept_friend.setCursor(Qt.CursorShape.PointingHandCursor)
         self.remove_friend = QPushButton("Remove")
-        self.remove_friend.clicked.connect(self.send_message_to)
+        self.remove_friend.clicked.connect(self.remove_friend_func)
         self.remove_friend.setCursor(Qt.CursorShape.PointingHandCursor)
         self.remove_friend.setStyleSheet(f'QPushButton {{background: rgba(200,10,10,1); \
             color: white; font: bold 10pt "MS Shell Dlg 2";border:1px solid black;border-radius:2px;}} \
@@ -258,6 +259,11 @@ class MyFriend(QWidget):
     #         self.reject_friend_function()
     #     elif is_pendient == True:
     #         pass
+    def remove_friend_func(self):
+        print('Removing friend', self.username)
+        self.deleteLater()
+        self.signal_remove_friend.emit(self.username)
+        remove_friend_post(token=self.token, to_username=self.username)
 
     def change_status(self):
         '''When the instance is created, we check the status of the friend request.

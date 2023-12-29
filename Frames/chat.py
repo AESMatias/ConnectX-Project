@@ -281,6 +281,8 @@ class ChatFrame(QWidget):
         self.signal_send_request_friend.emit(username)
 
     def new_message(self, message: str):
+        if message.__contains__('MESSAGE_LOGIN'):
+            return
         if message.__contains__(' - '):
             time_message, user_and_message = message.split(' - ')
             username, message_text = user_and_message.split(': ')

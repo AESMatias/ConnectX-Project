@@ -1,6 +1,13 @@
 import requests
 
 
+def remove_friend_post(token: str, to_username: str) -> None:
+    # to_username = username.strip()
+    # to_username = str(to_username)
+    # url = 'http://localhost:8000/friend/remove'
+    print('remove_friend_post, we need to implement this')
+
+
 def reject_friend_request(token: str, to_username: str) -> None:
     to_username = to_username.strip()
     to_username = str(to_username)

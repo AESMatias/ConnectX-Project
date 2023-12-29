@@ -40,59 +40,60 @@ if __name__ == '__main__':
         window.g_colour = 115  # Green component
         window.b_colour = 255  # Blue component
 
-        def change_style() -> None:
-            # Red component
-            if window.r_colour >= 0 and window.r_first_cycle:
-                window.r_colour -= 1  # Red component
-                if window.r_colour == 0:
-                    window.r_first_cycle = False
-                    window.r_second_cycle = True
-            if window.r_colour >= 0 and window.r_colour <= 107 and window.r_second_cycle == True:
-                window.r_colour += 1  # Red component
-                if window.r_colour == 107:
-                    window.r_first_cycle = True
-                    window.r_second_cycle = False
-            # Green component
-            if window.g_colour >= 0 and window.g_first_cycle:
-                window.g_colour -= 1  # Red component
-                if window.g_colour == 0:
-                    window.g_first_cycle = False
-                    window.g_second_cycle = True
-            if window.g_colour >= 0 and window.g_colour <= 180 and window.g_second_cycle == True:
-                window.g_colour += 1  # Red component
-                if window.g_colour == 180:
-                    window.g_first_cycle = True
-                    window.g_second_cycle = False
-            # Blue component
-            if window.b_colour >= 0 and window.b_first_cycle:
-                window.b_colour -= 4  # Red component
-                if window.b_colour == 0:
-                    window.b_first_cycle = False
-                    window.b_second_cycle = True
-            if window.b_colour >= 0 and window.b_colour <= 255 and window.b_second_cycle == True:
-                window.b_colour += 4  # Red component
-                if window.b_colour == 255:
-                    window.b_first_cycle = True
-                    window.b_second_cycle = False
+    #     def change_style() -> None:
+    #         # Red component
+    #         if window.r_colour >= 0 and window.r_first_cycle:
+    #             window.r_colour -= 1  # Red component
+    #             if window.r_colour == 0:
+    #                 window.r_first_cycle = False
+    #                 window.r_second_cycle = True
+    #         if window.r_colour >= 0 and window.r_colour <= 107 and window.r_second_cycle == True:
+    #             window.r_colour += 1  # Red component
+    #             if window.r_colour == 107:
+    #                 window.r_first_cycle = True
+    #                 window.r_second_cycle = False
+    #         # Green component
+    #         if window.g_colour >= 0 and window.g_first_cycle:
+    #             window.g_colour -= 1  # Red component
+    #             if window.g_colour == 0:
+    #                 window.g_first_cycle = False
+    #                 window.g_second_cycle = True
+    #         if window.g_colour >= 0 and window.g_colour <= 180 and window.g_second_cycle == True:
+    #             window.g_colour += 1  # Red component
+    #             if window.g_colour == 180:
+    #                 window.g_first_cycle = True
+    #                 window.g_second_cycle = False
+    #         # Blue component
+    #         if window.b_colour >= 0 and window.b_first_cycle:
+    #             window.b_colour -= 4  # Red component
+    #             if window.b_colour == 0:
+    #                 window.b_first_cycle = False
+    #                 window.b_second_cycle = True
+    #         if window.b_colour >= 0 and window.b_colour <= 255 and window.b_second_cycle == True:
+    #             window.b_colour += 4  # Red component
+    #             if window.b_colour == 255:
+    #                 window.b_first_cycle = True
+    #                 window.b_second_cycle = False
 
-            # Ensure that the values are within the appropriate range (0-255)
-            window.r_colour = max(0, min(window.r_colour, 255))
-            window.g_colour = max(0, min(window.g_colour, 255))
-            window.b_colour = max(0, min(window.b_colour, 255))
-            # Turn the RGB values into hexadecimal format
-            gradient_colour = "#{:02X}{:02X}{:02X}".format(
-                window.r_colour, window.g_colour, window.b_colour)
-            window.timer.stop()
-            window.setStyleSheet(f"""
-    QWidget {{
-        background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
-                                    stop: 0 {gradient_colour}, stop: 1 #000DFF);
-    }}
-    """)
-            QCoreApplication.processEvents()
-            window.timer.start()
+    #         # Ensure that the values are within the appropriate range (0-255)
+    #         window.r_colour = max(0, min(window.r_colour, 255))
+    #         window.g_colour = max(0, min(window.g_colour, 255))
+    #         window.b_colour = max(0, min(window.b_colour, 255))
+    #         # Turn the RGB values into hexadecimal format
+    #         gradient_colour = "#{:02X}{:02X}{:02X}".format(
+    #             window.r_colour, window.g_colour, window.b_colour)
+    #         window.timer.stop()
+    #         window.setStyleSheet(f"""
+    # QWidget {{
+    #     background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+    #                                 #000DFF);
+    #                                 stop: 0 {gradient_colour}, stop: 1
+    # }}
+    # """)
+        # QCoreApplication.processEvents()
+        # window.timer.start()
 
-        window.timer.timeout.connect(change_style)
+        # window.timer.timeout.connect(change_style)
 
         # edit_profile_window = EditProfile()
         # chat_frame = ChatFrame()
@@ -183,8 +184,7 @@ if __name__ == '__main__':
         #     login_window.send_first_message)
         # TODO TODO TODO
         # Changing the layout of the edit profile window
-        login_window.edit_account_frame.stack_button1.clicked.connect(
-            login_window.edit_account_frame.change_page)
+
         login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
             login_window.edit_account_frame.close_and_det_first_page)
 

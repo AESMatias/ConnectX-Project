@@ -243,6 +243,18 @@ class FrameLogin(QWidget):
             self.volume_label.setPixmap(self.volume_label.pixmap)
             self.repaint()
 
+    def sound_effect_clicked(self):
+        # TODO: We need to move this function to the class Button for the three buttons
+        # Lounge looped music
+        self.media_player = QMediaPlayer(self)
+        self.media_player.setAudioOutput(QAudioOutput(self))
+        file_url = QUrl.fromLocalFile(os.path.join(
+            'Music', 'mixkit-modern-technology-select-3124.wav'))
+        self.media_player.setSource(file_url)
+        # instance.media_player.mediaStatusChanged.connect(
+        #     instance.handle_media_status)
+        self.media_player.play()
+
     def init_gui(self) -> None:
         # Grid Layout
         self.grid = QGridLayout()
@@ -268,6 +280,7 @@ class FrameLogin(QWidget):
         self.edit_account = Button(
             'editAccount', (300, 250), ' Menu [2] ', self)
         self.edit_account_shadow = ProfileViewBackground(self)
+        self.edit_account.clicked.connect(self.sound_effect_clicked)
         # self.edit_account_frame.instance_optional_close(
         #     self.edit_account_shadow)
 
@@ -285,10 +298,12 @@ class FrameLogin(QWidget):
         self.logout_button.setStyleSheet(
             button_style_logged)
         self.logout_button.clicked.connect(self.change_username_status)
+        self.logout_button.clicked.connect(self.sound_effect_clicked)
 
         # CHAT
         self.chat_button = Chat_Button(
             'chatButton', (300, 250), ' Chat [1] ', self)
+        self.chat_button.clicked.connect(self.sound_effect_clicked)
         self.chat_button.setCursor(
             QCursor(QtCore.Qt.CursorShape.PointingHandCursor))
         self.chat_button.setStyleSheet(

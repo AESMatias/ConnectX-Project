@@ -12,6 +12,9 @@ from PyQt6.QtWidgets import QFrame
 from PyQt6.QtGui import QGuiApplication
 import requests
 from PyQt6.QtWidgets import QLineEdit, QTextEdit
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PyQt6.QtCore import QUrl
+import os
 
 
 class PrivateMessageFrameSecond(QWidget):
@@ -231,6 +234,13 @@ class PrivateMessageFrame(QWidget):
 
     def emit_signal_send_message_offline(self):
         self.signal_send_message_offline.emit()
+        # clicked sound
+        self.media_player = QMediaPlayer(self)
+        self.media_player.setAudioOutput(QAudioOutput(self))
+        file_url = QUrl.fromLocalFile(os.path.join(
+            'Music', 'mixkit-modern-technology-select-3124.wav'))
+        self.media_player.setSource(file_url)
+        self.media_player.play()
 
     def send_message_func(self, from_username=None, message_text=None, to_username=None):
         to_username = self.qlabel_to_write.text().strip()
