@@ -19,7 +19,7 @@ from components.messages import MessagesWidget
 from Frames.private_message import PrivateMessageFrame
 from Frames.page_5_layout import PageFiveLayout
 from Frames.page_4_security import PageSecurityLayout
-from Frames.page_3_contacts import PageContactsLayout
+from Frames.page_3_contacts import PageFriendsLayout, StackContacts
 
 
 class ChatWidget(QWidget):
@@ -258,8 +258,8 @@ class EditProfile(QWidget):
     def jwt_receiver(self, jwt: str, username: str) -> None:
         self.jwt = jwt
         self.username = username
-        # If we have the jwt, we can start the GUI of the PageContactsLayout
-        self.page3_layout.get_token(self.jwt)
+        # If we have the jwt, we can start the GUI of the StackContacts
+        self.stacked_contacts.get_token_and_username(self.jwt, self.username)
 
         # The following lines are for set the profile image
         # Upload profile image
@@ -468,9 +468,10 @@ class EditProfile(QWidget):
         page2_layout_general.addLayout(page2_layout_buttons)
         container2.setLayout(page2_layout_general)
 
-        self.page3_layout = PageContactsLayout(token=self.jwt)
+        self.stacked_contacts = StackContacts(
+            token=self.jwt)
         container3 = QWidget()
-        container3.setLayout(self.page3_layout)
+        container3.setLayout(self.stacked_contacts)
 
         self.page4_layout = PageSecurityLayout()
         container4 = QWidget()

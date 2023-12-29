@@ -42,8 +42,9 @@ def last_n_messages(self, n: str) -> list[str]:
         for message in data_loaded:
 
             message_time = message['datatime'][11:16]
-            formatted_message = f"{message_time} - {message['username']}: {message['mensaje']}"
-            messages_to_return.append(formatted_message)
+            f_message = str(
+                f"{message_time} - {message['username']}: {message['mensaje']}")
+            messages_to_return.append(f_message)
         messages_to_return
         return messages_to_return[0:n]
 

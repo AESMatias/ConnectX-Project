@@ -18,6 +18,7 @@ from PyQt6.QtCore import Qt
 from components.qlabels import MusicButton
 from PyQt6.QtGui import QPixmap, QImage, QColor
 from components.friends_endpoints import send_request
+from asyncio import sleep
 
 
 class FrameLogin(QWidget):
@@ -72,7 +73,6 @@ class FrameLogin(QWidget):
             pass
 
     def add_friend_func(self, friend_username: str) -> None:
-        print(self.jwt, ' AAAAAAAAAAAA')
         print('Aqui se envia la solicitud POST hacia: ', friend_username)
         send_request(self, self.jwt, friend_username)
 
@@ -81,7 +81,8 @@ class FrameLogin(QWidget):
         # self.first_message = f"general|{self.jwt}|general|MESSAGE_LOGIN"
         # print(' SENDING AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         # self.send_message_login.emit(self.first_message)
-        sleep(0)  # Without this sleep, the first message is not sent
+        # TODO: Without this sleep, the first message is not sent
+        sleep(0)
         self.client_communicator.username = self.username
         # self.client_thread = Thread(
         #     target=self.client_communicator.run_client)

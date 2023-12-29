@@ -1,4 +1,30 @@
-
+button_style_contacts = """
+    QPushButton {
+        border: 1px solid rgba(100,100,100,1);
+        border-radius: 2px;
+        font-size: 18px;
+        font-weight: 550;
+        color: white;
+        padding: 10px 10px;
+        margin: 2px 2px;
+        background: rgba(30,30,30,0.7);
+    }
+    
+    QPushButton:hover {
+        margin: 1.4px 1.4px;
+        border: 1px solid white;
+        font-size: 20px;
+        font-weight: bold;
+        background: rgba(10,10,180,1);
+    }
+    QPushButton:pressed {
+        border-radius: 1px;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        border: 2px solid white;
+}
+"""
 
 quote_style = """
 QLabel {
