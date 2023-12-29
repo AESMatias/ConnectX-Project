@@ -50,7 +50,12 @@ class StackContacts(QVBoxLayout):
         self.buttons_grouped.addWidget(self.btn_my_friends)
         self.buttons_grouped.addWidget(self.btn_pendient)
         widget_of_buttons = QWidget()
+        widget_of_buttons.setFixedHeight(60)
+        widget_of_buttons.setFixedWidth(1000)
+
         widget_of_buttons.setLayout(self.buttons_grouped)
+        self.buttons_grouped.setContentsMargins(300, 0, 0, 0)
+        self.buttons_grouped.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         # Containers
         self.friends_instance = PageFriendsLayout(
             username=username, token=token)
