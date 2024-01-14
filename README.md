@@ -12,9 +12,6 @@ The steps to run the backend server are basically the same: just create your .en
 
 > **Warning:** This project is just a proof of concept that lacks of the minimum requirements and security implementations of any real application. Therefore, this code should not be used, under any circumstance, in any real environment.
 
->![Screenshot 1](images/screenshot_2.jpg) 
->![Screenshot 2](images/screenshot_1.jpg)
-
 *The code is open source and free to use under the license attached in this repository* 
 ## Authors✨
 @AESMatias & @emonkey0
@@ -59,6 +56,12 @@ because of the split method, it's very easy to fix though.
 dinamically obtained through a function, thus allowing them to scrolls up the
 chat history, because currently there's a func that scrolls the whole chat down
 every 15 seconds.
+
+## Some Screenshots
+
+>![Screenshot 2](images/screenshot_1.jpg)
+>![Screenshot 2](images/screenshot_2.jpg) 
+
 
 # Attributions and Acknowledgments:
 Settings icon: <a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
