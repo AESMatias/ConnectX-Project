@@ -10,7 +10,7 @@ from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from threading import Thread
 from Login.client_socket import ClientCommunicator
 from PyQt6.QtCore import pyqtSignal
-from time import sleep
+
 from Frames.edit_profile import EditProfile, ProfileViewBackground
 from Frames.chat import ChatFrame
 from PyQt6.QtGui import QGuiApplication
@@ -67,7 +67,6 @@ class FrameLogin(QWidget):
             event_clicked = Qt.MouseButton.LeftButton
             self.volume_label.mousePressEvent(event_clicked)
 
-            self.music_function(self.music_status)
         elif event.key() == Qt.Key.Key_Escape:
             # TODO: set a counter with QTimer to avoid closing the app by mistake
             pass
@@ -93,25 +92,18 @@ class FrameLogin(QWidget):
     def jws_writter(self, jwt: str, username=None) -> None:
         self.jwt = jwt
 
-    def music_function(self, music_status: bool) -> None:
+    def music_function(self) -> None:
+        sender = self.sender()
+        music_status: bool = sender.music_status
+
         if music_status == False:
-            print('Musica iniciada')
+            print('Music playing')
             self.music_status = True
             self.media_player.play()
         elif music_status == True:
-            print('Musica pausada')
+            print('Music paused')
             self.music_status = False
             self.media_player.pause()
-
-    def manage_music(self, music_status: bool) -> None:
-        sender = self.sender()
-        if sender.name == 'musicButton':
-            if sender.music_status == True:
-                print('pausada')
-                self.media_player.pause()
-            elif sender.music_status == False:
-                print('reanudada')
-                self.media_player.play()
 
     def play_media(self):
         self.media_player.play()

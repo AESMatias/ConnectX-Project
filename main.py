@@ -7,8 +7,6 @@ from styles.styles import global_style
 from Frames.frame1 import Frame1
 from Frames.frame_login import FrameLogin
 
-image_florence = 'florence.jpg'
-aristotle_1 = 'aristotle_1.jpg'
 
 if __name__ == '__main__':
     try:
@@ -132,15 +130,14 @@ if __name__ == '__main__':
         # TODO: Add a new friend
         login_window.chat_frame.signal_send_request_friend.connect(
             login_window.add_friend_func)
-        window.volume_label.clicked_signal.connect(login_window.manage_music)
+        window.volume_label.clicked_signal.connect(login_window.music_function)
         window.volume_label.clicked_signal.connect(
             window.volume_icon_change)
         login_window.volume_label.clicked_signal.connect(
-            login_window.manage_music)
+            login_window.music_function)
         # login_window.volume_label.clicked_signal.connect(
         #     login_window.volume_icon_change)
 
-        # TODO AAAA TODO
         # new message
         login_window.client_communicator.message_received.connect(
             login_window.chat_frame.new_message)
@@ -157,33 +154,12 @@ if __name__ == '__main__':
 
         login_window.chat_frame.send_message_signal.connect(
             login_window.client_communicator.send_message)
-        # TODO AAA TODO
-        # # Opening the chat
-        # login_window.chat_button.clicked.connect(chat_frame.launch)
-        # login_window.chat_button.jwt_emit.connect(chat_frame.jwt_receiver)
-        # todo this TODO arreglar esto JWT UNO SOLOOO
-        # window.login_button.signal_jwt_login.connect(chat_frame.jwt_receiver)
-        # TODO TODO TODO
+
         window.login_button.signal_jwt_login.connect(
             login_window.edit_account_frame.jwt_receiver)
-        # TODO TODO TODO
 
-        # # new message
-        # login_window.client_communicator.message_received.connect(
-        #     chat_frame.new_message)
-        # chat_frame.client_communicator.message_received.connect(
-        #     chat_frame.new_message)
-        # Here, we send the first message through the socket to the server with the token:
-        # TODO
         login_window.send_message_login.connect(
             login_window.client_communicator.send_message)
-        # chat_frame.send_message_signal.connect(
-        #     login_window.client_communicator.send_message)
-        # When the client is ready, send the first message
-        # login_window.client_communicator.client_ready.connect(
-        #     login_window.send_first_message)
-        # TODO TODO TODO
-        # Changing the layout of the edit profile window
 
         login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
             login_window.edit_account_frame.close_and_det_first_page)
@@ -210,33 +186,11 @@ if __name__ == '__main__':
         # Conectamos la de;al de presionar el Qlabel con cerrar el menu
         login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
             login_window.edit_account_frame.timer_expand_animation_close.start)
-        # TODO lo mismo de arriba, pero ahora si el usuario aprieta escape
-        # login_window.edit_account_frame.signal_escape.connect(
-        #     login_window.chat_frame.timer_animate_close.start)
-        # Conectamos la de;al de presional el Qlabel con la shadow que aparece
-        # login_window.edit_account_frame.go_back_pixmap.signal_profile_close.connect(
-        #     login_window.edit_account_frame.close_menu_shadow)
 
-        # Conectamos la senal de presionar enviar mensaje privado offline con la ventana que lo abre
+        # Connecting the signal of pressing the send private message offline with the window that opens it
         login_window.edit_account_frame.private_message_frame.signal_send_message_offline.connect(
             login_window.edit_account_frame.private_message_frame.show_function)
 
-        # TODO TODO TODO
-        # login_window.edit_account.clicked.connect(
-        #     edit_profile_window.show_profile)
-        # Profile picture chat clicked
-        # timer = QTimer()
-        # timer.timeout.connect(enviar_senal)
-        # timer.start(1000)  # Cada 1000 milisegundos (1 segundo)
-        # def enviar_senal():
-        #     for element in chat_frame.pixmaps_profiles_array:
-        #         element.signal_profile_picture_clicked.emit('press')
-        # def printear():
-        #     print("Clic en la imagen del chat")
-        # chat_frame.pixmaps_profiles_array[0].signal_profile_picture_clicked.connect(printear)
-
-        # window.signal_frame1.connect(chat_frame.close_all)
-        # login_window.signal_frame_login.connect(chat_frame.close_all)
         sys.exit(app.exec())
     except KeyboardInterrupt as e:
         window.timer.stop()

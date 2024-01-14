@@ -1,29 +1,43 @@
 # ConnectX Project 🚀
-ConnectX it's an chat application, the project it's made in PyQt6 framework.
+ConnectX it's an chat application, the project it's made in PyQt6 framework and works in conjuntion with FastAPI and MySQL as DBMS.
+
+Therefore, in order to run it, you need use this repository as backend:
+https://github.com/AESMatias/ConnectX-Backend
+The steps to run the backend server are basically the same: just create your .env file according to the *env.sample* file inside the repository, and run the main.py file. Do you need an MySQL instance running first. 
+
+<iframe width="560" height="315" src="https://www.youtube.com/watch?v=Nll7__gmBSY" frameborder="0" allowfullscreen></iframe>
+
+> **Warning:** This project is just a proof of concept that lacks of the minimum requirements and security implementations of any real application. Therefore, this code should not be used, under any circumstance, in any real environment.
+
+>![Screenshot 1](images/screenshot_2.jpg) 
+>![Screenshot 2](images/screenshot_1.jpg)
 
 *The code is open source and free to use under the license attached in this repository* 
+## Authors✨
+@AESMatias & @emonkey0
 
-Tags:
-- fastapi 🚄
-- uvicorn 🐍
+### Tags:
+- FastAPI 🚄
+- Uvicorn 🐍
 - PyQt6 🐉
 - Qt
 - Python 🐉
 - sqlalchemy 🗃️
 - Chat Application
+- Sockets
 
 ## How to Get Started 🌟
 1. Clone this repository to your local machine.
 2. Install the required dependencies using `pip install -r requirements.txt`. 📦
-3. Run the `main.py` script. 🏃
+3. Run the `main.py` script inside the main folder. 🏃
 4. Enjoy 🌐
 
 ## Features ✨
-- The features are listed here.
-## Authors✨
-@AESMatias & @emonkey0
-# Next things to do 🚀
+- Real-time socket implementation.
+
+# Next things to do and fix 🚀
 - Fix the quality issue that occurs when we upload an image.
+- Fix the looping of the music.
 ### Improve the memory optimization:
 
 ### Modularize the code and solve the problem of hight cohesion and low coupling:
@@ -43,7 +57,7 @@ dinamically obtained through a function, thus allowing them to scrolls up the
 chat history, because currently there's a func that scrolls the whole chat down
 every 15 seconds.
 
-# Attributions and acknowledgments:
+# Attributions and Acknowledgments:
 Settings icon: <a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by Freepik - Flaticon</a>
 
 Volume icon: <a href="https://www.flaticon.com/free-icons/speaker" title="speaker icons">Speaker icons created by Pixel perfect - Flaticon</a>
