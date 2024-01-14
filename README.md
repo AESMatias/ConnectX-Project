@@ -6,9 +6,8 @@ https://github.com/AESMatias/ConnectX-Backend
 The steps to run the backend server are basically the same: just create your .env file according to the *env.sample* file inside the repository, and run the main.py file. Do you need an MySQL instance running first. 
 
 # YouTube Video
-
 [![Alt text](https://img.youtube.com/vi/Nll7__gmBSY/0.jpg)](https://www.youtube.com/watch?v=Nll7__gmBSY)
-
+https://www.youtube.com/watch?v=Nll7__gmBSY
 
 > **Warning:** This project is just a proof of concept that lacks of the minimum requirements and security implementations of any real application. Therefore, this code should not be used, under any circumstance, in any real environment.
 
