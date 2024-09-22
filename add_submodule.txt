@@ -1,0 +1,19 @@
+git submodule add <url>
+git submodule init
+git submodule update
+git commit -m 'submodule added'
+
+Note:
+to clone this repository, in the future, i will be need to use:
+git clone --recurse-submodules <url-main-repo>
+or, if i have already the repository without the submodules:
+git submodule update --init --recursive
+
+cat texto.txt | xclip -selection clipboard
+
+add:
+copy to the clipboard:
+1:
+xclip -selection clipboard < add_submodule.txt
+2 (less secure because of cat limit output):
+cat add_submodule.txt | xclip -selection clipboard

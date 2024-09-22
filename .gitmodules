@@ -1,0 +1,3 @@
+[submodule "ConnectX-Backend"]
+	path = ConnectX-Backend
+	url = https://github.com/AESMatias/ConnectX-Backend.git
